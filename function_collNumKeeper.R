@@ -19,11 +19,13 @@ a <- c("M.8564", "8272", "M 8539", "M.8056A", "11448A", "11504", "M 10019", "M10
 ### function:
 
 collNumKeeper <- function(x){
-        as.numeric(gsub("[^0-9]", "", a))
+       gsub("[^0-9]", "", x)
 }
 
-print("...function 'collNumKeeper' loaded; to use, call: collNumKeeper(x)")
-print("...strips away prefixes and suffixes from collector numbers")
+print(". ")
+print(".. function 'collNumKeeper' loaded; to use, call: collNumKeeper(x)")
+print("... collNumKeeper() strips away prefixes and suffixes from collector numbers")
+print(".... ")
 
 #test:
 #collNumKeeper(a)
