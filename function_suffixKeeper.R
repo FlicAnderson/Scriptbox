@@ -13,8 +13,10 @@ suffixKeeper <- function(x){
   gsub("^([A-Za-z]([ ])?|^[A-Za-z][\\.]([ ])?)?([0-9]*)", "", x)
 }
 
-print("...function 'suffixKeeper' loaded; to use, call: suffixKeeper(x)")
-print("...strips away prefixes and collection numbers from collector numbers")
+print(". ")
+print(".. function 'suffixKeeper' loaded; to use, call: suffixKeeper(x)")
+print("... suffixKeeper() strips away prefixes and collection numbers from collector numbers")
+print(".... ")
 
 #test:
 #suffixKeeper(a)
