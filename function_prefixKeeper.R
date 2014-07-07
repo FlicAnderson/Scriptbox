@@ -15,12 +15,14 @@ prefixKeeper <- function(x){
   gsub("([0-9]*)*(([A-Za-z]$)?)", "", x)
 }
 
-print("...function 'prefixKeeper' loaded; to use, call: prefixKeeper(x)")
-print("...strips away collection numbers and suffixes from collector numbers")
+print(". ")
+print(".. function 'prefixKeeper' loaded; to use, call: prefixKeeper(x)")
+print("... prefixKeeper() strips away collection numbers and suffixes from collector numbers")
+print(".... ")
 
 
 #test:
-#prefixKeeper(a)
+prefixKeeper(a)
 
 ###
 ### to call: prefixKeeper(x)
