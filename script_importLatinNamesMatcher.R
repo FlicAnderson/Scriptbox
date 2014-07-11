@@ -1,6 +1,7 @@
 # Padme Data:: Databasin:: importLatinNamesMatcher.R
 # ======================================================== 
 # (1st July 2014)
+# Author: Flic Anderson
 # ~ standalone script
 
 
