@@ -12,7 +12,13 @@
 
 # CODE # 
 
-
+# 1) Input species name
+# 2) Get Latin Names ID for species name
+# 3) Need to 'get higher' taxon ID? 
+# 4) Insert the IDs into the query code
+# 5) Run the query
+# 6) Show the output
+# 7) Save the output to .csv
 
 #Dichrostachys dehiscens
 # [Latin Names].id = 3125
@@ -55,9 +61,11 @@ nrow(recGrab)
 recGrab[order(recGrab$FlicStatus, decreasing=TRUE, na.last=TRUE),]
 
 # write to .csv file
-write.csv(recGrab[order(recGrab$FlicStatus, decreasing=TRUE, na.last=TRUE),], file="z:/fufluns/databasin/specimenDataGrab/Dichrostachys-dehiscens_Records.csv")
+# select where to save it & what to call it (need to add ".R" on end/create file)
+write.csv(recGrab[order(recGrab$FlicStatus, decreasing=TRUE, na.last=TRUE),], file=file.choose())
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
 odbcCloseAll()
 rm(list=ls())
+
