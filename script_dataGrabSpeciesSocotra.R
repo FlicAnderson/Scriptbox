@@ -20,6 +20,10 @@
 # 6) Show the output
 # 7) Save the output to .csv
 
+
+### WARNING: THIS IS STILL PROGRAMMED FOR Dichrostachys dehiscens !!! ###
+### NOT STARTED/FINISHED GENERALISING YET ### 
+
 #Dichrostachys dehiscens
 # [Latin Names].id = 3125
 
