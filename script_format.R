@@ -6,7 +6,7 @@
 # standalone script // dependant on: [filename]
 # saved at: O://CMEP\-Projects/Scriptbox/[filename]
 #
-# AIM: What this script is all about, why it was made, what
+# SCRIPT AIM: What this script is all about, why it was made, what
 # it does, etc.
 #
 # --------------------------------------------------------
