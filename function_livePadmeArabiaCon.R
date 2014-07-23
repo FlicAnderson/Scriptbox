@@ -1,7 +1,17 @@
-### FUNCTION: livePadmeArabiaCon ###
-### 3rd June 2014
-### Set up and open connection to import copy of THULIN DATASET database, return confirmation.
-###
+## FUNCTION :: livePadmeArabiaCon()
+# ======================================================== 
+# (3rd June 2014)
+# Author: Flic Anderson
+#
+# to call: livePadmeArabiaCon()
+# objects created: locat_livePadmeArabia; con_livePadmeArabia (locally global)
+# saved at: O://CMEP\-Projects/Scriptbox/function_livePadmeArabiaCon.R
+#
+# FUNCTION AIM: Set up and open connection to import copy of THULIN DATASET database, return confirmation.
+#
+# --------------------------------------------------------
+
+# CODE # 
 
 # install/load RODBC package if required
 if (!require(RODBC)){
@@ -24,6 +34,3 @@ livePadmeArabiaCon <- function(){
   # return confirmation it's working:
   print(paste("...source database connection online: ", locat_livePadmeArabia))
 }
-###
-### to call: livePadmeArabiaCon()
-### objects created: locat_livePadmeArabia; con_livePadmeArabia (locally global)
