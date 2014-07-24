@@ -162,6 +162,9 @@ socotraTaxa <- sort(socotraTaxaFull[,], na.last=TRUE, decreasing=FALSE)
 print(paste("Padme contains records for", length(socotraTaxaFull), "distinct taxa found on Socotra in total from literature records, field observations, and herbarium specimen records.", sep=" "))
   # as of 22/07/2014 this number was 1965 taxa records, including synonyms and only current dets and including random records like "Incana incana" <- the Socotran Warbler, a bird...
 
+# write the output to file
+#write.csv()
+
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
