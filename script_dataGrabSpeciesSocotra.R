@@ -12,6 +12,7 @@
 
 # CODE # 
 
+# 0) Load libraries, functions, source scripts
 # 1) Input species name
 # 2) Get Latin Names ID for species name
 # 3) Need to 'get higher' taxon ID? 
@@ -24,8 +25,18 @@
 ### WARNING: THIS IS STILL PROGRAMMED FOR Dichrostachys dehiscens !!! ###
 ### NOT STARTED/FINISHED GENERALISING YET ### 
 
-#Dichrostachys dehiscens
-# [Latin Names].id = 3125
+# Coelocarpum
+# [Latin Names].id = 2384
+#  **OR** 
+# [Latin Names].[next higher name] = 2384
+
+
+# load required packages, install if they aren't installed already
+# {RODBC} - ODBC Database Access
+if (!require(RODBC)){
+  install.packages("RODBC")
+  library(RODBC)
+} 
 
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
@@ -52,7 +63,7 @@ LEFT JOIN [Synonyms tree] AS [Snym] ON Dets.[latin name key] = Snym.member)
 LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id) 
 LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) 
 LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
-WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=True AND (Lnam.id = 3125)
+WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=True AND AND (Lnam.id = 2384 OR Lnam.[next higher name] = 2384)
 ORDER BY Herb.FlicStatus, Team.[name for display], Herb.[Collection number] & '' & Herb.postfix;"
 #remove the following once it stops giving an error:
 #sqlQuery(con, qry)
