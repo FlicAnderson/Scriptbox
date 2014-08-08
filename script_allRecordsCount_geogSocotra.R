@@ -41,6 +41,9 @@ source("function_livePadmeArabiaCon.R")
 # call padme connection function to open connection to live Padme Arabia
 livePadmeArabiaCon()
 
+# sleep (5 seconds) to allow query to run
+Sys.sleep(5)
+
 ## {optional: 
 ## check the connection is working}
 #odbcGetInfo(con_livePadmeArabia)
@@ -156,3 +159,4 @@ print(paste("Padme contains", nrow(allRex), "Socotran records from all sources (
 odbcCloseAll()
 # empty the environment of objects
 rm(list=ls())
+
