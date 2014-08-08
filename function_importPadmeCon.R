@@ -12,8 +12,10 @@ if (!require(RODBC)){
 #define function
 importPadmeCon <- function(){
   # set up connection, needs to point to padmeCODE.mdb, otherwise the imported tables don't show up!
-  # locat = location of padme data file
-  locat_importPadme <<- "C:/Padme/import-copy-UPSthulin/padmecode.mdb"
+  # locat = location of padme data file, can be set by hard-coding : locat_importPadme <<- "C:/Padme/import-copy-UPSthulin/padmecode.mdb"
+  # or interactively:
+  print("...choose import file:")
+  locat_importPadme <<- file.choose()
   # open connection called "con" to file at known location
   # if this is already open it doesn't do any harm if this command is repeated I think
     # "<<-" operator below is used to globally assign the connection so the 'con_' object can be 
