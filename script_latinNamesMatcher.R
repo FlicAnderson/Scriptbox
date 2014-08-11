@@ -110,7 +110,7 @@ importNames_db <- function(){
 
 # call function if importSource is a database file
 if(dbImport==TRUE){
-  print("...using database method")
+  print("...using database method to import file")
   importNames_db()
   # print dimensions of crrntDet
   print(dim(crrntDet))
@@ -138,7 +138,7 @@ importNames_xlsx <- function(){
  
 # call function if importSource is a spreadsheet file
 if(spsImport==TRUE) {
-  print("...using spreadsheet method")
+  print("...using spreadsheet method to import file")
   # load xlsx package to library
   if (!require(xlsx)){
     install.packages("xlsx")
@@ -171,13 +171,12 @@ importNames_csv <- function(){
 
 # call function if importSource is a csv file
 if(csvImport==TRUE){
-  print("...using csv method")
+  print("...using csv method to import file")
   # run the spreadsheet import method function
   importNames_csv()
   # print dimensions of crrntDet
   dim(crrntDet)
 }
-# data cleaning required for crrntDet?!
 
 
 # 2) get list of names from Padme? ([Latin Names].[sortName] -> nameZ)
@@ -200,13 +199,13 @@ checkNames_db <- function(){
       #I don't remember what this does but it can probably be deleted:
       #crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")  
   # output list of names which need to be fixed/examined
-    print(paste("... ", nrow(crrntDetREQFIX), " names need to be fixed from determinations (",importSource, ")"))
-      #print(paste("... ", nrow(origNameREQFIX), " names need to be fixed from original names (",importSource, ")"))
+    print(paste0("... ", nrow(crrntDetREQFIX), " names need to be fixed from determinations << ",importSource))
+      #print(paste0("... ", nrow(origNameREQFIX), " names need to be fixed from original names << ",importSource))
 }
 
 
 if(dbImport==TRUE){
-  print("...using database method")
+  print("...using database method to extract and check names")
   # run the database name check method function
   checkNames_db()
 }
@@ -229,16 +228,46 @@ checkNames_xlsx <- function(){
   # => "crrntDetREQFIX"
     crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
   # output list of names which need to be fixed/examined
-    print(paste("... ", length(crrntDetREQFIX), " names need to be fixed from determinations (",importSource, ")"))
-    #print(paste("... ", length(origNameREQFIX), " names need to be fixed from original names (",importSource, ")"))
+    print(paste0("... ", length(crrntDetREQFIX), " names need to be fixed from determinations << ",importSource))
+    #print(paste0("... ", length(origNameREQFIX), " names need to be fixed from original names <<",importSource))
 }
 
 if(spsImport==TRUE) {
-  print("...using spreadsheet method")
+  print("...using spreadsheet method to extract and check names")
   # run the spreadsheet name check method function
-  checkNames_xlsx() 
+  checkNames_xlsx()
 }   
 
+# C) csv methods
+
+### FUNCTION: csv file name check method: checkNames_csv
+checkNames_csv <- function(){  
+  # get list of all the number of unique sortnames (no authorities) in the live database names table 
+  # => "nameZ"
+  qryB <- "SELECT DISTINCT sortName FROM [Latin Names]"
+  nameZ <<- sqlQuery(con_livePadmeArabia, qryB)
+  # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
+  # => "origNameREQFIX"
+  #origNameREQFIX <- origName[which(origDet$Taxon %in% nameZ$sortName == FALSE),]
+  # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
+  # => "crrntDetREQFIX"
+  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
+  # output list of names which need to be fixed/examined
+  print(paste0("... ", length(crrntDetREQFIX), " names need to be fixed from determinations << ",importSource))
+  #print(paste0("... ", length(origNameREQFIX), " names need to be fixed from original names << ",importSource))
+}
+
+if(csvImport==TRUE) {
+  print("...using comma-separated-values file method to extract and check names")
+  # run the csv name check method function
+  checkNames_csv() 
+}   
+
+
+
+
+
+# A) 
 if(dbImport==TRUE){
   # 4A) write list of non-matching names from comparison
   # ensure names of name-columns is the same to allow merge, set both column names to "taxa"
@@ -259,7 +288,8 @@ if(dbImport==TRUE){
   # show IDs and Unique Names 
   namesOnly <- unique(allNames[2])
   # write out to a file to hold the fix-reqs
-  write.csv(allNames, file.choose(), na="") 
+  write.csv(allNames, fixMeLocat <- file.choose(), na="") 
+  print(paste0("... ", "names requiring manual checking/fixing saved to file >> ",fixMeLocat))
   ####
   # ID numbers and names for rows to pull out: 
   allNames
@@ -303,12 +333,13 @@ if(dbImport==TRUE){
 
 
 
-# 4B) spreadsheet/csv method
+# 4B) spreadsheet
 if(spsImport==TRUE){
 ## are there any original names?
 # if NO: 
   # write out to a file to hold the fix-reqs
-  write.csv(crrntDetREQFIX, file.choose(), na="") 
+  write.csv(crrntDetREQFIX, fixMeLocat <- file.choose(), na="") 
+  print(paste0("... ", "names requiring manual checking/fixing saved to file >> ",fixMeLocat))
 # if YES
     # ensure names of name-columns is the same/NULL to allow merge, set both column names to "taxa" then merge both into one result to allow batchfix at once; create object for all the things left over (e.g  wrong/new names, lichens and fungi)
     # => "noMatch"
@@ -321,8 +352,29 @@ if(spsImport==TRUE){
   #write.csv(allNames, "Z://fufluns/databasin/FixMe.csv", na="") 
 } 
 
+
+# 4C) csv method
+if(csvImport==TRUE){
+  ## are there any original names?
+  # if NO: 
+  # write out to a file to hold the fix-reqs
+  write.csv(crrntDetREQFIX, fixMeLocat <- file.choose(), na="") 
+  print(paste0("... ", "names requiring manual checking/fixing saved to file >> ",fixMeLocat))
+
+  # if YES
+  # ensure names of name-columns is the same/NULL to allow merge, set both column names to "taxa" then merge both into one result to allow batchfix at once; create object for all the things left over (e.g  wrong/new names, lichens and fungi)
+  # => "noMatch"
+  #print(noMatch <- merge(crrntDetREQFIX, origNameREQFIX))
+  # to fix from current Dets & orig Names together:
+  #allNames <- unique(rbind(origNameREQFIX, crrntDetREQFIX))
+  # show IDs and Unique Names 
+  #namesOnly <- unique(allNames[2])
+  # write out to a file to hold the fix-reqs
+  #write.csv(allNames, "Z://fufluns/databasin/FixMe.csv", na="") 
+} 
+
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
 odbcCloseAll()
-rm(list=ls())
+#rm(list=ls())
 
