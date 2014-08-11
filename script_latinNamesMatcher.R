@@ -76,8 +76,8 @@ csvImport <- grepl(".csv", extns)
 # follow these instructions... 
 # ([0UPS].[nameNoAuth] -> origName) & ([0UPS].[currntDetNoAuth] -> crrntDet)
 
-### FUNCTION: import-copy database name import method: dbMethod
-dbMethod <- function(){
+### FUNCTION: import-copy database name import method: importNames_db
+importNames_db <- function(){
 # call functions to open connections with import padme and live padme
   importPadmeCon()
   livePadmeArabiaCon()
@@ -111,7 +111,7 @@ dbMethod <- function(){
 # call function if importSource is a database file
 if(dbImport==TRUE){
   print("...using database method")
-  dbaseMethod()
+  importNames_db()
   # print dimensions of crrntDet
   print(dim(crrntDet))
 }
@@ -122,8 +122,8 @@ if(dbImport==TRUE){
 # follow these instructions... 
 # column of names -> crrntDet
 
-### FUNCTION: spreadsheet name import method: spsMethod
-spsMethod <- function(){  
+### FUNCTION: spreadsheet name import method: importNames_xlsx
+importNames_xlsx <- function(){  
   # call functions to open connections with import padme and live padme
     #importPadmeCon()
     livePadmeArabiaCon()
@@ -145,7 +145,7 @@ if(spsImport==TRUE) {
     library(xlsx)
   }
   # run the spreadsheet import method function
-  spsMethod()
+  importNames_xlsx()
   # print dimensions of crrntDet
   print(dim(crrntDet))
 }   
@@ -156,8 +156,8 @@ if(spsImport==TRUE) {
 # follow these instructions... 
 # ??? -> crrntDet
 
-### FUNCTION: csv file name import method: csvMethod
-csvMethod <- function(){  
+### FUNCTION: csv file name import method: importNames_csv
+importNames_csv <- function(){  
   # call functions to open connections with live padme
     livePadmeArabiaCon()
   # for a subset of columns or rows, enter the indexes required:
@@ -173,7 +173,7 @@ csvMethod <- function(){
 if(csvImport==TRUE){
   print("...using csv method")
   # run the spreadsheet import method function
-  csvMethod()
+  importNames_csv()
   # print dimensions of crrntDet
   dim(crrntDet)
 }
@@ -182,86 +182,144 @@ if(csvImport==TRUE){
 
 # 2) get list of names from Padme? ([Latin Names].[sortName] -> nameZ)
 
-# set up connection to {Live Padme}
-#livePadmeArabiaCon()
-# pull the names out & store in an object
-qry <- "SELECT sortName, id FROM [Latin Names]"
-nameZ <- sqlQuery(con_livePadmeArabia, qry)
-# to consider the number of unique sortnames in the live database names table:
-#qry <- "SELECT DISTINCT sortName FROM [Latin Names]"
-#nameZ1 <- sqlQuery(con_livePadmeArabia, qry)
 
-
-# this works:
-origNameREQFIX <- sqldf("SELECT [origName].[id], [origName].[nameNoAuth] FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
-#origNameREQFIX <- sqldf("SELECT * FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
-#origNameREQFIX <- sqldf("SELECT * FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE (((id) Is Null));")
-crrntDetREQFIX <- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
-#crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")
-
-paste("... ", nrow(origNameREQFIX), " names need to be fixed from original names (",locat_importPadme, ")")
-paste("... ", nrow(crrntDetREQFIX), " names need to be fixed from determinations (",locat_importPadme, ")")
-
-
-# 4) write list of non-matching names from comparison
-# ensure names of name-columns is the same to allow merge, set both column names to "taxa"
-names(origNameREQFIX)[2] <- "taxa"
-names(crrntDetREQFIX)[2] <- "taxa"
-# merge both into one result to allow batchfix at once
-# create object called noMatch for all the things left over (e.g  wrong/new names, lichens and fungi)
-#print(noMatch <- merge(crrntDetREQFIX, origNameREQFIX))
-
-
-# 5) ... use list to research cause of non-match and then create new names and change spellings by hand.  Weed any non-plants out!
-# lichens and fungi not added to the datbase yet.  
-# write them to a file so they can be kept in case they do need to be imported later.  
-
-#### this works 01st July 2014, 3pm ###
-# to fix from current Dets & orig Names together:
-allNames <- unique(rbind(origNameREQFIX, crrntDetREQFIX))
-# show IDs and Unique Names 
-namesOnly <- unique(allNames[2])
-# write out to a file to hold the fix-reqs
-write.csv(allNames, "Z://fufluns/databasin/FixMe.csv", na="") 
-####
-# ID numbers and names for rows to pull out: 
-allNames
-# ID numbers for rows to pull out:
-pullRows <- as.factor(allNames$id)
-## output the non-match (non-plant?) names to a .csv file to set aside and deal with another time:
-
-# check importPadme connection is open
-importPadmeCon()
-
-# CREATE FUNCTION TO REMOVE ALL NON-NON-PLANTS FROM [0NonPlants] to create NON-PLANTS-ONLY
-plantRemovr <- function(x){
-#testing stage:
-  ##SELECT ROWS TO DELETE - check all working ok:
-  #qry<- sub(", )$", ")", paste("SELECT * FROM [0NonPlants] WHERE id NOT IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
-#real stage: 
-  # DELETE PLANTS FROM 0UPS
-  qry<- sub(", )$", ")", paste("DELETE FROM [0NonPlants] WHERE id NOT IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
-  sqlQuery(con_importPadme, qry)
+# A) database method
+### FUNCTION: database file name check method: checkNames_db
+checkNames_db <- function(){  
+  # call functions to open connections with live padme
+    livePadmeArabiaCon()
+  # get list of all the number of sortnames (no authorities) and Latin Name IDs in the live database names table 
+  # => "nameZ"
+    qryA <- "SELECT sortName, id FROM [Latin Names]"
+    nameZ <<- sqlQuery(con_livePadmeArabia, qryA)
+      # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
+      #origNameREQFIX <- sqldf("SELECT [origName].[id], [origName].[nameNoAuth] FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
+  # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
+  # => "crrntDetREQFIX"
+    crrntDetREQFIX <<- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
+      #I don't remember what this does but it can probably be deleted:
+      #crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")  
+  # output list of names which need to be fixed/examined
+    print(paste("... ", nrow(crrntDetREQFIX), " names need to be fixed from determinations (",importSource, ")"))
+      #print(paste("... ", nrow(origNameREQFIX), " names need to be fixed from original names (",importSource, ")"))
 }
-# RUN FUNCTION TO REMOVE ALL NON-PLANTS FROM 0NonPlants
-plantRemovr()
 
-# CREATE FUNCTION TO REMOVE ALL NON-PLANTS FROM 0UPS
-nonPlantRemovr <- function(x){
-  #testing stage:
-  ##SELECT ROWS TO DELETE - check all working ok:
-  #qry<- sub(", )$", ")", paste("SELECT * FROM [0UPS] WHERE id IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
-  #real stage: 
-  # DELETE NONPLANTS FROM 0UPS
-  qry<- sub(", )$", ")", paste("DELETE FROM [0UPS] WHERE id IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
-  sqlQuery(con_importPadme, qry)
+
+if(dbImport==TRUE){
+  print("...using database method")
+  # run the database name check method function
+  checkNames_db()
 }
-# RUN FUNCTION TO REMOVE ALL NON-PLANTS FROM 0UPS
-nonPlantRemovr()
 
 
-# 6) THEN import the datA source to a new {Import Padme} which will have the new names etc and ought to match easily.
-# do this in Access, not from scripts
+
+
+# B) spreadsheet/csv method
+
+### FUNCTION: xlsx file name check method: checkNames_xlsx
+checkNames_xlsx <- function(){  
+  # get list of all the number of unique sortnames (no authorities) in the live database names table 
+  # => "nameZ"
+    qryB <- "SELECT DISTINCT sortName FROM [Latin Names]"
+    nameZ <<- sqlQuery(con_livePadmeArabia, qryB)
+      # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
+      # => "origNameREQFIX"
+      #origNameREQFIX <- origName[which(origDet$Taxon %in% nameZ$sortName == FALSE),]
+  # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
+  # => "crrntDetREQFIX"
+    crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
+  # output list of names which need to be fixed/examined
+    print(paste("... ", length(crrntDetREQFIX), " names need to be fixed from determinations (",importSource, ")"))
+    #print(paste("... ", length(origNameREQFIX), " names need to be fixed from original names (",importSource, ")"))
+}
+
+if(spsImport==TRUE) {
+  print("...using spreadsheet method")
+  # run the spreadsheet name check method function
+  checkNames_xlsx() 
+}   
+
+if(dbImport==TRUE){
+  # 4A) write list of non-matching names from comparison
+  # ensure names of name-columns is the same to allow merge, set both column names to "taxa"
+  #names(origNameREQFIX)[2] <- "taxa"
+  names(crrntDetREQFIX) [2] <- "taxa"
+  # merge both into one result to allow batchfix at once
+  # create object called noMatch for all the things left over (e.g  wrong/new names, lichens and fungi)
+  #print(noMatch <- merge(crrntDetREQFIX, origNameREQFIX))
+
+
+  # 5) ... use list to research cause of non-match and then create new names and change spellings by hand.  Weed any non-plants out!
+  # lichens and fungi not added to the datbase yet.  
+  # write them to a file so they can be kept in case they do need to be imported later.  
+
+  #### this works 01st July 2014, 3pm ###
+  # to fix from current Dets & orig Names together:
+  allNames <- unique(rbind(origNameREQFIX, crrntDetREQFIX))
+  # show IDs and Unique Names 
+  namesOnly <- unique(allNames[2])
+  # write out to a file to hold the fix-reqs
+  write.csv(allNames, file.choose(), na="") 
+  ####
+  # ID numbers and names for rows to pull out: 
+  allNames
+  # ID numbers for rows to pull out:
+  pullRows <- as.factor(allNames$id)
+  ## output the non-match (non-plant?) names to a .csv file to set aside and deal with another time:
+
+  # check importPadme connection is open
+  importPadmeCon()
+
+  # CREATE FUNCTION TO REMOVE ALL NON-NON-PLANTS FROM [0NonPlants] to create NON-PLANTS-ONLY
+  plantRemovr <- function(x){
+    #testing stage:
+    ##SELECT ROWS TO DELETE - check all working ok:
+    #qry<- sub(", )$", ")", paste("SELECT * FROM [0NonPlants] WHERE id NOT IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
+    #real stage: 
+    # DELETE PLANTS FROM 0UPS
+    qry<- sub(", )$", ")", paste("DELETE FROM [0NonPlants] WHERE id NOT IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
+    sqlQuery(con_importPadme, qry)
+  }
+  # RUN FUNCTION TO REMOVE ALL NON-PLANTS FROM 0NonPlants
+  plantRemovr()
+
+  # CREATE FUNCTION TO REMOVE ALL NON-PLANTS FROM 0UPS
+  nonPlantRemovr <- function(x){
+    #testing stage:
+    ##SELECT ROWS TO DELETE - check all working ok:
+    #qry<- sub(", )$", ")", paste("SELECT * FROM [0UPS] WHERE id IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
+    #real stage: 
+    # DELETE NONPLANTS FROM 0UPS
+    qry<- sub(", )$", ")", paste("DELETE FROM [0UPS] WHERE id IN (", paste(pullRows, sep="", ",", collapse=" "), ");"))
+    sqlQuery(con_importPadme, qry)
+  }
+  # RUN FUNCTION TO REMOVE ALL NON-PLANTS FROM 0UPS
+  nonPlantRemovr()
+
+
+  # 6) THEN import the datA source to a new {Import Padme} which will have the new names etc and ought to match easily.
+  # do this in Access, not from scripts
+}
+
+
+
+# 4B) spreadsheet/csv method
+if(spsImport==TRUE){
+## are there any original names?
+# if NO: 
+  # write out to a file to hold the fix-reqs
+  write.csv(crrntDetREQFIX, file.choose(), na="") 
+# if YES
+    # ensure names of name-columns is the same/NULL to allow merge, set both column names to "taxa" then merge both into one result to allow batchfix at once; create object for all the things left over (e.g  wrong/new names, lichens and fungi)
+    # => "noMatch"
+      #print(noMatch <- merge(crrntDetREQFIX, origNameREQFIX))
+  # to fix from current Dets & orig Names together:
+  #allNames <- unique(rbind(origNameREQFIX, crrntDetREQFIX))
+    # show IDs and Unique Names 
+  #namesOnly <- unique(allNames[2])
+  # write out to a file to hold the fix-reqs
+  #write.csv(allNames, "Z://fufluns/databasin/FixMe.csv", na="") 
+} 
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
