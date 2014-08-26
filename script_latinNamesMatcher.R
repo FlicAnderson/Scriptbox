@@ -1,4 +1,4 @@
-# Padme Data:: Databasin:: importLatinNamesMatcher.R
+# Padme Data:: Databasin:: LatinNamesMatcher.R
 # ======================================================== 
 # (1st July 2014)
 # Author: Flic Anderson
@@ -219,7 +219,7 @@ if(dbImport==TRUE){
 checkNames_xlsx <- function(){  
   # get list of all the number of unique sortnames (no authorities) in the live database names table 
   # => "nameZ"
-    qryB <- "SELECT DISTINCT sortName FROM [Latin Names]"
+    qryB <- "SELECT DISTINCT sortName, id FROM [Latin Names]"
     nameZ <<- sqlQuery(con_livePadmeArabia, qryB)
       # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
       # => "origNameREQFIX"
@@ -376,5 +376,10 @@ if(csvImport==TRUE){
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
 odbcCloseAll()
-#rm(list=ls())
+rm(checkNames_csv, checkNames_db, checkNames_xlsx)
+rm(importNames_csv, importNames_db, importNames_xlsx)
+rm(csvImport, dbImport, spsImport)
+rm(fixMeLocat, extns, crrntDetREQFIX, nameZ)
 
+# Instead of lots of rm()s, should use this to remove everything EXCEPT what you want to keep (e.g. connections, crrntDet, crrntDetREQFIX, etc):
+#rm(list=setdiff(ls(), c("Rubber", "Brazil", "Yem_wc", "Yemen")))
