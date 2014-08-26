@@ -48,7 +48,8 @@ source("Z:/fufluns/scripts/function_livePadmeArabiaCon.R")
 
 
 # source spreadsheet:
-importSource <- file.choose()
+#importSource <- file.choose()
+importSource <- "Z://fufluns//databasin//taxaDataGrab//Socotra SPECIES LIST.xlsx"
 # get the extension
 extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
 # IF extns = database: 
@@ -128,7 +129,7 @@ importNames_xlsx <- function(){
     #importPadmeCon()
     livePadmeArabiaCon()
     # for a subset of columns or rows, enter the indexes required:
-      rowIndex <- 4:915
+      rowIndex <- 5:921
       colIndex <- 4  
   # import the file
     #check it pulls out the right data: 
@@ -338,7 +339,7 @@ if(spsImport==TRUE){
 ## are there any original names?
 # if NO: 
   # write out to a file to hold the fix-reqs
-  write.csv(crrntDetREQFIX, fixMeLocat <- file.choose(), na="") 
+  write.csv(crrntDetREQFIX, fixMeLocat <- "Z://fufluns/databasin/taxaDataGrab/FixMe.csv", na="") 
   print(paste0("... ", "names requiring manual checking/fixing saved to file >> ",fixMeLocat))
 # if YES
     # ensure names of name-columns is the same/NULL to allow merge, set both column names to "taxa" then merge both into one result to allow batchfix at once; create object for all the things left over (e.g  wrong/new names, lichens and fungi)
