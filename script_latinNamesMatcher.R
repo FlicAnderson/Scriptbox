@@ -498,7 +498,7 @@ odbcCloseAll()
 # want to keep (e.g. connections, crrntDet, crrntDetREQFIX, etc):
 rm(list=setdiff(ls(), c("crrntDet", "importSource", "locat_livePadmeArabia", 
                         "con_livePadmeArabia", "importPadmeCon", 
-                        "livePadmeArabiaCon"
+                        "livePadmeArabiaCon", "TESTPadmeArabiaCon"
                         )
                 )
    )
