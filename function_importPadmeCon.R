@@ -24,7 +24,7 @@ importPadmeCon <- function(){
   # check the connection is working 
   odbcGetInfo(con_importPadme)
   # return confirmation it's working:
-  print(paste("...source database connection online: ", locat_importPadme))
+  print(paste("... source database connection online: ", locat_importPadme))
 }
 ###
 ### to call: importPadmeCon()
