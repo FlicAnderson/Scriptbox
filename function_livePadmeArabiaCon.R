@@ -32,5 +32,5 @@ livePadmeArabiaCon <- function(){
   # check the connection is working 
   odbcGetInfo(con_livePadmeArabia)
   # return confirmation it's working:
-  print(paste("...source database connection online: ", locat_livePadmeArabia))
+  print(paste("... source database connection online: ", locat_livePadmeArabia))
 }
