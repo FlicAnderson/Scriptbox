@@ -25,8 +25,8 @@ if (!require(sqldf)){
 } 
 
 # source functions:
-source("Z:/fufluns/scripts/function_importPadmeCon.R")
-source("Z:/fufluns/scripts/function_livePadmeArabiaCon.R")
+source("O:/CMEP\ Projects/Scriptbox/function_importPadmeCon.R")
+source("O:/CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
 
 # source names field (from spreadsheet, or in this case import-database):
 # [0UPS].[nameNoAuth]
@@ -210,9 +210,9 @@ importNames_xlsx <- function(){
         ifelse( # condition
                 nameForm == TRUE, 
                 # do if true:
-                print("...all names in correct format; carry on with analysis"), 
+                print("... all names in correct format; carry on with analysis"), 
                 # do if false:
-                print("...all names NOT in correct format; ACTION REQUIRED")
+                print("... all names NOT in correct format; ACTION REQUIRED")
         )
         ## Unfinished: need to implement a way of fixing format or outputting 
         ## those with formatting issues.  It's probably best to do this by hand
@@ -224,7 +224,7 @@ importNames_xlsx <- function(){
 
 # call function if importSource is a spreadsheet file
 if(spsImport==TRUE) {
-        print("...using spreadsheet method to import file")
+        print("... using spreadsheet method to import file")
         # load xlsx package to library
         if (!require(xlsx)){
                 install.packages("xlsx")
@@ -257,7 +257,7 @@ importNames_csv <- function(){
 
 # call function if importSource is a csv file
 if(csvImport==TRUE){
-  print("...using csv method to import file")
+  print("... using csv method to import file")
   # run the spreadsheet import method function
   importNames_csv()
   # print dimensions of crrntDet
@@ -271,29 +271,42 @@ if(csvImport==TRUE){
 # A) database method
 ### FUNCTION: database file name check method: checkNames_db
 checkNames_db <- function(){  
-  # call functions to open connections with live padme
-    livePadmeArabiaCon()
-  # get list of all the number of sortnames (no authorities) and Latin Name IDs in the live database names table 
-  # => "nameZ"
-    qryA <- "SELECT sortName, id FROM [Latin Names]"
-    nameZ <<- sqlQuery(con_livePadmeArabia, qryA)
-      # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
-      #origNameREQFIX <- sqldf("SELECT [origName].[id], [origName].[nameNoAuth] FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
-  # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
-  # => "crrntDetREQFIX"
-    crrntDetREQFIX <<- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
-      #I don't remember what this does but it can probably be deleted:
-      #crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")  
-  # output list of names which need to be fixed/examined
-    print(paste0("...", nrow(crrntDetREQFIX), " names need to be fixed from determinations << ",importSource))
-      #print(paste0("...", nrow(origNameREQFIX), " names need to be fixed from original names << ",importSource))
+        # call functions to open connections with live padme
+        livePadmeArabiaCon()
+        # get list of all the number of sortnames (no authorities) and Latin Name IDs in the live database names table 
+        # => "nameZ"
+        qryA <- "SELECT sortName, id FROM [Latin Names]"
+        nameZ <<- sqlQuery(con_livePadmeArabia, qryA)
+        # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
+        #origNameREQFIX <- sqldf("SELECT [origName].[id], [origName].[nameNoAuth] FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
+        # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
+        # => "crrntDetREQFIX"
+        crrntDetREQFIX <<- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
+        #I don't remember what this does but it can probably be deleted:
+        #crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")  
+        # output list of names which need to be fixed/examined
+        if(nrow(crrntDetREQFIX)!=0){
+                print(paste0(
+                        "...", 
+                        nrow(crrntDetREQFIX), 
+                        " names need to be fixed from determinations << ",
+                        importSource)
+                )
+        }
+        if(nrow(crrntDetREQFIX)==0){
+                print(paste0(
+                        "...", 
+                        " no names need to be fixed from determinations, no action required")
+                )
+        }
+        #print(paste0("...", nrow(origNameREQFIX), " names need to be fixed from original names << ",importSource))
 }
 
 
 if(dbImport==TRUE){
-  print("...using database method to extract and check names")
-  # run the database name check method function
-  checkNames_db()
+        print("... using database method to extract and check names")
+        # run the database name check method function
+        checkNames_db()
 }
 
 
@@ -320,18 +333,26 @@ checkNames_xlsx <- function(){
         crrntDetREQFIX <<- crrntDet[which(
                 crrntDet$Taxon %in% nameZ$sortName == FALSE),]
         # output list of names which need to be fixed/examined
-        
+        if(nrow(crrntDetREQFIX)!=0){
         print(paste0(
                 "...", 
                 nrow(crrntDetREQFIX), 
                 " names need to be fixed from determinations << ",
                 importSource)
               )
+        }
+        if(nrow(crrntDetREQFIX)==0){
+                print(paste0(
+                        "...", 
+                        " no names need to be fixed from determinations, no action required")
+                      )
+        }
+        
         #print(paste0("...", nrow(origNameREQFIX), " names need to be fixed from original names <<",importSource))
 }
 
 if(spsImport==TRUE) {
-  print("...using spreadsheet method to extract and check names")
+  print("... using spreadsheet method to extract and check names")
   # run the spreadsheet name check method function
   checkNames_xlsx()
 }   
@@ -351,12 +372,27 @@ checkNames_csv <- function(){
   # => "crrntDetREQFIX"
   crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
   # output list of names which need to be fixed/examined
-  print(paste0("...", length(crrntDetREQFIX), " names need to be fixed from determinations << ",importSource))
+    if(length(crrntDetREQFIX)!=0){
+          print(paste0(
+                  "...", 
+                  nrow(crrntDetREQFIX), 
+                  " names need to be fixed from determinations << ",
+                  importSource)
+          )
+  }
+  if(length(crrntDetREQFIX)==0){
+          print(paste0(
+                  "...", 
+                  " no names need to be fixed from determinations, no action required")
+          )
+  }
+  
+  
   #print(paste0("...", length(origNameREQFIX), " names need to be fixed from original names << ",importSource))
 }
 
 if(csvImport==TRUE) {
-  print("...using comma-separated-values file method to extract and check names")
+  print("... using comma-separated-values file method to extract and check names")
   # run the csv name check method function
   checkNames_csv() 
 }   
@@ -366,7 +402,7 @@ if(csvImport==TRUE) {
 
 
 # A) 
-if(dbImport==TRUE){
+if(dbImport==TRUE && nrow(crrntDetREQFIX)!=0){
   # 4A) write list of non-matching names from comparison
   # ensure names of name-columns is the same to allow merge, set both column names to "taxa"
   #names(origNameREQFIX)[2] <- "taxa"
@@ -387,7 +423,7 @@ if(dbImport==TRUE){
   namesOnly <- unique(allNames[2])
   # write out to a file to hold the fix-reqs
   write.csv(allNames, fixMeLocat <- file.choose(), na="") 
-  print(paste0("...", "names requiring manual checking/fixing saved to file >> ",fixMeLocat))
+  print(paste0("...", " names requiring manual checking/fixing saved to file >> ",fixMeLocat))
   ####
   # ID numbers and names for rows to pull out: 
   allNames
@@ -433,7 +469,7 @@ if(dbImport==TRUE){
 
 
 # 4B) spreadsheet
-if(spsImport==TRUE){
+if(spsImport==TRUE && nrow(crrntDetREQFIX)!=0){
         ## are there any original names?
         # if NO: 
         # write out to a file to hold the fix-reqs
@@ -444,7 +480,7 @@ if(spsImport==TRUE){
         ) 
         print(paste0(
                 "...", 
-                "names requiring manual checking/fixing saved to file >> ",
+                " names requiring manual checking/fixing saved to file >> ",
                 fixMeLocat)
         )
         # if YES
@@ -464,14 +500,14 @@ if(spsImport==TRUE){
 
 
 # 4C) csv method
-if(csvImport==TRUE){
+if(csvImport==TRUE && length(crrntDetREQFIX)!=0){
   ## are there any original names?
   # if NO: 
   # write out to a file to hold the fix-reqs
   write.csv(crrntDetREQFIX, fixMeLocat <- file.choose(), na="") 
   print(paste0(
           "...", 
-          "names requiring manual checking/fixing saved to file >> ",
+          " names requiring manual checking/fixing saved to file >> ",
           fixMeLocat)
         )
 
@@ -502,3 +538,5 @@ rm(list=setdiff(ls(), c("crrntDet", "importSource", "locat_livePadmeArabia",
                         )
                 )
    )
+
+print("... name checking complete")
