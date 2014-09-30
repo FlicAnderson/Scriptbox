@@ -55,8 +55,8 @@ source("O:/CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
 
 
 # source spreadsheet:
-#importSource <- file.choose()
-importSource <- "Z://fufluns//databasin//taxaDataGrab//Socotra SPECIES LIST.xlsx"
+importSource <- file.choose()
+#importSource <- "Z://fufluns//databasin//taxaDataGrab//Socotra SPECIES LIST.xlsx"
 # get the extension
 extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
 # IF extns = database: 
@@ -139,8 +139,11 @@ importNames_xlsx <- function(){
         #importPadmeCon()
         livePadmeArabiaCon()
         # for a subset of columns or rows, enter the indexes required:
-        rowIndex <- 4:921
-        colIndex <- c(4,6)  
+        # REQUIRE INPUT FOR COLUMN/ROW SUBSET
+        rowIndex <- readline(prompt="... Enter row index to read in - format '1:5' ... ")
+        colIndex <- readline(prompt="... Enter column index to read in - format 'c(1,2)' - 1st column species names, 2nd column for any subspecific epithets... ")
+        #rowIndex <- 4:921
+        #colIndex <- c(4,6)  
         
         # import the file
         #check it pulls out the right data: 
@@ -246,13 +249,22 @@ importNames_csv <- function(){
   # call functions to open connections with live padme
     livePadmeArabiaCon()
   # for a subset of columns or rows, enter the indexes required:
-  rowIndex <- 4:915
-  colIndex <- 4  
+  # REQUIRE USER INPUT FOR COLUMN/ROW SUBSET
+    rowIndexUser <<- readline(prompt="... Enter row index to read in - enter in format '1:10' ... ")
+      # fix character -> numeric problem
+      inp <- as.numeric(strsplit(rowIndexUser, ":")[[1]]) 
+      rowIndexUser <- inp[1]:inp[2]
+    colIndexUser <<- readline(prompt="... Enter column index to read in - format '1,2' - 1st column species names, 2nd column for any subspecific epithets... ")
+      # fix character -> numeric problem
+      colIndexUser <- as.numeric(strsplit(colIndexUser, ",")[[1]])
+    # OR REANABLE THESE TO HARD-CODE INDICES  
+    #rowIndex <- 1:10
+    #colIndex <- 21
   # import the file
-  #check it pulls out the right data: 
-  crrntDet <<- read.csv(file=importSource, sheetIndex=1, 
-                        colIndex=colIndex, rowIndex=rowIndex, 
-                        header=TRUE)
+  #check it pulls out the right data: strings NOT as.factors; ""=>NA
+  crrntDet <<- read.csv(file=importSource, header=TRUE, as.is=TRUE, na.strings="")
+  # preserve dataframe structure & call variable "Taxon"
+  crrntDet <<- data.frame(Taxon=crrntDet[as.numeric(rowIndexUser), as.numeric(colIndexUser)])
 }
 
 # call function if importSource is a csv file
@@ -261,7 +273,8 @@ if(csvImport==TRUE){
   # run the spreadsheet import method function
   importNames_csv()
   # print dimensions of crrntDet
-  #dim(crrntDet)
+  #dim(crrntDet) 
+  #length(crrntDet)
 }
 
 
@@ -375,7 +388,7 @@ checkNames_csv <- function(){
     if(length(crrntDetREQFIX)!=0){
           print(paste0(
                   "...", 
-                  nrow(crrntDetREQFIX), 
+                  length(crrntDetREQFIX), 
                   " names need to be fixed from determinations << ",
                   importSource)
           )
@@ -417,6 +430,7 @@ if(dbImport==TRUE && nrow(crrntDetREQFIX)!=0){
   # write them to a file so they can be kept in case they do need to be imported later.  
 
   #### this works 01st July 2014, 3pm ###
+  
   # to fix from current Dets & orig Names together:
   allNames <- unique(rbind(origNameREQFIX, crrntDetREQFIX))
   # show IDs and Unique Names 
@@ -504,10 +518,11 @@ if(csvImport==TRUE && length(crrntDetREQFIX)!=0){
   ## are there any original names?
   # if NO: 
   # write out to a file to hold the fix-reqs
-  write.csv(crrntDetREQFIX, fixMeLocat <- file.choose(), na="") 
+  write.csv(unique(crrntDetREQFIX), fixMeLocat <- file.choose(), na="") 
   print(paste0(
           "...", 
-          " names requiring manual checking/fixing saved to file >> ",
+          length(unique(crrntDetREQFIX)),
+          " UNIQUE names requiring manual checking/fixing saved to file >> ",
           fixMeLocat)
         )
 
