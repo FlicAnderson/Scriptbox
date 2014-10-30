@@ -55,6 +55,7 @@ source("O:/CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
 
 
 # source spreadsheet:
+message("... please choose the file to check names from ")
 importSource <- file.choose()
 #importSource <- "Z://fufluns//databasin//taxaDataGrab//Socotra SPECIES LIST.xlsx"
 # get the extension
