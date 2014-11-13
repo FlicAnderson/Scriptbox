@@ -13,6 +13,8 @@
 # doc/**/*.txt
 
 
+.RData
+.Rhistory
 */.RData
 */.Rhistory
 */.Rproj.user/**
