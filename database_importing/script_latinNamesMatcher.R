@@ -134,98 +134,6 @@ if(dbImport==TRUE){
 # follow these instructions... 
 # column of names -> crrntDet
 
-### FUNCTION: spreadsheet name import method: importNames_xlsx
-importNames_xlsx <- function(){  
-        # call functions to open connections with import padme and live padme
-        #importPadmeCon()
-        livePadmeArabiaCon()
-        # for a subset of columns or rows, enter the indexes required:
-        # REQUIRE INPUT FOR COLUMN/ROW SUBSET
-        rowIndex <- readline(prompt="... Enter row index to read in - format '1:5' ... ")
-        colIndex <- readline(prompt="... Enter column index to read in - format 'c(1,2)' - 1st column species names, 2nd column for any subspecific epithets... ")
-        #rowIndex <- 4:921
-        #colIndex <- c(4,6)  
-        
-        # import the file
-        #check it pulls out the right data: 
-        crrntDet <<- read.xlsx(file=importSource, sheetIndex=1, 
-                               colIndex=colIndex, rowIndex=rowIndex, 
-                               header=TRUE)
-        
-        # change variable names
-        # change the column names using <<- operator to allow the changes to be
-        # accessible from outside the function
-        names(crrntDet)
-        names(crrntDet)[1] <<- "Species_Name"
-        names(crrntDet)[2] <<- "Subspecific_Epithet"
-        names(crrntDet)
-        
-        # missing values
-        # are there any NA values in Species_Name column?
-        anyNA(crrntDet[,1])
-        # are there any NA values in Subspecific_Epithet column?
-        anyNA(crrntDet[,2])
-        # yes!
-        # find rows where is.NA for column 2 is TRUE
-        crrntDet[which(is.na(crrntDet[,2])==TRUE),]
-        # set these cells to empty string
-        crrntDet[which(is.na(crrntDet[,2])==TRUE),2] <<- ""
-        
-        # case problems
-        # ensure subspecific epithets are all lowercase
-        crrntDet[,2] <<- tolower(crrntDet[,2])
-        #crrntDet
-        # with ssp
-        #exampl1 <- crrntDet[1,]
-        # without ssp
-        #exampl2 <- crrntDet[2,]
-        
-        # using paste to complete the species names
-        # (underscores used in examples below to show inserted spaces)
-        #exampl3 <- paste(exampl1[,1], exampl1[,2])
-        #[1] "Peperomia blanda_var. leptostachya"
-        #exampl4 <- paste(exampl2[,1], exampl2[,2])
-        #[1] "Peperomia tetraphylla_"
-        
-        # recreating the 'full' subspecific names:
-        fullnames <- paste(crrntDet[,1], crrntDet[,2])
-        #using gsub/etc to remove the additional spaces:
-        # pattern which finds end spaces:
-        # pattern_endspace <- "[ ]$"
-        fullnames <- gsub("[ ]$", "", fullnames)
-        
-        # pattern which checks they're in the right format: 
-        # pattern_rightformat <- "^[A-Za-z]+( [a-z])?"
-        
-        # is format of data [crrntDet[,1]: 
-        # if sum(allT/FsFromThat)=0 then it IS        
-        #pattern <- "^[A-Za-z]+( [a-z])?"
-        
-        # define function to check if formats are right
-        nameFormat <- function(){
-                sum(grepl("^[A-Z][a-z]( [a-z])?", fullnames))==length(fullnames)
-        }
-        #run function:
-        # I currently have no idea why this seems to repeat the prints twice...
-        # but it seems harmless...
-        nameForm <- nameFormat() 
-        
-        # return whether all names are in correct format or not
-        ifelse( # condition
-                nameForm == TRUE, 
-                # do if true:
-                print("... all names in correct format; carry on with analysis"), 
-                # do if false:
-                print("... all names NOT in correct format; ACTION REQUIRED")
-        )
-        ## Unfinished: need to implement a way of fixing format or outputting 
-        ## those with formatting issues.  It's probably best to do this by hand
-        
-        crrntDet$Taxon <<- fullnames
-        dim(crrntDet)
-}
-
-
 # call function if importSource is a spreadsheet file
 if(spsImport==TRUE) {
         print("... using spreadsheet method to import file")
@@ -235,51 +143,42 @@ if(spsImport==TRUE) {
                 library(xlsx)
         }
         # run the spreadsheet import method function
+        source(/function_importNames_xlsx.R)
+        # RUN & CALL importNames_xlsx() function
         importNames_xlsx()
         # print dimensions of crrntDet
-        dim(crrntDet)       
+        #dim(crrntDet)       
 }
         
 
 # For source (C) - comma separated value file -
-# follow these instructions... 
-# ??? -> crrntDet
 
-### FUNCTION: csv file name import method: importNames_csv
-importNames_csv <- function(){  
-  # call functions to open connections with live padme
-    livePadmeArabiaCon()
-  # for a subset of columns or rows, enter the indexes required:
-  # REQUIRE USER INPUT FOR COLUMN/ROW SUBSET
-    rowIndexUser <<- readline(prompt="... Enter row index to read in - enter in format '1:10' ... ")
-      # fix character -> numeric problem
-      inp <- as.numeric(strsplit(rowIndexUser, ":")[[1]]) 
-      rowIndexUser <- inp[1]:inp[2]
-    colIndexUser <<- readline(prompt="... Enter column index to read in - format '1,2' - 1st column species names, 2nd column for any subspecific epithets... ")
-      # fix character -> numeric problem
-      colIndexUser <- as.numeric(strsplit(colIndexUser, ",")[[1]])
-    # OR REANABLE THESE TO HARD-CODE INDICES  
-    #rowIndex <- 1:10
-    #colIndex <- 21
-  # import the file
-  #check it pulls out the right data: strings NOT as.factors; ""=>NA
-  crrntDet <<- read.csv(file=importSource, header=TRUE, as.is=TRUE, na.strings="")
-  # preserve dataframe structure & call variable "Taxon"
-  crrntDet <<- data.frame(Taxon=crrntDet[as.numeric(rowIndexUser), as.numeric(colIndexUser)])
-}
+# source importNames_csv() function from file & run if importSource is a csv file
+  # file gets: row/column indices for data & whether authority is attached, from user
+  # file puts taxa into crrntDet data frame
 
-# call function if importSource is a csv file
+# CALL & RUN importNames_csv() function if importSource is a csv file
 if(csvImport==TRUE){
   print("... using csv method to import file")
   # run the spreadsheet import method function
+  source(/function_importNames_csv.R)
+  # CALL & RUN function
   importNames_csv()
   # print dimensions of crrntDet
-  #dim(crrntDet) 
-  #length(crrntDet)
+  #dim(crrntDet) #length(crrntDet)
 }
 
 
+
 # 2) get list of names from Padme? ([Latin Names].[sortName] -> nameZ)
+
+# TO IMPLEMENT!!!############################
+# Q) Do your taxon names have authorities attached?
+# if YES: nameVar <- [sortName]
+# if NO:  nameVar <- [Full name]
+# Need to improve this so it can run depending on what's entered.  
+# For instance prompt user to enter Y/N, and then if Y set variable to use 
+# [Latin Names].[sortName], if N set to use [Latin Names].[Full name].
 
 
 # A) database method
@@ -289,13 +188,32 @@ checkNames_db <- function(){
         livePadmeArabiaCon()
         # get list of all the number of sortnames (no authorities) and Latin Name IDs in the live database names table 
         # => "nameZ"
-        qryA <- "SELECT sortName, id FROM [Latin Names]"
+        
+        # ask user whether taxon names have authorities attached 
+        authCheck <<- readline(
+          prompt="... Enter 'TRUE' if taxon names HAVE authorities 
+                attached (ie. in same column), or 'FALSE' if there is NO authority 
+                information attached... "
+        )
+        # convert the entered text to logical
+        authCheck <- as.logical(authCheck)
+        
+        # IF taxon names HAVE authorities attached, use [Full name] field from database
+        if(sum(authCheck)==1){
+          nameVar <- "[Full name]"
+        }
+        # IF taxon names DO NOT HAVE authorities attached, use [sortName] Padme field
+        if(sum(authCheck)!=1){
+          nameVar <- "[sortName]"
+        }
+        
+        qryA <- paste0("SELECT ", nameVar, ", id FROM [Latin Names]")
         nameZ <<- sqlQuery(con_livePadmeArabia, qryA)
         # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
         #origNameREQFIX <- sqldf("SELECT [origName].[id], [origName].[nameNoAuth] FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
         # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
         # => "crrntDetREQFIX"
-        crrntDetREQFIX <<- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
+        crrntDetREQFIX <<- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = nameVar WHERE ((([nameZ].[id]) Is Null));")
         #I don't remember what this does but it can probably be deleted:
         #crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")  
         # output list of names which need to be fixed/examined
@@ -326,88 +244,32 @@ if(dbImport==TRUE){
 
 
 
-# B) spreadsheet/csv method
+# B) spreadsheet method
 
-### FUNCTION: xlsx file name check method: checkNames_xlsx
-checkNames_xlsx <- function(){  
-        # get list of all the number of unique sortnames (no authorities) in 
-        # the live database names table & => "nameZ"
-        qryB <- "SELECT DISTINCT sortName, id FROM [Latin Names]"
-        nameZ <<- sqlQuery(con_livePadmeArabia, qryB)
-        
-        # where original names field exists along with determinations: 
-        #(leave commented & ignore this if there are no other dets):
-        # => "origNameREQFIX"
-        #origNameREQFIX <- origName[which(origDet$Taxon %in% nameZ$sortName 
-        #== FALSE),]
-        # for dets where no other original dets exist, list all taxon names from
-        #importSource where taxon name is NOT in Padme taxa list (nameZ) 
-        # => "crrntDetREQFIX"
-        
-        crrntDetREQFIX <<- crrntDet[which(
-                crrntDet$Taxon %in% nameZ$sortName == FALSE),]
-        # output list of names which need to be fixed/examined
-        if(nrow(crrntDetREQFIX)!=0){
-        print(paste0(
-                "...", 
-                nrow(crrntDetREQFIX), 
-                " names need to be fixed from determinations << ",
-                importSource)
-              )
-        }
-        if(nrow(crrntDetREQFIX)==0){
-                print(paste0(
-                        "...", 
-                        " no names need to be fixed from determinations, no action required")
-                      )
-        }
-        
-        #print(paste0("...", nrow(origNameREQFIX), " names need to be fixed from original names <<",importSource))
-}
+# source checkNames_xlsx() function from file & run if importSource is a xlsx file
+# file gets: row/column indices for data & whether authority is attached, from user
+# file puts taxa into crrntDet data frame
 
 if(spsImport==TRUE) {
   print("... using spreadsheet method to extract and check names")
   # run the spreadsheet name check method function
-  checkNames_xlsx()
+  source(/function_importNames_xlsx.R)
+  # CALL & RUN function
+  #importNames_xlsx()
 }   
 
 # C) csv methods
 
-### FUNCTION: csv file name check method: checkNames_csv
-checkNames_csv <- function(){  
-  # get list of all the number of unique sortnames (no authorities) in the live database names table 
-  # => "nameZ"
-  qryB <- "SELECT DISTINCT sortName FROM [Latin Names]"
-  nameZ <<- sqlQuery(con_livePadmeArabia, qryB)
-  # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
-  # => "origNameREQFIX"
-  #origNameREQFIX <- origName[which(origDet$Taxon %in% nameZ$sortName == FALSE),]
-  # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
-  # => "crrntDetREQFIX"
-  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
-  # output list of names which need to be fixed/examined
-    if(length(crrntDetREQFIX)!=0){
-          print(paste0(
-                  "...", 
-                  length(crrntDetREQFIX), 
-                  " names need to be fixed from determinations << ",
-                  importSource)
-          )
-  }
-  if(length(crrntDetREQFIX)==0){
-          print(paste0(
-                  "...", 
-                  " no names need to be fixed from determinations, no action required")
-          )
-  }
-  
-  
-  #print(paste0("...", length(origNameREQFIX), " names need to be fixed from original names << ",importSource))
-}
+# source checkNames_csv() function from file & run if importSource is a csv file
+# file gets: row/column indices for data & whether authority is attached, from user
+# file puts taxa into crrntDet data frame
 
+# CALL & RUN checkNames_csv() function if importSource is a csv file
 if(csvImport==TRUE) {
   print("... using comma-separated-values file method to extract and check names")
   # run the csv name check method function
+  source(/function_checkNames.R)
+  # CALL & RUN function
   checkNames_csv() 
 }   
 
