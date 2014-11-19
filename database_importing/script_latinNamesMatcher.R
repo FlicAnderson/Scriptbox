@@ -82,77 +82,39 @@ csvImport <- grepl(".csv", extns)
 # 1) get names from source into dataframe 
 
 # For source (A) - {import padme} or similar database -
-# follow these instructions... 
 # ([0UPS].[nameNoAuth] -> origName) & ([0UPS].[currntDetNoAuth] -> crrntDet)
-
-### FUNCTION: import-copy database name import method: importNames_db
-importNames_db <- function(){
-# call functions to open connections with import padme and live padme
-  importPadmeCon()
-  livePadmeArabiaCon()
-# deal with non-plants issue, where lichens and things complicate matters:  
-  # create original ALLPlants table
-    # DO ONCE (already done)
-    # copy [0UPS] table to allow us to delete non-plants from [0UPS] but still 
-        #have a copy of them somewhere ready to import if necessary. 
-    qry <- "SELECT * INTO 0ALLPlants FROM 0UPS"
-    sqlQuery(con_importPadme, qry)
-  # CREATE NON-PLANTS ONLY TABLE - can be imported separately if required at a 
-        #later date, will contain non-import 'non-plants' e.g lichens
-    # DO ONCE
-    # copy [0UPS] table to allow us to delete non-plants from [0UPS] but still 
-        #have a copy of them somewhere ready to import if necessary. 
-    qry <- "SELECT * INTO 0NonPlants FROM 0UPS"
-    sqlQuery(con_importPadme, qry)
-  # 0UPS will have all non-plants removed.
-
-# pull out the names from the 0UPS imported table
-    #sqlColumns(con_importPadme, "0UPS")$COLUMN_NAME  
-    # want [nameNoAuth] and also to check through [currntDetNoAuth]
-    # make objects, pull unique names into them via SQL
-    # original names & id
-    qry <- "SELECT id, nameNoAuth FROM [0UPS]"
-    origName <- sqlQuery(con_importPadme, qry)
-    # current dets & id
-    qry <- "SELECT id, currntDetNoAuth FROM [0UPS]"
-    crrntDet <- sqlQuery(con_importPadme, qry)
-  # CLOSE THE CONNECTION!
-  #odbcCloseAll()
-}
 
 # call function if importSource is a database file
 if(dbImport==TRUE){
   print("...using database method to import file")
+  # source script
+  source(/function_importNames_db.R)
+  # call function
   importNames_db()
-  # print dimensions of crrntDet
-  print(dim(crrntDet))
 }
-
  
 
 # For source (B) - spreadsheet -
-# follow these instructions... 
 # column of names -> crrntDet
 
 # call function if importSource is a spreadsheet file
 if(spsImport==TRUE) {
-        print("... using spreadsheet method to import file")
-        # load xlsx package to library
-        if (!require(xlsx)){
-                install.packages("xlsx")
-                library(xlsx)
-        }
-        # run the spreadsheet import method function
-        source(/function_importNames_xlsx.R)
-        # RUN & CALL importNames_xlsx() function
-        importNames_xlsx()
-        # print dimensions of crrntDet
-        #dim(crrntDet)       
+  print("... using spreadsheet method to import file")
+  # load xlsx package to library
+  if (!require(xlsx)){
+    install.packages("xlsx")
+    library(xlsx)
+  }
+  # run the spreadsheet import method function
+  source(/function_importNames_xlsx.R)
+  # RUN & CALL importNames_xlsx() function
+  importNames_xlsx()
+  # print dimensions of crrntDet
+  #dim(crrntDet)       
 }
-        
+
 
 # For source (C) - comma separated value file -
-
 # source importNames_csv() function from file & run if importSource is a csv file
   # file gets: row/column indices for data & whether authority is attached, from user
   # file puts taxa into crrntDet data frame
@@ -172,7 +134,6 @@ if(csvImport==TRUE){
 
 # 2) get list of names from Padme? ([Latin Names].[sortName] -> nameZ)
 
-# TO IMPLEMENT!!!############################
 # Q) Do your taxon names have authorities attached?
 # if YES: nameVar <- [sortName]
 # if NO:  nameVar <- [Full name]
@@ -182,70 +143,17 @@ if(csvImport==TRUE){
 
 
 # A) database method
-### FUNCTION: database file name check method: checkNames_db
-checkNames_db <- function(){  
-        # call functions to open connections with live padme
-        livePadmeArabiaCon()
-        # get list of all the number of sortnames (no authorities) and Latin Name IDs in the live database names table 
-        # => "nameZ"
-        
-        # ask user whether taxon names have authorities attached 
-        authCheck <<- readline(
-          prompt="... Enter 'TRUE' if taxon names HAVE authorities 
-                attached (ie. in same column), or 'FALSE' if there is NO authority 
-                information attached... "
-        )
-        # convert the entered text to logical
-        authCheck <- as.logical(authCheck)
-        
-        # IF taxon names HAVE authorities attached, use [Full name] field from database
-        if(sum(authCheck)==1){
-          nameVar <- "[Full name]"
-        }
-        # IF taxon names DO NOT HAVE authorities attached, use [sortName] Padme field
-        if(sum(authCheck)!=1){
-          nameVar <- "[sortName]"
-        }
-        
-        qryA <- paste0("SELECT ", nameVar, ", id FROM [Latin Names]")
-        nameZ <<- sqlQuery(con_livePadmeArabia, qryA)
-        # where original names field exists along with determinations (leave commented & ignore this if there are no other dets):
-        #origNameREQFIX <- sqldf("SELECT [origName].[id], [origName].[nameNoAuth] FROM origName LEFT JOIN nameZ ON nameNoAuth = sortName WHERE ((([nameZ].[id]) Is Null));")
-        # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
-        # => "crrntDetREQFIX"
-        crrntDetREQFIX <<- sqldf("SELECT [crrntDet].[id], [crrntDet].[currntDetNoAuth] FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = nameVar WHERE ((([nameZ].[id]) Is Null));")
-        #I don't remember what this does but it can probably be deleted:
-        #crrntDetREQFIX <- sqldf("SELECT currntDetNoAuth, id FROM crrntDet LEFT JOIN nameZ ON currntDetNoAuth = sortName WHERE (((id) Is Null));")  
-        # output list of names which need to be fixed/examined
-        if(nrow(crrntDetREQFIX)!=0){
-                print(paste0(
-                        "...", 
-                        nrow(crrntDetREQFIX), 
-                        " names need to be fixed from determinations << ",
-                        importSource)
-                )
-        }
-        if(nrow(crrntDetREQFIX)==0){
-                print(paste0(
-                        "...", 
-                        " no names need to be fixed from determinations, no action required")
-                )
-        }
-        #print(paste0("...", nrow(origNameREQFIX), " names need to be fixed from original names << ",importSource))
-}
-
 
 if(dbImport==TRUE){
-        print("... using database method to extract and check names")
-        # run the database name check method function
-        checkNames_db()
+  print("... using database method to extract and check names")
+  # source database name check method script
+  source(/function_checkNames_db.R)
+  # run the database name check method function
+  checkNames_db()
 }
-
-
 
 
 # B) spreadsheet method
-
 # source checkNames_xlsx() function from file & run if importSource is a xlsx file
 # file gets: row/column indices for data & whether authority is attached, from user
 # file puts taxa into crrntDet data frame
@@ -258,8 +166,8 @@ if(spsImport==TRUE) {
   #importNames_xlsx()
 }   
 
-# C) csv methods
 
+# C) csv methods
 # source checkNames_csv() function from file & run if importSource is a csv file
 # file gets: row/column indices for data & whether authority is attached, from user
 # file puts taxa into crrntDet data frame
