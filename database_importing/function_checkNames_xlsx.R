@@ -23,7 +23,7 @@ checkNames_xlsx <- function(){
   # => "crrntDetREQFIX"
   
   # vvvvvvvvvvvvvv  THIS ROW NEEDS CHECKING!!!  vvvvvvvvvvvvvvvvvv
-  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% as.factor(paste0("nameZ$", nameVar)) == FALSE),]
+  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),]
   # ^^^^^^^^^^^^^^  THIS ROW NEEDS CHECKING!!!  ^^^^^^^^^^^^^^^^^^
   #line above replaces line below:
   #crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
@@ -31,7 +31,7 @@ checkNames_xlsx <- function(){
   # output list of names which need to be fixed/examined
   if(nrow(crrntDetREQFIX)!=0){
     print(paste0(
-      "...", 
+      "... ", 
       nrow(crrntDetREQFIX), 
       " names need to be fixed from determinations << ",
       importSource)
