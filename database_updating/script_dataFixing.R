@@ -28,16 +28,16 @@ if (!require(sqldf)){
 
 # set up connection:
 # source function to open connections to {LIVE Padme}
-source("O://CMEP Projects/Scriptbox/function_TESTPadmeArabiaCon.R")
+#source("O://CMEP Projects/Scriptbox/function_TESTPadmeArabiaCon.R")
 #source("C://Users//rbgeuser/Desktop/Flic_REMOVE/Scriptbox/function_TESTPadmeArabiaCon.R")
-#source("O:/CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R") 
+source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R") 
 # run function:
-#livePadmeArabiaCon()
+livePadmeArabiaCon()
 # opens connection "con_livePadmeArabia" 
 # from location at "locat_livePadmeArabia"
 
 # run function:
-TESTPadmeArabiaCon()
+#TESTPadmeArabiaCon()
 # opens connection "con_TESTPadmeArabia" 
 # from location at "locat_TESTPadmeArabia"
 
@@ -47,11 +47,11 @@ TESTPadmeArabiaCon()
 #Team <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Teams]")  # appx 2.5k records
 #Lnam <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Latin Names]")  # appx 10.5k records
 #Geog <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Geography]")  # appx 8k records
-Team <- sqlQuery(con_TESTPadmeArabia, query="SELECT * FROM [Teams]")  # appx 2.5k records
-Expd <- sqlQuery(con_TESTPadmeArabia, query="SELECT * FROM [Expeditions]")  # 45 records 
+Team <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Teams]")  # appx 2.5k records
+Expd <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Expeditions]")  # 45 records 
 
 # get names of fields for herbarium specimens table
-#sqlColumns(con_TESTPadmeArabia, "Herbarium specimens")[4]
+sqlColumns(con_livePadmeArabia, "Herbarium specimens")[4]
 
 #Team.[name for display] AS importedCollector
 
@@ -91,7 +91,7 @@ FROM (((((([Herbarium specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON He
 WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=TRUE;" #10719
 
 # run query
-#collections <- sqlQuery(con_livePadmeArabia, qry)
+collections <- sqlQuery(con_livePadmeArabia, qry)
 collections <- sqlQuery(con_TESTPadmeArabia, qry)   # 8634 obs, 22 vars
 
 head(collections[order(collections$FullSort, na.last=TRUE),])
@@ -105,7 +105,7 @@ names(collections)
 
 # all records collected by/with Miller
 millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
-# 3360 obs of 22 variables
+# 3310 obs of 22 variables
 
 
 Expd <- sqlQuery(con_TESTPadmeArabia, query="SELECT * FROM [Expeditions]")  # 44 records 
@@ -163,7 +163,7 @@ table(sqldf("SELECT Expd.expeditionTitle FROM collections LEFT JOIN Expd ON coll
 # check they're all correct
 
 # number of unique collectors for Socotra records
-length(unique(collections$collector)) # (106 ex. 86 ex. 95) collector combos
+length(unique(collections$collector)) # (84 ex 106 ex. 86 ex. 95) collector combos
 # how many contain "Miller"
 sum(grepl("Miller", levels(collections$collector))) # x17 (prev. 18) contain "Miller"
 
@@ -207,57 +207,55 @@ levels(collections$collector)
 # [32] "Dr. Hay, G.W.R."                                                                         
 # [33] "Ensoll, Banfield, L. & Scott, S."                                                        
 # [34] "Fayed, A.A."                                                                             
-# [35] "Forbes, H.O."                                                                            
-# [36] "Forbes, H.O. & Ogilvie-Grant, W.R."                                                      
-# [37] "Garguus, M.D."                                                                           
-# [38] "Garyune"                                                                                 
-# [39] "Goss, J.H."                                                                              
-# [40] "Gwynne, M."                                                                              
-# [41] "Hein, P."                                                                                
-# [42] "Hein, P. & v. Raab-Straube, E."                                                          
-# [43] "Hunt, G.E."                                                                              
-# [44] "Hunter, A."                                                                              
-# [45] "Hyam, R.D."                                                                              
-# [46] "Lavranos, J.J."                                                                          
-# [47] "Lavranos, J.J. & Radcliffe-Smith, A."                                                    
-# [48] "Lunt, W."                                                                                
-# [49] "McLeish, I."                                                                             
-# [50] "Mies, B."                                                                                
-# [51] "Miller, A.G."                                                                            
-# [52] "Miller, A.G. & Alexander, D."                                                            
-# [53] "Miller, A.G. & Nyberg, J.A."                                                             
-# [54] "Miller, A.G. & Nyberg, J.A. et al."                                                      
-# [55] "Miller, A.G. & Talib, N.M."                                                              
-# [56] "Miller, A.G. et al."                                                                     
-# [57] "Miller, A.G., Alexander, D. & Ali, N.A."                                                 
-# [58] "Miller, A.G., Alexander, D., Sulaiman, A.S., Talib, N.M., Hughes, M. & Hyam, R.D."       
-# [59] "Miller, A.G., Banfield, L. & Scott, S."                                                  
-# [60] "Miller, A.G., Bazara'a, M., Guarino, L. & Kassim, N."                                    
-# [61] "Miller, A.G., Guarino, L., Bazara'a, M. & Kassim, N."                                    
-# [62] "Miller, A.G., Guarino, L., Obadi, N., Hassan, S.K.M. & Mohammed, N."                     
-# [63] "Miller, A.G., Hyam, R.D., Al Khulaidi, A-W.A., Sulaiman, A.S. & Talib, N.M."             
-# [64] "Miller, A.G., Hyam, R.D., Alexander, D. & Hughes, M."                                    
-# [65] "Morris, M.J."                                                                            
-# [66] "Nimmo, J."                                                                               
-# [67] "Nyberg, J.A. & Miller, A.G."                                                             
-# [68] "Ogilvie-Grant, W.R."                                                                     
-# [69] "Ogilvie-Grant, W.R. & Forbes, H.O."                                                      
-# [70] "Paulay, S."                                                                              
-# [71] "Popov, G.B."                                                                             
-# [72] "Radcliffe-Smith, A."                                                                     
-# [73] "Radcliffe-Smith, A. & Henchie, S.J."                                                     
-# [74] "Riebeck"                                                                                 
-# [75] "Scholte, P."                                                                             
-# [76] "Schuurman, J.F.M."                                                                       
-# [77] "Schweinfurth, G.A."                                                                      
-# [78] "Simony, O."                                                                              
-# [79] "Thulin, M."                                                                              
-# [80] "Thulin, M. & Gifri, A.N."                                                                
-# [81] "Van Damme, K."                                                                           
-# [82] "Vierhapper, F."                                                                          
-# [83] "Virgo, K.J."                                                                             
-# [84] "Wahab, R.A."                                                                             
-# [85] "Woodrow, G.M."    
+# [35] "Forbes, H.O. & Ogilvie-Grant, W.R."                                                      
+# [36] "Garguus, M.D."                                                                           
+# [37] "Garyune"                                                                                 
+# [38] "Goss, J.H."                                                                              
+# [39] "Gwynne, M."                                                                              
+# [40] "Hein, P."                                                                                
+# [41] "Hein, P. & v. Raab-Straube, E."                                                          
+# [42] "Hunt, G.E."                                                                              
+# [43] "Hunter, A."                                                                              
+# [44] "Hyam, R.D."                                                                              
+# [45] "Lavranos, J.J."                                                                          
+# [46] "Lavranos, J.J. & Radcliffe-Smith, A."                                                    
+# [47] "Lunt, W."                                                                                
+# [48] "McLeish, I."                                                                             
+# [49] "Mies, B."                                                                                
+# [50] "Miller, A.G."                                                                            
+# [51] "Miller, A.G. & Alexander, D."                                                            
+# [52] "Miller, A.G. & Nyberg, J.A."                                                             
+# [53] "Miller, A.G. & Nyberg, J.A. et al."                                                      
+# [54] "Miller, A.G. & Talib, N.M."                                                              
+# [55] "Miller, A.G. et al."                                                                     
+# [56] "Miller, A.G., Alexander, D. & Ali, N.A."                                                 
+# [57] "Miller, A.G., Alexander, D., Sulaiman, A.S., Talib, N.M., Hughes, M. & Hyam, R.D."       
+# [58] "Miller, A.G., Banfield, L. & Scott, S."                                                  
+# [59] "Miller, A.G., Bazara'a, M., Guarino, L. & Kassim, N."                                    
+# [60] "Miller, A.G., Guarino, L., Bazara'a, M. & Kassim, N."                                    
+# [61] "Miller, A.G., Guarino, L., Obadi, N., Hassan, S.K.M. & Mohammed, N."                     
+# [62] "Miller, A.G., Hyam, R.D., Al Khulaidi, A-W.A., Sulaiman, A.S. & Talib, N.M."             
+# [63] "Miller, A.G., Hyam, R.D., Alexander, D. & Hughes, M."                                    
+# [64] "Morris, M.J."                                                                            
+# [65] "Nimmo, J."                                                                               
+# [66] "Nyberg, J.A. & Miller, A.G."                                                             
+# [67] "Ogilvie-Grant, W.R."                                                                     
+# [68] "Paulay, S."                                                                              
+# [69] "Popov, G.B."                                                                             
+# [70] "Radcliffe-Smith, A."                                                                     
+# [71] "Radcliffe-Smith, A. & Henchie, S.J."                                                     
+# [72] "Riebeck"                                                                                 
+# [73] "Scholte, P."                                                                             
+# [74] "Schuurman, J.F.M."                                                                       
+# [75] "Schweinfurth, G.A."                                                                      
+# [76] "Simony, O."                                                                              
+# [77] "Thulin, M."                                                                              
+# [78] "Thulin, M. & Gifri, A.N."                                                                
+# [79] "Van Damme, K."                                                                           
+# [80] "Vierhapper, F."                                                                          
+# [81] "Virgo, K.J."                                                                             
+# [82] "Wahab, R.A."                                                                             
+# [83] "Woodrow, G.M."    
 
 # show all levels which contain "Miller"
 levels(collections$collector)[grep("Miller", levels(collections$collector))]
@@ -267,7 +265,7 @@ levels(collections$collector)[grep("Miller", levels(collections$collector))]
 
 # all records collected by/with Miller
 #millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
-# 3355
+# 3310
 
 # table out the collection numbers
 summary(millers$collNumFull)
@@ -276,7 +274,7 @@ summary(millers$collNumFull)
 # Particularly when we've already ruled out any records where det is NOT current...
 
 # number of unique collection numbers within Millers subset:
-length(unique(millers$collNumFull))   # only 2687 out of 3358!
+length(unique(millers$collNumFull))   # only 2682 out of 3310!
 
 # example: 
 #millers[which(millers$collNumFull=="11421"),]
@@ -330,9 +328,10 @@ millers$tripCat <- cut(millers$collNumShort, breaks = seq(0, (maxCat), by = 1000
 table(millers$tripCat[, drop=TRUE])
 # how many categories?
 nlevels(millers$tripCat[, drop=TRUE])
+#15
 
 # 0s 1000s 2000s 8000s 10000s  11000s  12000s  14000s  16000s  17000s  19000s  20000s  22000s  31000s 101000s 
-# 6  1     1     802   817     465     155     333     153     213     176      74       5      27    1 
+# 6  1     1     788   800     453     148     332     153     212     175     71      5       27     1
 # *  *     *                                                                                          *
 
 # * = probable collection number confusion error!!!
@@ -396,9 +395,24 @@ millers$dateConcat <- as.Date(paste(millers$date1DD, millers$date1MM, millers$da
 # make available outside this script
 millers <<- millers 
 
+## summarise Found/unfound/issues
+
+# found/unfound overall
+table(collections$FlicFound, useNA="ifany")
+# found/unfound for millers
+table(millers$FlicFound, useNA="ifany")
+
+# 
+table(millers$FlicIssue, useNA="ifany")
+
 # fix importedCollector -> collector (where no collector existed)
 #source("Z://fufluns/scripts/script_importCollectorFix.R")
 #source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2/fufluns/scripts/script_importCollectorFix.R")
+
+# fix collector issues 
+# e.g. "Miller et al" -> something more useful
+# also "W.R. Ogilvie-Grant & H.O. Forbes" -> "H.o. Forbes & W.R.Ogilvie-Grant" so all duplicates are obvious!
+        # note that the expedition is still Ogilvie-Grant THEN Forbes, but as Forbes was a botanist, collections should bear his name first.
 
 # fix problem dates
 #source("Z://fufluns/scripts/script_dateFixes.R")
@@ -422,4 +436,4 @@ millers <<- millers
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
-#odbcCloseAll()
+odbcCloseAll()
