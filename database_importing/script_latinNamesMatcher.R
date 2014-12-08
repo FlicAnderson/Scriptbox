@@ -3,7 +3,10 @@
 # (1st July 2014)
 # Author: Flic Anderson
 # ~ standalone script
-# 
+# saved at: 
+# "O:/CMEP\ Projects/Scriptbox/database_importing/script_latinNamesMatcher.R"
+# to run: 
+# source("O:/CMEP\ Projects/Scriptbox/database_importing/script_latinNamesMatcher.R")
 
 
 # AIM: to check de-authored names field against [Latin Names].[sortName] in 
@@ -25,8 +28,8 @@ if (!require(sqldf)){
 } 
 
 # source functions:
-source("O:/CMEP\ Projects/Scriptbox/function_importPadmeCon.R")
-source("O:/CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
+#source("O:/CMEP\ Projects/Scriptbox/function_importPadmeCon.R")
+source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 
 # source names field (from spreadsheet, or in this case import-database):
 # [0UPS].[nameNoAuth]
@@ -55,7 +58,7 @@ source("O:/CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
 
 
 # source spreadsheet:
-message("... please choose the file to check names from ")
+message("........ please choose file to check names from: ")
 importSource <- file.choose()
 #importSource <- "Z://fufluns//databasin//taxaDataGrab//Socotra SPECIES LIST.xlsx"
 # get the extension
@@ -86,9 +89,9 @@ csvImport <- grepl(".csv", extns)
 
 # call function if importSource is a database file
 if(dbImport==TRUE){
-  print("...using database method to import file")
+  print("... using database method to import file...")
   # source script
-  source(/function_importNames_db.R)
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_importNames_db.R")
   # call function
   importNames_db()
 }
@@ -99,14 +102,14 @@ if(dbImport==TRUE){
 
 # call function if importSource is a spreadsheet file
 if(spsImport==TRUE) {
-  print("... using spreadsheet method to import file")
+  print("... using spreadsheet method to import file...")
   # load xlsx package to library
   if (!require(xlsx)){
     install.packages("xlsx")
     library(xlsx)
   }
   # run the spreadsheet import method function
-  source(/function_importNames_xlsx.R)
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_importNames_xlsx.R")
   # RUN & CALL importNames_xlsx() function
   importNames_xlsx()
   # print dimensions of crrntDet
@@ -121,9 +124,9 @@ if(spsImport==TRUE) {
 
 # CALL & RUN importNames_csv() function if importSource is a csv file
 if(csvImport==TRUE){
-  print("... using csv method to import file")
+  print("... using csv method to import file...")
   # run the spreadsheet import method function
-  source(/function_importNames_csv.R)
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_importNames_csv.R")
   # CALL & RUN function
   importNames_csv()
   # print dimensions of crrntDet
@@ -145,9 +148,9 @@ if(csvImport==TRUE){
 # A) database method
 
 if(dbImport==TRUE){
-  print("... using database method to extract and check names")
+  print("... using database method to extract and check names... ")
   # source database name check method script
-  source(/function_checkNames_db.R)
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_checkNames_db.R")
   # run the database name check method function
   checkNames_db()
 }
@@ -159,11 +162,11 @@ if(dbImport==TRUE){
 # file puts taxa into crrntDet data frame
 
 if(spsImport==TRUE) {
-  print("... using spreadsheet method to extract and check names")
+  print("... using spreadsheet method to extract and check names... ")
   # run the spreadsheet name check method function
-  source(/function_importNames_xlsx.R)
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_checkNames_xlsx.R")
   # CALL & RUN function
-  #importNames_xlsx()
+  checkNames_xlsx()
 }   
 
 
@@ -174,9 +177,9 @@ if(spsImport==TRUE) {
 
 # CALL & RUN checkNames_csv() function if importSource is a csv file
 if(csvImport==TRUE) {
-  print("... using comma-separated-values file method to extract and check names")
+  print("... using comma-separated-values file method to extract and check names... ")
   # run the csv name check method function
-  source(/function_checkNames.R)
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_checkNames.R")
   # CALL & RUN function
   checkNames_csv() 
 }   
@@ -258,13 +261,17 @@ if(spsImport==TRUE && nrow(crrntDetREQFIX)!=0){
         ## are there any original names?
         # if NO: 
         # write out to a file to hold the fix-reqs
+        message("........ choose or create a .CSV file to hold the names requiring checking/fixing")
+        fixMeLocat <- file.choose()
         write.csv(
                 crrntDetREQFIX, 
-                fixMeLocat <- "Z://fufluns/databasin/taxaDataGrab/FixMe.csv", 
+                file=fixMeLocat,
+                row.names=FALSE,
                 na=""
         ) 
         print(paste0(
-                "...", 
+                "... ", 
+                nrow(crrntDetREQFIX),
                 " names requiring manual checking/fixing saved to file >> ",
                 fixMeLocat)
         )
@@ -286,17 +293,23 @@ if(spsImport==TRUE && nrow(crrntDetREQFIX)!=0){
 
 # 4C) csv method
 if(csvImport==TRUE && length(crrntDetREQFIX)!=0){
-  ## are there any original names?
-  # if NO: 
-  # write out to a file to hold the fix-reqs
-  write.csv(unique(crrntDetREQFIX), fixMeLocat <- file.choose(), na="") 
-  print(paste0(
-          "...", 
-          length(unique(crrntDetREQFIX)),
-          " UNIQUE names requiring manual checking/fixing saved to file >> ",
-          fixMeLocat)
+        ## are there any original names?
+        # if NO: 
+        # write out to a file to hold the fix-reqs
+        message("........ choose or create a .CSV file to hold the names requiring checking/fixing")
+        fixMeLocat <- file.choose()
+        write.csv(
+                unique(crrntDetREQFIX), 
+                fixMeLocat <- file.choose(), 
+                na=""
+        ) 
+        print(paste0(
+                "... ", 
+                length(unique(crrntDetREQFIX)),
+                " UNIQUE names requiring manual checking/fixing saved to file >> ",
+                fixMeLocat)
         )
-
+        
   # if YES
   # ensure names of name-columns is the same/NULL to allow merge, set both 
   #column names to "taxa" then merge both into one result to allow batchfix at 
@@ -318,11 +331,11 @@ odbcCloseAll()
         
 # Instead of lots of rm()s, should use this to remove everything EXCEPT what you
 # want to keep (e.g. connections, crrntDet, crrntDetREQFIX, etc):
-rm(list=setdiff(ls(), c("crrntDet", "importSource", "locat_livePadmeArabia", 
+rm(list=setdiff(ls(), c("crrntDet", "crrntDetREQFIX", "importSource", "locat_livePadmeArabia", 
                         "con_livePadmeArabia", "importPadmeCon", 
                         "livePadmeArabiaCon", "TESTPadmeArabiaCon"
                         )
                 )
    )
 
-print("... name checking complete")
+print("... name checking complete!")
