@@ -26,7 +26,7 @@ checkNames_csv <- function(){
   # output list of names which need to be fixed/examined
   if(length(crrntDetREQFIX)!=0){
     print(paste0(
-      "...", 
+      "... ", 
       length(crrntDetREQFIX), 
       " names need to be fixed from determinations << ",
       importSource)
