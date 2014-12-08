@@ -10,9 +10,9 @@
 # ... that can be fixed, or formatting to standardise, & update {Live Padme} 
 # ... expedition fields with an expedition code for that trip.
 
-#source("Z://fufluns/scripts/script_dataFixing.R")
-#source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
-
+## DEPRECATED - source("Z://fufluns/scripts/script_dataFixing.R")
+## LAPTOP SOURCE - source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 
 
 ##------------------------------8000s--YE/SOC-89-1----------------------------##
@@ -97,7 +97,7 @@ for(i in 1:length(tempTrip$id)){
   # end of loop  
 }
 
-#source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 
 ##-----------------------------10000s-----SOC-90-1----------------------------##
 
@@ -199,12 +199,12 @@ for(i in 1:length(tempTrip$id)){
   # end of loop  
 }
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 
 
 ##-----------------------------11000s----YE/SOC-92-1--------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off trip (11000s)
 tempTrip <- millers[which(millers$tripCat=="11000s"),]
 # 465 obs. of 22 variables
@@ -304,7 +304,7 @@ for(i in 1:length(tempTrip$id)){
 
 ##-----------------------------12000s----YE/SOC-93-1--------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="12000s"),]
 # 155 obs. of 22 variables
@@ -393,7 +393,7 @@ for(i in 1:length(tempTrip$id)){
 
 ##-----------------------------14000s----SOC-96-1-----------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="14000s"),]
 # 333 obs. of 22 variables
@@ -487,7 +487,7 @@ odbcCloseAll()
 
 ##-----------------------------16000s----SOC-98-1-----------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="16000s"),]
 # 153 obs. of 22 variables
@@ -582,7 +582,7 @@ odbcCloseAll()
 
 ##-----------------------------17000s----SOC-99-1-----------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="17000s"),]
 # 213 obs. of 22 variables
@@ -680,7 +680,7 @@ odbcCloseAll()
 
 ##-----------------------------19000s----SOC-00-1-----------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="19000s"),]
 # 176 obs. of 22 variables
@@ -775,7 +775,7 @@ odbcCloseAll()
 
 ##-----------------------------20000s----SOC-01-1-----------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="20000s"),]
 # 74 obs. of 22 variables
@@ -871,7 +871,7 @@ odbcCloseAll()
 
 ##-----------------------------22000s--YE/SOC-02-1----------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="22000s"),]
 # 5 obs. of 22 variables
@@ -966,13 +966,13 @@ odbcCloseAll()
 
 ##---------------------------24000s--YE/SOC-03/04-1---------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="24000s"),]
 # NO HERBARIUM RECORDS PULLED OUT!!
 # CHECK FIELD NOTES!!
 
-# tempTrip = 22k
+# tempTrip = 24k
 # tempTrip <- millers[which(millers$tripCat=="24000s"),]
 # expedition = YE/SOC-03/04-1
 expdID = 38
@@ -981,7 +981,7 @@ expdID = 38
 
 ##---------------------------27000s--YE/SOC-06-1---------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="27000s"),]
 # NO HERBARIUM RECORDS PULLED OUT!!
@@ -997,7 +997,7 @@ expdID = 39
 ##---------------------------31000s--YE/SOC-07-1---------------------------##
 
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="31000s"),]
 # 27 obs. of 22 variables
@@ -1091,7 +1091,7 @@ odbcCloseAll()
 
 ##---------------------------????--YE/SOC-07-2---------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 #tempTrip <- millers[which(millers$tripCat=="????"),]
 # NO HERBARIUM RECORDS PULLED OUT!!
@@ -1108,7 +1108,7 @@ odbcCloseAll()
 
 ##---------------------------????--SOC-08-1---------------------------##
 
-source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2//fufluns/scripts/script_dataFixing.R")
+#source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 #tempTrip <- millers[which(millers$tripCat=="????"),]
 #???
@@ -1205,6 +1205,7 @@ millers[which(millers$institute=="KTUH"),]  # (only?) 3 specimens to Kuwait Univ
 # Gwynne/etc
 # Paulay/Simony?
 # Baldini/Tardelli
+# Thulin?
 # etc
 
 # VERY IMPORTANT!
