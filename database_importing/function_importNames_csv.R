@@ -12,7 +12,7 @@ importNames_csv <- function(){
   
   # ask user whether taxon names have authorities attached 
   authCheck <<- readline(
-    prompt="... Enter 'TRUE' if taxon names HAVE authorities 
+    prompt="........ enter 'TRUE' if taxon names HAVE authorities 
     attached (ie. in same column), or 'FALSE' if there is NO authority 
     information attached... "
   )
@@ -30,11 +30,11 @@ importNames_csv <- function(){
   
   # for a subset of columns or rows, enter the indexes required:
   # REQUIRE USER INPUT FOR COLUMN/ROW SUBSET
-  rowIndexUser <<- readline(prompt="... Enter row index to read in - enter in format '1:10' ... ")
+  rowIndexUser <<- readline(prompt="........ enter ROW index to read in - format '1:5' (if uncertain as to exact number, overestimate!) ... ")
   # fix character -> numeric problem
   inp <- as.numeric(strsplit(rowIndexUser, ":")[[1]]) 
   rowIndexUser <- inp[1]:inp[2]
-  colIndexUser <<- readline(prompt="... Enter column index to read in - format '1,2' - 1st column species names, 2nd column for any subspecific epithets... ")
+  colIndexUser <<- readline(prompt="........ enter COLUMN index to read in - format '1,2' - 1st column species names, 2nd column for any subspecific epithets (example: column 1 contains 'Adenium obesum', column 2 contains 'subsp. sokotranum')... "
   # fix character -> numeric problem
   colIndexUser <- as.numeric(strsplit(colIndexUser, ",")[[1]])
   # OR REANABLE THESE TO HARD-CODE INDICES  
