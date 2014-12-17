@@ -18,21 +18,21 @@ checkNames_csv <- function(){
   # => "crrntDetREQFIX"
   
   # vvvvvvvvvvvvvv  THIS ROW NEEDS CHECKING!!!  vvvvvvvvvvvvvvvvvv
-  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% as.factor(paste0("nameZ$", nameVar)) == FALSE),]
+  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),]
   # ^^^^^^^^^^^^^^  THIS ROW NEEDS CHECKING!!!  ^^^^^^^^^^^^^^^^^^
   #line above replaces line below:
   #crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
   
   # output list of names which need to be fixed/examined
-  if(length(crrntDetREQFIX)!=0){
+  if(nrow(crrntDetREQFIX)!=0){
     print(paste0(
       "... ", 
-      length(crrntDetREQFIX), 
+      nrow(crrntDetREQFIX), 
       " names need to be fixed from determinations << ",
       importSource)
     )
   }
-  if(length(crrntDetREQFIX)==0){
+  if(nrow(crrntDetREQFIX)==0){
     print(paste0(
       "...", 
       " no names need to be fixed from determinations, no action required")
