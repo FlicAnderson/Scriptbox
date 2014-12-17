@@ -31,13 +31,12 @@ importNames_xlsx <- function(){
   }
   
   # for a subset of columns or rows, enter the indexes required:
-  # REQUIRE INPUT FOR COLUMN/ROW SUBSET
-  rowIndex <- readline(prompt="........ enter ROW index to read in - format '1:5'
-         (if uncertain as to exact number, overestimate!) 
-         ... "
-  )
-  rowIndex <- as.numeric(unlist(strsplit(rowIndex, split=":")))[1]:as.numeric(unlist(strsplit(rowIndex, split=":")))[2]      
-  #as.numeric(rowIndex)
+  # REQUIRE USER INPUT FOR COLUMN/ROW SUBSET
+  rowIndexFirst <<- readline(prompt="........ enter FIRST ROW index to read in from - format '1' ... ")
+  rowIndexLast <<- readline(prompt="........ enter LAST ROW index to read in - format '295' (if uncertain as to exact number, overestimate!) ... ")
+  # fix character -> numeric problem
+  rowIndex <- as.numeric(rowIndexFirst):as.numeric(rowIndexLast)
+  
   colIndex <- readline(prompt="........ enter COLUMN index to read in - format '1,2' 
          - 1st column species names, 2nd column for any subspecific epithets 
          (example: column 1 contains 'Adenium obesum', column 2 contains 'subsp. sokotranum')
