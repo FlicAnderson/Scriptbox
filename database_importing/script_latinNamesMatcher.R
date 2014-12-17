@@ -179,7 +179,7 @@ if(spsImport==TRUE) {
 if(csvImport==TRUE) {
   print("... using comma-separated-values file method to extract and check names... ")
   # run the csv name check method function
-  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_checkNames.R")
+  source("O:/CMEP\ Projects/Scriptbox/database_importing/function_checkNames_csv.R")
   # CALL & RUN function
   checkNames_csv() 
 }   
@@ -292,7 +292,7 @@ if(spsImport==TRUE && nrow(crrntDetREQFIX)!=0){
 
 
 # 4C) csv method
-if(csvImport==TRUE && length(crrntDetREQFIX)!=0){
+if(csvImport==TRUE && nrow(crrntDetREQFIX)!=0){
         ## are there any original names?
         # if NO: 
         # write out to a file to hold the fix-reqs
@@ -300,12 +300,12 @@ if(csvImport==TRUE && length(crrntDetREQFIX)!=0){
         fixMeLocat <- file.choose()
         write.csv(
                 unique(crrntDetREQFIX), 
-                fixMeLocat <- file.choose(), 
+                fixMeLocat, 
                 na=""
         ) 
         print(paste0(
                 "... ", 
-                length(unique(crrntDetREQFIX)),
+                nrow(unique(crrntDetREQFIX)),
                 " UNIQUE names requiring manual checking/fixing saved to file >> ",
                 fixMeLocat)
         )
