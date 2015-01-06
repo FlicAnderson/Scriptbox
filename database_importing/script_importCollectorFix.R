@@ -3,20 +3,24 @@
 # (7th October 2014)
 # Author: Flic Anderson
 # mini script for "script_dataFixing.R"
+# located at: source("O:/CMEP\ Projects/Scriptbox/database_importing/script_importCollectorFix.R")
 
+# RUN ONCE ALREADY!
+# run 06/01/2015 (1pm) on LIVE PADME 
 
 # AIM: Identify and fix missing collectors where importedCollector has been given 
 # ... FOR SOCOTRAN SPECIMENS ONLY!!
 
 ## COLLECTIONS WITHOUT COLLECTORS
-nrow(collections[is.na(collections$collector),]) #1629 records
+nrow(collections[is.na(collections$collector),]) #1597 records
 collections[is.na(collections$collector),][1:10,] 
   # some records attributed to "wp"s - possible to ID collectors if they're Miller trip records?
 
 ## IMPORTED-COLLECTORS
 importCols <- levels(collections$importedCollector) # 46 levels (output as character)
-#unique(collections$importedCollector) # 46 levels (output as factor)
+unique(collections$importedCollector) # 46 levels (output as factor)
 
+# colIDs are TEAM.ID for each of the imported collector strings found below. These are the fixes to be applied. Manually looked up and checked.
 colIDs <- c(36049, 36051, 35832, 35832, 35833, 35833, 35834, 35834, 35835, 35837, 35830, 35839, 35841, 35843, 35844, 35845, 35846, 35847, 35848, 35848, 35825, 35848, 35849, 35850, 35840, 35339, 36054, 36057, 36059, 36060, 36061, 36062, 36063, 36065, 36067, 36068, 36069, 36070, 36071, 36071, 36074, 9307, 35512, 33832, 36056, 35517)
 
 # IMPORTED-COLLECTORS WHERE COLLECTOR IS NA
@@ -40,35 +44,39 @@ for(i in 1:length(importCols)){
 }
 
 # loop SELECT/UPDATE script
-for(i in 1:length(importCols)){
-# start of loop
-  
-  # print current iteration imported collector & the collectorID being updated to  
-  print(importCols[i])
-  print(colIDs[i])
-  # split the output a little for readability
-  message("...")
-  
-  # SELECT QUERY: check current settings for records with importedCollector[i]
-  qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Collector Key], [Team].[name for display] AS collector, [Herb].[importedCollector], [Herb].[Locality] FROM [Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id WHERE [Herb].[importedCollector]='", importCols[i], "';")
-  # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
-  
-  # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
-  qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Collector Key]=", colIDs[i], " WHERE [Herbarium specimens].[importedCollector]='", importCols[i], "';")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
-  # print results of sqlQuery
-  
-  # SELECT QUERY: check new settings for records with importedCollector[i]
-  qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Collector Key], [Team].[name for display] AS collector, [Herb].[importedCollector], [Herb].[Locality] FROM [Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id WHERE [Herb].[importedCollector]='", importCols[i], "';")
-  # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
-  
-  # split up output again before next iteration
-  message("...................................................................")
-  
-# end of loop  
-}
+#time the loop:
+system.time(
+        for(i in 1:length(importCols)){
+                # start of loop
+                
+                # print current iteration imported collector & the collectorID being updated to  
+                print(importCols[i])
+                print(colIDs[i])
+                # split the output a little for readability
+                message("...")
+                
+                # SELECT QUERY: check current settings for records with importedCollector[i]
+                qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Collector Key], [Team].[name for display] AS collector, [Herb].[importedCollector], [Herb].[Locality] FROM [Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id WHERE [Herb].[importedCollector]='", importCols[i], "';")
+                # print results of sqlQuery
+                print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
+                
+                # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
+                qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Collector Key]=", colIDs[i], " WHERE [Herbarium specimens].[importedCollector]='", importCols[i], "';")
+                print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
+                # print results of sqlQuery
+                
+                # SELECT QUERY: check new settings for records with importedCollector[i]
+                qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Collector Key], [Team].[name for display] AS collector, [Herb].[importedCollector], [Herb].[Locality] FROM [Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id WHERE [Herb].[importedCollector]='", importCols[i], "';")
+                # print results of sqlQuery
+                print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
+                
+                # split up output again before next iteration
+                message("...................................................................")
+                
+                # end of loop  
+        }
+# return system time
+)
 
 
 ## TEAM.IDs//HERB.COLLECTOR-KEYS IMPORTED COLLECTOR VALUES WERE SET TO:
