@@ -47,7 +47,7 @@ table(tempTrip$date1DD)
 
   # how many are found vs how many are NOT FOUND
   table(tempTrip$FlicFound, useNA="always")
-  # 433 found; 369 NA
+  # 433 found; 353 NA
 
   # show WHERE they're found (only show used categories and also NA)
   table(tempTrip$FlicStatus[, drop=TRUE], useNA="always")
@@ -57,11 +57,11 @@ table(tempTrip$collector[,drop=TRUE])
 # this is a good way of weeding out which ones may be incorrect etc
 
 #Miller, A.G. 
-#14 
+#12 
 #Miller, A.G. et al. 
-#134 
+#126 
 #Miller, A.G., Guarino, L., Obadi, N., Hassan, S.K.M. & Mohammed, N. 
-#654 
+#648 
 
 # tempTrip = 8k
 # expedition = YE/SOC-89-1
@@ -79,17 +79,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -104,23 +104,14 @@ for(i in 1:length(tempTrip$id)){
 
 ## split off first trip (10000s)
 tempTrip <- millers[which(millers$tripCat=="10000s"),]
-# 819 obs. of 22 variables
+# 799 obs. of 22 variables
 
 # look at collectors for that trip & number of specimens per collector: 
 table(tempTrip$collector[,drop=TRUE])
 # this is a good way of weeding out which ones may be incorrect etc
 
-#Miller, A.G. 
-#23 
-#Miller, A.G. et al. 
-#172 
 #Miller, A.G., Bazara'a, M., Guarino, L. & Kassim, N. 
-#617
-#Miller, A.G., Guarino, L., Bazara'a, M. & Kassim, N. 
-#4 
-#Miller, A.G., Hyam, R.D., Al Khulaidi, A-W.A., Sulaiman, A.S. & Talib, N.M. 
-#1
-# NOTE: the Miller/Hyam/Al Kulaidi/etc one seems likely to be wrong.
+#799
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -131,10 +122,11 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
   tempTrip[which(!(tempTrip$collNumShort %in% tripLimits)),]  
 }
 # NOTES: 
-# 1 record not in 'expected' range - M10685b - Orthosiphon ferrugineus.
+# 1 record  was not in 'expected' range - M10685b - Orthosiphon ferrugineus.
 # taxon in this case is ENDEMIC so must be from Socotra. 
 # BUT date is 1998, not 1990, so may not be part of 10000s trip.
 # ignore this 'error' since nothing can be done about it except changing expedition
+# FIXED IT. It was supposed to be a 16000s record, likely collNum confusion.
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
@@ -181,17 +173,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -207,23 +199,15 @@ for(i in 1:length(tempTrip$id)){
 #source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off trip (11000s)
 tempTrip <- millers[which(millers$tripCat=="11000s"),]
-# 465 obs. of 22 variables
+# 451 obs. of 22 variables
 
 # look at collectors for that trip & number of specimens per collector: 
 table(tempTrip$collector[,drop=TRUE])
 # this is a good way of weeding out which ones may be incorrect etc
 
-#Miller, A.G.        
-#4
 #Miller, A.G. & Nyberg, J.A. 
-#424
-#Miller, A.G. & Nyberg, J.A. et al. 
-#14
-#Miller, A.G. et al.        
-#22                  
-#Nyberg, J.A. & Miller, A.G. 
-#1
-# NOTE: Approximately right :s  Too many versions of the same collector team though
+#
+
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -239,8 +223,9 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
-# No
-
+# 30
+# 8
+# some...
 # show number of collections per year
 table(tempTrip$date1YYYY, useNA="always")
 # show number of collections per month
@@ -283,17 +268,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -307,14 +292,14 @@ for(i in 1:length(tempTrip$id)){
 #source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="12000s"),]
-# 155 obs. of 22 variables
+# 148 obs. of 22 variables
 
 # look at collectors for that trip & number of specimens per collector: 
 table(tempTrip$collector[,drop=TRUE])
 # this is a good way of weeding out which ones may be incorrect etc
 
 #Miller, A.G.        
-#155
+#148
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -328,7 +313,7 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
-# No
+# 7 already at 31
 
 # show number of collections per year
 table(tempTrip$date1YYYY, useNA="always")
@@ -372,17 +357,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -396,7 +381,7 @@ for(i in 1:length(tempTrip$id)){
 #source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="14000s"),]
-# 333 obs. of 22 variables
+# 332 obs. of 22 variables
 
 # look at collectors for that trip & number of specimens per collector: 
 table(tempTrip$collector[,drop=TRUE])
@@ -419,7 +404,7 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
-# No
+# 3x
 
 # show number of collections per year
 table(tempTrip$date1YYYY, useNA="always")
@@ -440,7 +425,7 @@ plot(table(sort(weekdays(tempTrip$dateConcat))))  # not sure how to show in Mon 
 
 # how many are found vs how many are NOT FOUND
 table(tempTrip$FlicFound, useNA="always")
-# 227 found; 106 NA
+# 243 found; 89 NA
 
 # show WHERE they're found (only show used categories and also NA)
 table(tempTrip$FlicStatus[, drop=TRUE], useNA="always")
@@ -463,17 +448,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -496,10 +481,8 @@ tempTrip <- millers[which(millers$tripCat=="16000s"),]
 table(tempTrip$collector[,drop=TRUE])
 # this is a good way of weeding out which ones may be incorrect etc
 
-#Miller, A.G.
-#2
 #Miller, A.G., Hyam, R.D., Al Khulaidi, A-W.A., Sulaiman, A.S. & Talib, N.M.
-#151
+#153
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -557,17 +540,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -591,14 +574,9 @@ tempTrip <- millers[which(millers$tripCat=="17000s"),]
 table(tempTrip$collector[,drop=TRUE])
 # varies, but seems approx correct according to the collection notes spreadsheet
 
-#Miller, A.G. 
-#21 
 #Miller, A.G., Alexander, D., Sulaiman, A.S., Talib, N.M., Hughes, M. & Hyam, R.D. 
-#189 
-#Miller, A.G., Hyam, R.D., Al Khulaidi, A-W.A., Sulaiman, A.S. & Talib, N.M. 
-#1 
-#Miller, A.G., Hyam, R.D., Alexander, D. & Hughes, M. 
-#2
+#213 
+
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -612,14 +590,14 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
-# No
+# 1x
 
 # show number of collections per year
 table(tempTrip$date1YYYY, useNA="always")
 # show number of collections per month
 table(tempTrip$date1MM, useNA="always")
 # show number of collections per day
-#table(tempTrip$date1DD, useNA="always")
+table(tempTrip$date1DD, useNA="always")
 
 # show dates & number of collections on those
 table(sort(tempTrip$dateConcat), useNA="always")
@@ -633,7 +611,7 @@ plot(table(sort(weekdays(tempTrip$dateConcat))))  # not sure how to show in Mon 
 
 # how many are found vs how many are NOT FOUND
 table(tempTrip$FlicFound, useNA="always")
-# 141 found; 72 NA
+# 143 found; 68 NA
 
 # show WHERE they're found (only show used categories and also NA)
 table(tempTrip$FlicStatus[, drop=TRUE], useNA="always")
@@ -656,17 +634,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -683,16 +661,14 @@ odbcCloseAll()
 #source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="19000s"),]
-# 176 obs. of 22 variables
+# 173 obs. of 22 variables
 
 # look at collectors for that trip & number of specimens per collector: 
 table(tempTrip$collector[,drop=TRUE])
 # seems legit
 
-#Miller, A.G. 
-#8
 #Miller, A.G. & Talib, N.M. 
-#168
+#165
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -706,7 +682,7 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
-# No
+# 2x
 
 # show number of collections per year
 table(tempTrip$date1YYYY, useNA="always")
@@ -727,7 +703,7 @@ plot(table(sort(weekdays(tempTrip$dateConcat))))  # not sure how to show in Mon 
 
 # how many are found vs how many are NOT FOUND
 table(tempTrip$FlicFound, useNA="always")
-# 133 found; 43 NA
+# 133 found; 40 NA
 
 # show WHERE they're found (only show used categories and also NA)
 table(tempTrip$FlicStatus[, drop=TRUE], useNA="always")
@@ -750,17 +726,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -778,14 +754,14 @@ odbcCloseAll()
 #source("O://CMEP Projects/Scriptbox/database_updating/script_dataFixing.R")
 ## split off the trip
 tempTrip <- millers[which(millers$tripCat=="20000s"),]
-# 74 obs. of 22 variables
+# 71 obs. of 22 variables
 
 # look at collectors for that trip & number of specimens per collector: 
 table(tempTrip$collector[,drop=TRUE])
 # seems legit
 
 #Miller, A.G. 
-#74
+#71
 
 ## check all collection numbers within expected range (tripLimits #1)
 summary(tempTrip$collNumShort)
@@ -801,7 +777,7 @@ if(sum(!(tempTrip$collNumShort %in% tripLimits))>0){
 
 # any pre-existing expedition codes?
 table(tempTrip$Expedition)
-# No
+# 1x
 
 # show number of collections per year
 table(tempTrip$date1YYYY, useNA="always")
@@ -822,7 +798,7 @@ plot(table(sort(weekdays(tempTrip$dateConcat))))  # not sure how to show in Mon 
 
 # how many are found vs how many are NOT FOUND
 table(tempTrip$FlicFound, useNA="always")
-# 17 found; 57 NA
+# 17 found; 54 NA
 
 # show WHERE they're found (only show used categories and also NA)
 table(tempTrip$FlicStatus[, drop=TRUE], useNA="always")
@@ -845,17 +821,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -942,17 +918,17 @@ for(i in 1:length(tempTrip$id)){
   
   
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
@@ -1068,17 +1044,17 @@ for(i in 1:length(tempTrip$id)){
   # SELECT QUERY: check current settings for records with importedCollector[i]
   qry_checkCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_checkCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_checkCurrent))
   
   # UPDATE QUERY: update [Herbarium specimens].[Collector Key] settings with colID[i] in records with importedCollector[i]
   qry_updateCurrent <- paste0("UPDATE [Herbarium specimens] SET [Herbarium specimens].[Expedition]=", expdID, "  WHERE [Herbarium specimens].[id]=", tempTrip$id[i], " AND [Herbarium specimens].[Expedition] IS NULL;")
-  print(sqlQuery(con_TESTPadmeArabia, qry_updateCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_updateCurrent))
   # print results of sqlQuery
   
   # SELECT QUERY: check new settings for records with importedCollector[i]
   qry_newCurrent <- paste0("SELECT [Herb].[id], [Herb].[Expedition], [Expd].[expeditionTitle] AS expdTitle, [Team].[name for display] AS collector, [Herb].[Locality] FROM ([Herbarium specimens] AS [Herb] LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) LEFT JOIN [Expeditions] AS [Expd] ON [Herb].[Expedition]=[Expd].[id] WHERE [Herb].[id]=", tempTrip$id[i], ";")
   # print results of sqlQuery
-  print(sqlQuery(con_TESTPadmeArabia, qry_newCurrent))
+  print(sqlQuery(con_livePadmeArabia, qry_newCurrent))
   
   # split up output again before next iteration
   message("...................................................................")
