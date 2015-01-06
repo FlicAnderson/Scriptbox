@@ -31,10 +31,10 @@ if (!require(sqldf)){
 #source("O://CMEP Projects/Scriptbox/function_TESTPadmeArabiaCon.R")
 #source("C://Users//rbgeuser/Desktop/Flic_REMOVE/Scriptbox/function_TESTPadmeArabiaCon.R")
 source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R") 
-# run function:
+        # run function:
 livePadmeArabiaCon()
-# opens connection "con_livePadmeArabia" 
-# from location at "locat_livePadmeArabia"
+        # opens connection "con_livePadmeArabia" 
+        # from location at "locat_livePadmeArabia"
 
 # run function:
 #TESTPadmeArabiaCon()
@@ -48,7 +48,7 @@ livePadmeArabiaCon()
 #Lnam <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Latin Names]")  # appx 10.5k records
 #Geog <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Geography]")  # appx 8k records
 Team <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Teams]")  # appx 2.5k records
-Expd <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Expeditions]")  # 45 records 
+Expd <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Expeditions]")  # 53 records 
 
 # get names of fields for herbarium specimens table
 sqlColumns(con_livePadmeArabia, "Herbarium specimens")[4]
@@ -57,7 +57,7 @@ sqlColumns(con_livePadmeArabia, "Herbarium specimens")[4]
 
 # Join collectors (and others) onto herbarium specimens records to allow Miller subset
 # [Herb].[Collector Key] == [Team].[id]
-qry <- "
+collectionsQry <- "
 SELECT
 Herb.[id],
 Herb.[Expedition], 
@@ -91,8 +91,9 @@ FROM (((((([Herbarium specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON He
 WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=TRUE;" #10719
 
 # run query
-collections <- sqlQuery(con_livePadmeArabia, qry)
-collections <- sqlQuery(con_TESTPadmeArabia, qry)   # 8634 obs, 22 vars
+#collections <- sqlQuery(con_TESTPadmeArabia, qry)
+collections <- sqlQuery(con_livePadmeArabia, collectionsQry)   # 8409 obs, 22 vars
+
 
 head(collections[order(collections$FullSort, na.last=TRUE),])
 
@@ -105,13 +106,13 @@ names(collections)
 
 # all records collected by/with Miller
 millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
-# 3310 obs of 22 variables
+# 3306 obs of 22 variables
 
 
-Expd <- sqlQuery(con_TESTPadmeArabia, query="SELECT * FROM [Expeditions]")  # 44 records 
+Expd <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Expeditions]")  # 53 records 
 tripDetails <- Expd[, c(1, 2)]
 # tripDetails
-#     id                                  expeditionTitle
+# id                                    expeditionTitle
 # 1   1                               Desert Locust Survey
 # 2   2                                               ARTP
 # 3   3                                             SA08-1
@@ -122,7 +123,16 @@ tripDetails <- Expd[, c(1, 2)]
 # 8  11                               Ogilvie-Grant-Forbes
 # 9  12                                        Berlin Hein
 # 10 13                                              Faten
-# ...
+# 11 14 Hilleshg Expedition to the Kingdom of Saudi Arabia
+# 12 16                                             KW12-1
+# 13 17                                            OMP13-2
+# 14 18                                           KUW-13-1
+# 15 19                                          E00647486
+# 16 20                                          E00647568
+# 17 21                                           OMP-12/4
+# 18 22                                            AWK 13A
+# 19 23                                            AWK 13B
+# 20 24                                            OMP12-1
 # 21 25                                         SOC-07-Oct
 # 22 26                                        YE/SOC-07-1
 # 23 27                                           SOC-08-1
@@ -147,134 +157,85 @@ tripDetails <- Expd[, c(1, 2)]
 # 42 47               Archaeological Expedition to Socotra
 # 43 48                                 Bilaidi Expedition
 # 44 49                        Cronk Expedition to Socotra
+# 45 50                                              MADAR
+# 46 51                                              MP095
+# 47 52                                              DOJAN
+# 48 53                                              DOFEB
+# 49 54    Middle East Command Expedition to Socotra, 1967
+# 50 55                                  Qatar Survey 2014
+# 51 56                                  Qatar Survey 2013
+# 52 57                                   Oman Survey 2013
+# 53 59             Hannon, Christie, Oakman; Socotra 2002
 
 # show unique expeditions for Socotra records & their numbers
 table(sqldf("SELECT Expd.expeditionTitle FROM collections LEFT JOIN Expd ON collections.Expedition=Expd.id"))
-#Berlin Hein    Faten     Ogilvie-Grant-Forbes    YE/SOC-07-1 
-#25             14        4                       27 
+
+# Balfour Cockburn ...   Berlin Hein    Cronk Expedition to Socotra 
+# 146                    26             1 
+
+# Expedition Riebeck     Faten          Hannon, Christie, Oakman; Socotra 2002 
+# 21                     5              29 
+
+# Ogilvie-Grant-Forbes   SOC-00-1       SOC-01-1 
+# 4                      173            71 
+
+# SOC-90-1               SOC-96-1       SOC-98-1 
+# 799                    332            154 
+
+# SOC-99-1               YE/SOC-07-1    YE/SOC-89-1 
+# 211                    27             786 
+
+# YE/SOC-92-1            YE/SOC-93-1 
+# 452                    148 
+
 
 ##---------------------------MILLER TRIPS-------------------------------------##
 
 ## MANUALLY ENTERED MILLER EXPEDITION DETAILS INTO PADME (12/Oct/2014)
-# do manually?
-
 
 ## PULL OUT TEAMS WITH MILLER IN
 # check they're all correct
 
 # number of unique collectors for Socotra records
-length(unique(collections$collector)) # (84 ex 106 ex. 86 ex. 95) collector combos
+length(unique(collections$collector)) # (105 ex. 85 ex. 84 ex 106 ex. 86 ex. 95) collector combos
 # how many contain "Miller"
 sum(grepl("Miller", levels(collections$collector))) # x17 (prev. 18) contain "Miller"
 
 # indices of levels of collector factor which contain "Miller"
 grep("Miller", levels(collections$collector))
-#[1] 17 22 70 71 72 73 74 75 76 77 78 79 80 81 82 83 86
+# [1] 17 22 70 71 72 73 74 75 76 77 78 79 80 81 82 83 86
 
 # show all levels
 levels(collections$collector)
-# [1] "Alexander, D."                                                                           
-# [2] "Alexander, D. & Hughes, M."                                                              
-# [3] "Alexander, D., Talib, N.M., Sulaiman, A.S., Affrar, A.I.A. & Boggs, R."                  
-# [4] "Balfour, I.B."                                                                           
-# [5] "Balfour, I.B., Lieutenant Cockburn, C.J. & Scott, A."                                    
-# [6] "Banfield, L."                                                                            
-# [7] "Banfield, L. & Adeeb, A."                                                                
-# [8] "Banfield, L. & Awad Al-Seily, B."                                                        
-# [9] "Banfield, L. & Home Robertson, P."                                                       
-# [10] "Banfield, L., Adeeb, A. & Bashwan, F."                                                   
-# [11] "Banfield, L., Adeeb, A. & Rhumsey, A."                                                   
-# [12] "Banfield, L., Adeeb, A., Bashwan, F., Thiv, M. & Porter, R."                             
-# [13] "Banfield, L., Adeeb, A., Scholte, P. & Issa, A."                                         
-# [14] "Banfield, L., Home Robertson, P. & Adeeb, A."                                            
-# [15] "Banfield, L., Home Robertson, P. & Awad Al-Seily, B."                                    
-# [16] "Banfield, L., Home Robertson, P. & Miller, A.G."                                         
-# [17] "Banfield, L., Home Robertson, P., Adeeb, A. & Bashwan, F."                               
-# [18] "Banfield, L., Home Robertson, P., Adeeb, A. & Najeeb, M."                                
-# [19] "Banfield, L., Home Robertson, P., Adeeb, A., Awad Al-Seily, B. & Scholte, P."            
-# [20] "Banfield, L., Home Robertson, P., Adeeb, A., Najeeb, M., Awad Al-Seily, B. & Scholte, P."
-# [21] "Banfield, L., Home Robertson, P., Miller, A.G., Knees, S.G., Morris, L. & Gibby, M."     
-# [22] "Banfield, L., Home Robertson, P., Scholte, P. & Awad Al-Seily, B."                       
-# [23] "Banfield, L., Raqeeb, A. & Scholte, P."                                                  
-# [24] "Bent, J.T."                                                                              
-# [25] "Bent, J.T. & Bent, M.V.A."                                                               
-# [26] "Capt. Hunter, F.M."                                                                      
-# [27] "Chaudhary, S.A."                                                                         
-# [28] "Christie, S."                                                                            
-# [29] "Cronk, Q.C.B."                                                                           
-# [30] "Daud, A."                                                                                
-# [31] "Dr. Hay, A."                                                                             
-# [32] "Dr. Hay, G.W.R."                                                                         
-# [33] "Ensoll, Banfield, L. & Scott, S."                                                        
-# [34] "Fayed, A.A."                                                                             
-# [35] "Forbes, H.O. & Ogilvie-Grant, W.R."                                                      
-# [36] "Garguus, M.D."                                                                           
-# [37] "Garyune"                                                                                 
-# [38] "Goss, J.H."                                                                              
-# [39] "Gwynne, M."                                                                              
-# [40] "Hein, P."                                                                                
-# [41] "Hein, P. & v. Raab-Straube, E."                                                          
-# [42] "Hunt, G.E."                                                                              
-# [43] "Hunter, A."                                                                              
-# [44] "Hyam, R.D."                                                                              
-# [45] "Lavranos, J.J."                                                                          
-# [46] "Lavranos, J.J. & Radcliffe-Smith, A."                                                    
-# [47] "Lunt, W."                                                                                
-# [48] "McLeish, I."                                                                             
-# [49] "Mies, B."                                                                                
-# [50] "Miller, A.G."                                                                            
-# [51] "Miller, A.G. & Alexander, D."                                                            
-# [52] "Miller, A.G. & Nyberg, J.A."                                                             
-# [53] "Miller, A.G. & Nyberg, J.A. et al."                                                      
-# [54] "Miller, A.G. & Talib, N.M."                                                              
-# [55] "Miller, A.G. et al."                                                                     
-# [56] "Miller, A.G., Alexander, D. & Ali, N.A."                                                 
-# [57] "Miller, A.G., Alexander, D., Sulaiman, A.S., Talib, N.M., Hughes, M. & Hyam, R.D."       
-# [58] "Miller, A.G., Banfield, L. & Scott, S."                                                  
-# [59] "Miller, A.G., Bazara'a, M., Guarino, L. & Kassim, N."                                    
-# [60] "Miller, A.G., Guarino, L., Bazara'a, M. & Kassim, N."                                    
-# [61] "Miller, A.G., Guarino, L., Obadi, N., Hassan, S.K.M. & Mohammed, N."                     
-# [62] "Miller, A.G., Hyam, R.D., Al Khulaidi, A-W.A., Sulaiman, A.S. & Talib, N.M."             
-# [63] "Miller, A.G., Hyam, R.D., Alexander, D. & Hughes, M."                                    
-# [64] "Morris, M.J."                                                                            
-# [65] "Nimmo, J."                                                                               
-# [66] "Nyberg, J.A. & Miller, A.G."                                                             
-# [67] "Ogilvie-Grant, W.R."                                                                     
-# [68] "Paulay, S."                                                                              
-# [69] "Popov, G.B."                                                                             
-# [70] "Radcliffe-Smith, A."                                                                     
-# [71] "Radcliffe-Smith, A. & Henchie, S.J."                                                     
-# [72] "Riebeck"                                                                                 
-# [73] "Scholte, P."                                                                             
-# [74] "Schuurman, J.F.M."                                                                       
-# [75] "Schweinfurth, G.A."                                                                      
-# [76] "Simony, O."                                                                              
-# [77] "Thulin, M."                                                                              
-# [78] "Thulin, M. & Gifri, A.N."                                                                
-# [79] "Van Damme, K."                                                                           
-# [80] "Vierhapper, F."                                                                          
-# [81] "Virgo, K.J."                                                                             
-# [82] "Wahab, R.A."                                                                             
-# [83] "Woodrow, G.M."    
+## long list 
+# 104 levels
 
 # show all levels which contain "Miller"
 levels(collections$collector)[grep("Miller", levels(collections$collector))]
 # visual inspection of levels(collections$collector) suggests that these are all of the ones we need?
 # YES
 
-
 # all records collected by/with Miller
-#millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
-# 3310
+millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
+# 3306
 
 # table out the collection numbers
 summary(millers$collNumFull)
 # shows that there are lots of collection numbers where there is more than one
-# record per number.  This doesn't bode well...  
-# Particularly when we've already ruled out any records where det is NOT current...
+# record per number.  This doesn't bode well... IF THE HERBARIUM IS THE SAME, AND DETS ARE SAME!!! 
+# IF HERBARIUM IS NOT THE SAME, THIS IS FINE! THEY'RE SPECIMEN DUPLICATES.
 
 # number of unique collection numbers within Millers subset:
-length(unique(millers$collNumFull))   # only 2682 out of 3310!
+length(unique(millers$collNumFull))   # only 2679 out of 3304!
+
+# but for example: 
+a <- unique(paste(millers$collNumFull, millers$institute, sep=" "))
+length(a)
+#2828 unique coll# and Herbarium combos
+a[grep("8245", a)]
+# "M.8245 E"  "8245 E"    "8245 K"    "8245 UPS"  "8245 KTUH"
+rm(a)
+# shows that there is a true duplicate record (M.8245 E vs 8245 E) but also 2 herbarium specimen duplicates, which are FINE to have.
 
 # example: 
 #millers[which(millers$collNumFull=="11421"),]
@@ -301,6 +262,7 @@ str(millers)
 tail(millers$collNum)
 millers[,7] <- as.character(millers$collNum)
 millers[,8] <- as.numeric(as.character(millers$collNumShort))
+millers$collNumShort <- as.numeric(as.character(millers$collNumShort))
 str(millers)
 
 #millers$collNumFull[1:50]
@@ -337,7 +299,7 @@ nlevels(millers$tripCat[, drop=TRUE])
 # * = probable collection number confusion error!!!
 
 
-table(millers[which(millers$tripCat=="8000s"),]$collector[,drop=TRUE])
+table(millers[which(millers$tripCat=="10000s"),]$collector[,drop=TRUE])
 
 # FIX THE EXPEDITION THING - UPDATE THE RECORDS!
 
@@ -399,36 +361,53 @@ millers <<- millers
 
 # found/unfound overall
 table(collections$FlicFound, useNA="ifany")
+# found  <NA> 
+# 2481  5928 
+
+# now only look for ones which are supposed to be at Edinburgh (E)!
+table(collections[which(collections$institute=="E"),]$FlicFound, useNA="ifany")
+# found  <NA> 
+# 2108  1438 
+
 # found/unfound for millers
 table(millers$FlicFound, useNA="ifany")
+# found  <NA> 
+# 1923  1383 
 
-# 
+# found/unfound for MILLERS which are SUPPOSED TO BE AT Edinburgh (E)!
+table(millers[which(millers$institute=="E"),]$FlicFound, useNA="ifany")
+# found  <NA> 
+# 1886  1075 
+
+# issues for millers
 table(millers$FlicIssue, useNA="ifany")
 
-# fix importedCollector -> collector (where no collector existed)
-#source("Z://fufluns/scripts/script_importCollectorFix.R")
-#source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2/fufluns/scripts/script_importCollectorFix.R")
+## fixes importedCollector -> collector (where no collector existed)
+# THIS HAS BEEN RUN, DO NOT RUN AGAIN!
+# RUN 06/01/2015 (1pm) on LIVE PADME
+##source("O:/CMEP\ Projects/Scriptbox/database_importing/script_importCollectorFix.R")
 
-# fix collector issues 
+## fix collector issues 
 # e.g. "Miller et al" -> something more useful
 # also "W.R. Ogilvie-Grant & H.O. Forbes" -> "H.o. Forbes & W.R.Ogilvie-Grant" so all duplicates are obvious!
         # note that the expedition is still Ogilvie-Grant THEN Forbes, but as Forbes was a botanist, collections should bear his name first.
 
-# fix problem dates
-#source("Z://fufluns/scripts/script_dateFixes.R")
-#source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2/fufluns/scripts/script_dateFixes.R")
+## fixes problem dates
+# THIS HAS BEEN RUN, DO NOT RUN AGAIN!
+# RUN 06/01/2015 (1pm) on LIVE PADME
+##source("O:/CMEP\ Projects/Scriptbox/database_updating/script_dateFixes.R")
 
-#TESTPadmeArabiaCon()
 
-# fix expedition numbers
-#source("Z://fufluns/scripts/script_expeditionTagger.R")
-#source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2/fufluns/scripts/script_expeditionTagger.R")
+## fixes expedition numbers
+# THIS HAS BEEN RUN, DO NOT RUN AGAIN!
+# RUN 06/01/2015 (1pm) on LIVE PADME
+##source("O:/CMEP\ Projects/Scriptbox/database_updating/script_expeditionTagger.R")
 
-#TESTPadmeArabiaCon()
 
 # add family names
-#source("Z://fufluns/scripts/script_addFamilyNames.R")
-#source("C://Users//rbgeuser/Desktop/Flic_REMOVE/fufluns2/fufluns/scripts/script_addFamilyNames.R")
+## UNNECESSARY, I THINK!
+#source("O:/CMEP\ Projects/Scriptbox/database_output/script_addFamilyNames.R")
+
 
 # Pull out unfounds only
 
@@ -436,4 +415,4 @@ table(millers$FlicIssue, useNA="ifany")
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
-odbcCloseAll()
+#odbcCloseAll()
