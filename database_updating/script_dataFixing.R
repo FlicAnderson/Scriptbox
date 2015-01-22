@@ -92,7 +92,7 @@ WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=TRUE;" #10719
 
 # run query
 #collections <- sqlQuery(con_TESTPadmeArabia, qry)
-collections <- sqlQuery(con_livePadmeArabia, collectionsQry)   # 8409 obs, 22 vars
+collections <- sqlQuery(con_livePadmeArabia, collectionsQry)   # 8076 (before manual duplicate removal it was 8409) obs, 22 vars
 
 
 head(collections[order(collections$FullSort, na.last=TRUE),])
@@ -106,7 +106,7 @@ names(collections)
 
 # all records collected by/with Miller
 millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
-# 3306 obs of 22 variables
+# 2986 (before manual duplicate removal it was 3306) obs of 22 variables
 
 
 Expd <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [Expeditions]")  # 53 records 
@@ -174,19 +174,19 @@ table(sqldf("SELECT Expd.expeditionTitle FROM collections LEFT JOIN Expd ON coll
 # 146                    26             1 
 
 # Expedition Riebeck     Faten          Hannon, Christie, Oakman; Socotra 2002 
-# 21                     5              29 
+# 21                     5              28 
 
 # Ogilvie-Grant-Forbes   SOC-00-1       SOC-01-1 
-# 4                      173            71 
+# 4                      173            56 
 
 # SOC-90-1               SOC-96-1       SOC-98-1 
-# 799                    332            154 
+# 665                    336            154 
 
 # SOC-99-1               YE/SOC-07-1    YE/SOC-89-1 
-# 211                    27             786 
+# 211                    27             663 
 
-# YE/SOC-92-1            YE/SOC-93-1 
-# 452                    148 
+# YE/SOC-92-1            YE/SOC-93-1    YE/SOC-02-1
+# 415                    148            5
 
 
 ##---------------------------MILLER TRIPS-------------------------------------##
@@ -197,9 +197,9 @@ table(sqldf("SELECT Expd.expeditionTitle FROM collections LEFT JOIN Expd ON coll
 # check they're all correct
 
 # number of unique collectors for Socotra records
-length(unique(collections$collector)) # (105 ex. 85 ex. 84 ex 106 ex. 86 ex. 95) collector combos
+length(unique(collections$collector)) # (100 ex. 105 ex. 85 ex. 84 ex 106 ex. 86 ex. 95) collector combos
 # how many contain "Miller"
-sum(grepl("Miller", levels(collections$collector))) # x17 (prev. 18) contain "Miller"
+sum(grepl("Miller", levels(collections$collector))) # x12 (prev 17 (prev. 18)) contain "Miller"
 
 # indices of levels of collector factor which contain "Miller"
 grep("Miller", levels(collections$collector))
@@ -209,6 +209,7 @@ grep("Miller", levels(collections$collector))
 levels(collections$collector)
 ## long list 
 # 104 levels
+# 99 levels
 
 # show all levels which contain "Miller"
 levels(collections$collector)[grep("Miller", levels(collections$collector))]
@@ -217,7 +218,7 @@ levels(collections$collector)[grep("Miller", levels(collections$collector))]
 
 # all records collected by/with Miller
 millers <- collections[collections$collector %in% levels(collections$collector)[grep("Miller", levels(collections$collector))],]
-# 3306
+# 2986 prv. 3306
 
 # table out the collection numbers
 summary(millers$collNumFull)
@@ -226,7 +227,7 @@ summary(millers$collNumFull)
 # IF HERBARIUM IS NOT THE SAME, THIS IS FINE! THEY'RE SPECIMEN DUPLICATES.
 
 # number of unique collection numbers within Millers subset:
-length(unique(millers$collNumFull))   # only 2679 out of 3304!
+length(unique(millers$collNumFull))   # only 2430 prv. 2679 out of 2986 prv. 3304!
 
 # but for example: 
 a <- unique(paste(millers$collNumFull, millers$institute, sep=" "))
@@ -296,6 +297,8 @@ nlevels(millers$tripCat[, drop=TRUE])
 # 6  1     1     788   800     453     148     332     153     212     175     71      5       27     1
 # *  *     *                                                                                          *
 
+#     0s  2000s  8000s 10000s 11000s 12000s 14000s 16000s 17000s 19000s 20000s 22000s 31000s 
+#     5      1    663    665    413    148    336    154    211    173     52      5     27
 # * = probable collection number confusion error!!!
 
 
@@ -308,6 +311,9 @@ table(millers[which(millers$tripCat=="10000s"),]$collector[,drop=TRUE])
 # 1000s
 # 2000s
 # 101000s
+
+# DONE
+
 
 # Actual trips: 
 # 8000s <- "8,000s - Socotra - 1989" <- YE/SOC-89-1
@@ -337,15 +343,15 @@ table(millers[which(millers$tripCat=="10000s"),]$collector[,drop=TRUE])
 # SOC: 22000-22118
 # 24000s <- "24,000's - Yemen & Socotra - 2003 & 04" <- YE/SOC-03/04-1  
 # SOC: 24000-24359
-# 27000s <- "27,000's - Socotra Feb 2006" <- YE/SOC-06-1    ????
-# SOC: ??27000-27199??
+## 28000s <- "28,000's - Socotra Feb 2006" <- YE/SOC-06-1    Previously thought 27k was Socotran trip, shold be 28k.
+## SOC: ??27000-27199??
 # 31000s <- "31,000's - Yemen & Socotra 2007-2_ OCT2007" <- YE/SOC-07-2
 # SOC: ??
 ## ?s <- "YE/SOC-07-1_January" <- YE/SOC-07-01
 ## ?s <- "SOC-08-1" <- SOC-08-1
 
 # tripCats
-tripVals <- c("8000s", "10000s", "11000s", "12000s", "14000s", "16000s",  "17000s", "19000s", "20000s", "22000s", "24000s", "27000s", "31000s")  
+tripVals <- c("8000s", "10000s", "11000s", "12000s", "14000s", "16000s",  "17000s", "19000s", "20000s", "22000s", "24000s", "28000s", "31000s")  
 # expedition codes
 expdNames <- c("YE/SOC-89-1", "SOC-90-1", "YE/SOC-92-1", "YE/SOC-93-1", "SOC-96-1", "SOC-98-1", "SOC-99-1", "SOC-00-1", "SOC-01-1", "YE/SOC-02-1", "YE/SOC-03/04-1", "YE/SOC-06-1", "YE/SOC-07-2")
 # trip numbers range which were Socotra not mainland
@@ -362,22 +368,27 @@ millers <<- millers
 # found/unfound overall
 table(collections$FlicFound, useNA="ifany")
 # found  <NA> 
-# 2481  5928 
+# 2480  5596 
+# (prev 2481  5928 )
 
 # now only look for ones which are supposed to be at Edinburgh (E)!
 table(collections[which(collections$institute=="E"),]$FlicFound, useNA="ifany")
 # found  <NA> 
-# 2108  1438 
+# 2133  1129
+# prev 2108  1438 
 
 # found/unfound for millers
 table(millers$FlicFound, useNA="ifany")
 # found  <NA> 
-# 1923  1383 
+#  1923  1063
+# prev 1923  1383 
+
 
 # found/unfound for MILLERS which are SUPPOSED TO BE AT Edinburgh (E)!
 table(millers[which(millers$institute=="E"),]$FlicFound, useNA="ifany")
 # found  <NA> 
-# 1886  1075 
+# 1911  766
+# prev 1886  1075 
 
 # issues for millers
 table(millers$FlicIssue, useNA="ifany")
