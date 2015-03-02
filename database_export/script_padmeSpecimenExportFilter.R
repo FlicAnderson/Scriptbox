@@ -12,6 +12,8 @@
 # ... Padme to BG-Base, where filter is "determined to species level or below", 
 # ... to avoid printing labels for indet, genus-det or "genus sp." specimens
 
+### RUNTIME - source(this script) takes ~3 minutes to run
+
 
 # load up packages
 # load RODBC library
@@ -152,4 +154,11 @@ message("... writing records to new file")
 
 write.csv(allDat, file=paste0("C://Padme//EXPORT_TO_BGBASE//test//", "PadmeExportData_unmtdSocotra", "_", Sys.Date(), ".csv"), row.names=FALSE, na="")
 
+message("... file written to C://Padme//EXPORT_TO_BGBASE//test//PadmeExportData_unmtdSocotra_[date].csv")
+
 message("... all actions complete. END.")
+
+
+# VERY IMPORTANT!
+# CLOSE THE CONNECTION!
+odbcCloseAll()
