@@ -82,12 +82,12 @@ LEFT JOIN [Teams] AS [Team] ON Fiel.[Collector Key]=Team.id
 WHERE Fiel.Expedition=61"
 
 
-qry2 <- "SELECT *
-FROM ((([Field notes] AS [Fiel] LEFT JOIN [Geography] AS [Geog] ON Fiel.Locality=Geog.ID)
-LEFT JOIN [Synonyms tree] AS [Snym] ON Fiel.determination = Snym.member)
-LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id)
-LEFT JOIN [Teams] AS [Team] ON Fiel.[Collector Key]=Team.id
-WHERE Fiel.Expedition=61"
+#qry2 <- "SELECT *
+#FROM ((([Field notes] AS [Fiel] LEFT JOIN [Geography] AS [Geog] ON Fiel.Locality=Geog.ID)
+#LEFT JOIN [Synonyms tree] AS [Snym] ON Fiel.determination = Snym.member)
+#LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id)
+#LEFT JOIN [Teams] AS [Team] ON Fiel.[Collector Key]=Team.id
+#WHERE Fiel.Expedition=61"
 
 #UNION
 
@@ -115,17 +115,14 @@ recGrab2 <- sqlQuery(con_livePadmeArabia, qry2)
 nrow(recGrab1)
 nrow(recGrab2)
 
-
-
-##### JOIN ON FIELD RECORDS! ####
-
-
+# join field and herbarium data vertically
+recGrab <- rbind(recGrab1, recGrab2)
 
 # 4)
 
 # show first 6 records returned 
 # sorted so Edinburgh specimens, then found specimens float to the top 
-head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
+head(recGrab[order(recGrab$collNum, na.last=TRUE),])
 
 # 5)
 
@@ -134,7 +131,7 @@ head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, 
 # enter filename including '.csv', & if asked whether to create file, say 'YES' 
 # write to .csv file
 # sorted so Edinburgh specimens, then found specimens, displayed ascendingly
-write.csv(recGrab[order(recGrab$institute, recGrab$FlicFound, na.last=TRUE),], file=file.choose())
+write.csv(recGrab[order(recGrab$collNum, na.last=TRUE),], file=file.choose())
 
 # VERY IMPORTANT!
 # CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
