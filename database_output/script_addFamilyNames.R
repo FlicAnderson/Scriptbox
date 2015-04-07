@@ -7,12 +7,12 @@
 # .... saved at "Z:/fufluns/scripts/script_addFamilyNames.R"
 
 # run function:
-TESTPadmeArabiaCon()
+#TESTPadmeArabiaCon()
 # opens connection "con_TESTPadmeArabia" 
 # from location at "locat_TESTPadmeArabia"
 
 ## run function:
-#livePadmeArabiaCon()
+livePadmeArabiaCon()
 ## opens connection "con_livePadmeArabia" 
 ## from location at "locat_livePadmeArabia"
 
@@ -23,8 +23,8 @@ qry <- "SELECT
     Ranks INNER JOIN [Latin Names] ON Ranks.id = [Latin Names].Rank) 
     INNER JOIN [names tree] ON [Latin Names].id = [names tree].[member of]
 WHERE (((Ranks.name)='family'));"
-families <- sqlQuery(con_TESTPadmeArabia, qry)
-#families <- sqlQuery(con_livePadmeArabia, qry)
+#families <- sqlQuery(con_TESTPadmeArabia, qry)
+families <- sqlQuery(con_livePadmeArabia, qry)
 
 
 qry <- "
@@ -55,8 +55,8 @@ LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id)
 LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id)
 LEFT JOIN [Expeditions] AS [Expd] ON Herb.Expedition=Expd.id
 WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=TRUE;" 
-hrbspx <- sqlQuery(con_TESTPadmeArabia, qry)
-#hrbspx <- sqlQuery(con_livePadmeArabia, qry)
+#hrbspx <- sqlQuery(con_TESTPadmeArabia, qry)
+hrbspx <- sqlQuery(con_livePadmeArabia, qry)
 
 
 # join family names and rest of data
