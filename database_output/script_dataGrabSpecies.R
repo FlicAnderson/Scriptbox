@@ -4,7 +4,8 @@
 # Author: Flic Anderson
 #
 # dependent on: "O://CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R"
-# saved at: O://CMEP\ Projects/Scriptbox/script_dataGrabSpeciesSocotra.R
+# saved at: O://CMEP\ Projects/Scriptbox/script_dataGrabSpecies.R
+# source: source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabSpecies.R")
 #
 # AIM: Pull out records into R for species in Arabia (not only Socotra) from 
 # .... Padme Arabia using SQL given a taxonName, print to console.  
@@ -33,7 +34,7 @@ if (!require(RODBC)){
   library(RODBC)
 } 
 # open connection to live padme
-source("O://CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
+source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
 
 
@@ -42,10 +43,18 @@ livePadmeArabiaCon()
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 # please input the taxon you're searching for, as shown in the examples below:
 # examples: 
-  #taxonName <- "Cyperaceae"
+  #taxonName <- "Cyperaceae" (NB: this will not find things WITHIN Cyperaceae, only det AS Cyperaceae)
   #taxonName <- "Coelocarpum"
   #taxonName <- "Dracaena cinnabari"
-taxonName <- "Coelocarpum"
+taxonName <- "Ochradenus"
+
+# please input the location you're searching for, as shown in the examples below:
+# examples: 
+#taxonName <- "Socotra"
+#taxonName <- "Socotran Archipelago"
+#taxonName <- "Hadibo"
+locatName <- "Socotra"
+
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
 # 2)
@@ -58,6 +67,7 @@ Team.[name for display] AS collector,
 Herb.[Collector Number] AS collNumFull, 
 Herb.[Collection number] & '' & Herb.postfix AS collNum,
 Herbaria.Acronym AS institute, 
+Lnam.[id] AS lnamID,
 Lnam.[Full Name] AS detAs,
 DetTeam.[name for display] AS detBy,
 Geog.fullName, 
@@ -72,8 +82,18 @@ FROM (((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON He
         LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id) 
           LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) 
             LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
-WHERE Dets.Current=True AND Lnam.sortName LIKE '%", taxonName, "%'
+WHERE Dets.Current=True AND Lnam.sortName LIKE '%", taxonName, "%' AND Geog.fullName LIKE '%", locatName, "%' 
 ORDER BY Herbaria.Acronym, Herb.FlicStatus, Team.[name for display], Herb.[Collection number] & '' & Herb.postfix;")
+
+# pull families data
+familyQry <- "SELECT 
+  [Latin Names].sortName AS familyName, 
+  [names tree].member
+  FROM (
+    Ranks INNER JOIN [Latin Names] ON Ranks.id = [Latin Names].Rank) 
+    INNER JOIN [names tree] ON [Latin Names].id = [names tree].[member of]
+WHERE (((Ranks.name)='family'));"
+families <- sqlQuery(con_livePadmeArabia, familyQry)
 
 # 3)
 
@@ -82,11 +102,17 @@ recGrab <- sqlQuery(con_livePadmeArabia, qry)
   # show number of records returned
   nrow(recGrab)
 
+# join family names to data
+recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN families ON recGrab.lnamID=families.member")
+names(recGrab)
+# remove member column
+recGrab <- recGrab[, 1:(ncol(recGrab)-1)]
+
 # 4)
 
 # show first 6 records returned 
   # sorted so Edinburgh specimens, then found specimens float to the top 
-head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE),])
+head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
 
 # 5)
 
