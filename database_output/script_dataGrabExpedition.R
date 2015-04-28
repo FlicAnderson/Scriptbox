@@ -50,17 +50,9 @@ livePadmeArabiaCon()
 
 # please input the location you're searching for, as shown in the examples below:
 # examples: 
-#taxonName <- "Socotra"
-#taxonName <- "Socotran Archipelago"
-#taxonName <- "Hadibo"
 #locatName <- "Socotra"
-
-# please input the location you're searching for, as shown in the examples below:
-# examples: 
-#taxonName <- "Socotra"
-#taxonName <- "Socotran Archipelago"
-#taxonName <- "Hadibo"
-
+#locatName <- "Socotran Archipelago"
+#locatName <- "Hadibo"
 
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
