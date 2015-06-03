@@ -79,26 +79,28 @@ Herb.[Longitude 1 Degrees] AS lon1Deg,
 Herb.[Longitude 1 Minutes] AS lon1Min,
 Herb.[Longitude 1 Seconds] AS lon1Sec,
 Herb.[Longitude 1 Decimal] AS lon1Dec,
+Herb.[coordinateSource] AS coordSource,
+Herb.[coordinateAccuracy] AS coordAccuracy,
+Herb.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Herb.[Date 1 Days] AS dateDD, 
 Herb.[Date 1 Months] AS dateMM, 
 Herb.[Date 1 Years] AS dateYY,
 Geog.fullName AS fullLocation
-FROM (((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON Herb.Locality=Geog.ID) 
+FROM ((((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON Herb.Locality=Geog.ID) 
   LEFT JOIN [Herbaria] ON Herb.Herbarium=Herbaria.id) 
     LEFT JOIN [determinations] AS [Dets] ON Herb.id=Dets.[specimen key]) 
       LEFT JOIN [Synonyms tree] AS [Snym] ON Dets.[latin name key] = Snym.member) 
         LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id) 
           LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) 
-            LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
+            LEFT JOIN [CoordinateSources] AS [Coor] ON Herb.[coordinateSource] = Coor.id)
+              LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
 WHERE Dets.Current=True AND Geog.fullName LIKE '%", locatName, "%' 
 AND Herb.[Latitude 1 Direction] IS NOT NULL 
 AND Herb.[Latitude 1 Degrees] IS NOT NULL
 AND Herb.[Latitude 1 Minutes] IS NOT NULL
-AND Herb.[Latitude 1 Seconds] IS NOT NULL
 AND Herb.[Longitude 1 Direction] IS NOT NULL 
 AND Herb.[Longitude 1 Degrees] IS NOT NULL
 AND Herb.[Longitude 1 Minutes] IS NOT NULL
-AND Herb.[Longitude 1 Seconds] IS NOT NULL
 ORDER BY Team.[name for display];")
 
 
@@ -119,6 +121,9 @@ Fiel.[Longitude 1 Degrees] AS lon1Deg,
 Fiel.[Longitude 1 Minutes] AS lon1Min,
 Fiel.[Longitude 1 Seconds] AS lon1Sec,
 Fiel.[Longitude 1 Decimal] AS lon1Dec,
+Fiel.[coordinateSource] AS coordSource,
+Fiel.[coordinateAccuracy] AS coordAccuracy,
+Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Fiel.[Date 1 Days] AS dateDD, 
 Fiel.[Date 1 Months] AS dateMM, 
 Fiel.[Date 1 Years] AS dateYY,
@@ -131,11 +136,9 @@ WHERE Geog.fullName LIKE '%", locatName, "%'
 AND Fiel.[Latitude 1 Direction] IS NOT NULL 
 AND Fiel.[Latitude 1 Degrees] IS NOT NULL
 AND Fiel.[Latitude 1 Minutes] IS NOT NULL
-AND Fiel.[Latitude 1 Seconds] IS NOT NULL
 AND Fiel.[Longitude 1 Direction] IS NOT NULL 
 AND Fiel.[Longitude 1 Degrees] IS NOT NULL
 AND Fiel.[Longitude 1 Minutes] IS NOT NULL
-AND Fiel.[Longitude 1 Seconds] IS NOT NULL
 ORDER BY Team.[name for display];")
 
 
@@ -156,6 +159,9 @@ Litr.[Longitude 1 Degrees] AS lon1Deg,
 Litr.[Longitude 1 Minutes] AS lon1Min,
 Litr.[Longitude 1 Seconds] AS lon1Sec,
 Litr.[Longitude 1 Decimal] AS lon1Dec,
+Litr.[coordinateSource] AS coordSource,
+Litr.[coordinateAccuracy] AS coordAccuracy,
+Litr.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Litr.[Date 1 Days] AS dateDD, 
 Litr.[Date 1 Months] AS dateMM, 
 Litr.[Date 1 Years] AS dateYY,
@@ -175,20 +181,18 @@ WHERE Geog.fullName LIKE '%", locatName, "%'
 AND Litr.[Latitude 1 Direction] IS NOT NULL 
 AND Litr.[Latitude 1 Degrees] IS NOT NULL
 AND Litr.[Latitude 1 Minutes] IS NOT NULL
-AND Litr.[Latitude 1 Seconds] IS NOT NULL
 AND Litr.[Longitude 1 Direction] IS NOT NULL 
 AND Litr.[Longitude 1 Degrees] IS NOT NULL
 AND Litr.[Longitude 1 Minutes] IS NOT NULL
-AND Litr.[Longitude 1 Seconds] IS NOT NULL
 ;")
 
 
 # 3)
 
 # run query
-herbRex <- sqlQuery(con_livePadmeArabia, qry1)
-fielRex <- sqlQuery(con_livePadmeArabia, qry2)
-litrRex <- sqlQuery(con_livePadmeArabia, qry3)
+herbRex <- sqlQuery(con_livePadmeArabia, qry1) #03/06/2015 1843 req DMS, 3647 req DM
+fielRex <- sqlQuery(con_livePadmeArabia, qry2) #03/06/2015 4602 req DMS, 6754 req DM
+litrRex <- sqlQuery(con_livePadmeArabia, qry3) #03/06/2015 0 req DMS, 31 req DM
 
 # show number of records returned
 nrow(herbRex)
@@ -202,6 +206,7 @@ nrow(litrRex)
         # but doesn't matter much!
 
 recGrab <- rbind(herbRex, fielRex, litrRex)
+nrow(recGrab) #03/06/2015 6445 req DMS, 10432 req DM
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 # 4)
