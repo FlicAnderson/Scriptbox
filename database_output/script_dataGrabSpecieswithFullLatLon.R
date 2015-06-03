@@ -58,9 +58,9 @@ locatName <- "Socotra"
 # 2)
 
 # get headings for herbarium specimens and field notes and literature records tables
-Herb <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Herbarium specimens]")
-Fiel <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Field notes]")
-Litr <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [literature records]")
+#Herb <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Herbarium specimens]")
+#Fiel <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Field notes]")
+#Litr <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [literature records]")
 
 # build HERB query
 # Adapted from script_dataGrabSpecies.R
@@ -74,12 +74,15 @@ Herb.[Latitude 1 Degrees] AS lat1Deg,
 Herb.[Latitude 1 Minutes] AS lat1Min,
 Herb.[Latitude 1 Seconds] AS lat1Sec,
 Herb.[Latitude 1 Decimal] AS lat1Dec,
+IIf(IsNull(Herb.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Herb.[Latitude 1 Decimal]) AS AnyLat,
 Herb.[Longitude 1 Direction] AS lon1Dir,
 Herb.[Longitude 1 Degrees] AS lon1Deg,
 Herb.[Longitude 1 Minutes] AS lon1Min,
 Herb.[Longitude 1 Seconds] AS lon1Sec,
 Herb.[Longitude 1 Decimal] AS lon1Dec,
+IIf(IsNull(Herb.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Herb.[Longitude 1 Decimal]) AS AnyLon,
 Herb.[coordinateSource] AS coordSource,
+iif(isnull(Herb.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
 Herb.[coordinateAccuracy] AS coordAccuracy,
 Herb.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Herb.[Date 1 Days] AS dateDD, 
@@ -95,13 +98,14 @@ FROM ((((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON H
             LEFT JOIN [CoordinateSources] AS [Coor] ON Herb.[coordinateSource] = Coor.id)
               LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
 WHERE Dets.Current=True AND Geog.fullName LIKE '%", locatName, "%' 
-AND Herb.[Latitude 1 Direction] IS NOT NULL 
-AND Herb.[Latitude 1 Degrees] IS NOT NULL
-AND Herb.[Latitude 1 Minutes] IS NOT NULL
-AND Herb.[Longitude 1 Direction] IS NOT NULL 
-AND Herb.[Longitude 1 Degrees] IS NOT NULL
-AND Herb.[Longitude 1 Minutes] IS NOT NULL
 ORDER BY Team.[name for display];")
+
+#AND Herb.[Latitude 1 Direction] IS NOT NULL 
+#AND Herb.[Latitude 1 Degrees] IS NOT NULL
+#AND Herb.[Latitude 1 Minutes] IS NOT NULL
+#AND Herb.[Longitude 1 Direction] IS NOT NULL 
+#AND Herb.[Longitude 1 Degrees] IS NOT NULL
+#AND Herb.[Longitude 1 Minutes] IS NOT NULL
 
 
 # build FIEL query
@@ -116,12 +120,15 @@ Fiel.[Latitude 1 Degrees] AS lat1Deg,
 Fiel.[Latitude 1 Minutes] AS lat1Min,
 Fiel.[Latitude 1 Seconds] AS lat1Sec,
 Fiel.[Latitude 1 Decimal] AS lat1Dec,
+IIf(IsNull(Fiel.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Fiel.[Latitude 1 Decimal]) AS AnyLat,
 Fiel.[Longitude 1 Direction] AS lon1Dir,
 Fiel.[Longitude 1 Degrees] AS lon1Deg,
 Fiel.[Longitude 1 Minutes] AS lon1Min,
 Fiel.[Longitude 1 Seconds] AS lon1Sec,
 Fiel.[Longitude 1 Decimal] AS lon1Dec,
+IIf(IsNull(Fiel.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Fiel.[Longitude 1 Decimal]) AS AnyLon,
 Fiel.[coordinateSource] AS coordSource,
+iif(isnull(Fiel.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
 Fiel.[coordinateAccuracy] AS coordAccuracy,
 Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Fiel.[Date 1 Days] AS dateDD, 
@@ -133,12 +140,6 @@ FROM ((([Field notes] AS [Fiel] LEFT JOIN [Geography] AS [Geog] ON Fiel.Locality
          LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id)
           LEFT JOIN [Teams] AS [Team] ON Fiel.[Collector Key]=Team.id
 WHERE Geog.fullName LIKE '%", locatName, "%'
-AND Fiel.[Latitude 1 Direction] IS NOT NULL 
-AND Fiel.[Latitude 1 Degrees] IS NOT NULL
-AND Fiel.[Latitude 1 Minutes] IS NOT NULL
-AND Fiel.[Longitude 1 Direction] IS NOT NULL 
-AND Fiel.[Longitude 1 Degrees] IS NOT NULL
-AND Fiel.[Longitude 1 Minutes] IS NOT NULL
 ORDER BY Team.[name for display];")
 
 
@@ -154,12 +155,15 @@ Litr.[Latitude 1 Degrees] AS lat1Deg,
 Litr.[Latitude 1 Minutes] AS lat1Min,
 Litr.[Latitude 1 Seconds] AS lat1Sec,
 Litr.[Latitude 1 Decimal] AS lat1Dec,
+IIf(IsNull(Litr.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Litr.[Latitude 1 Decimal]) AS AnyLat,
 Litr.[Longitude 1 Direction] AS lon1Dir,
 Litr.[Longitude 1 Degrees] AS lon1Deg,
 Litr.[Longitude 1 Minutes] AS lon1Min,
 Litr.[Longitude 1 Seconds] AS lon1Sec,
 Litr.[Longitude 1 Decimal] AS lon1Dec,
+IIf(IsNull(Litr.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Litr.[Longitude 1 Decimal]) AS AnyLon,
 Litr.[coordinateSource] AS coordSource,
+iif(isnull(Litr.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
 Litr.[coordinateAccuracy] AS coordAccuracy,
 Litr.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Litr.[Date 1 Days] AS dateDD, 
@@ -178,21 +182,15 @@ RIGHT JOIN LiteratureRecordLocations AS [LRLo]
 ON Geog.ID = LRLo.locality) 
 ON Litr.id = LRLo.litrecid 
 WHERE Geog.fullName LIKE '%", locatName, "%'
-AND Litr.[Latitude 1 Direction] IS NOT NULL 
-AND Litr.[Latitude 1 Degrees] IS NOT NULL
-AND Litr.[Latitude 1 Minutes] IS NOT NULL
-AND Litr.[Longitude 1 Direction] IS NOT NULL 
-AND Litr.[Longitude 1 Degrees] IS NOT NULL
-AND Litr.[Longitude 1 Minutes] IS NOT NULL
 ;")
 
 
 # 3)
 
 # run query
-herbRex <- sqlQuery(con_livePadmeArabia, qry1) #03/06/2015 1843 req DMS, 3647 req DM
-fielRex <- sqlQuery(con_livePadmeArabia, qry2) #03/06/2015 4602 req DMS, 6754 req DM
-litrRex <- sqlQuery(con_livePadmeArabia, qry3) #03/06/2015 0 req DMS, 31 req DM
+herbRex <- sqlQuery(con_livePadmeArabia, qry1) #03/06/2015 1843 req DMS, 3647 req DM, 8166 w/ IFF
+fielRex <- sqlQuery(con_livePadmeArabia, qry2) #03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
+litrRex <- sqlQuery(con_livePadmeArabia, qry3) #03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
 
 # show number of records returned
 nrow(herbRex)
@@ -206,7 +204,7 @@ nrow(litrRex)
         # but doesn't matter much!
 
 recGrab <- rbind(herbRex, fielRex, litrRex)
-nrow(recGrab) #03/06/2015 6445 req DMS, 10432 req DM
+nrow(recGrab) #03/06/2015 6445 req DMS, 10432 req DM, 22285 w/ IFF
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 # 4)
