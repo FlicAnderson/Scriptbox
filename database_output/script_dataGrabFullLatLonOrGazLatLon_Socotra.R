@@ -13,8 +13,7 @@
 # .... ignore records which only list locat as "Socotra" or "Socotra Archipelago"
 # .... as these would proliferate 1 location (the mid-point for Socotra or the 
 # .... islands; unhelpful). 
-# .... Then save as CSV file (.csv) for future use. Records ordered by fields
-# .... [Herbarium Specimens].[Herbaria], then [Herbarium Specimens].[FlicFound]
+# .... Then save as CSV file (.csv) for future use.
 
 # ---------------------------------------------------------------------------- #
 
