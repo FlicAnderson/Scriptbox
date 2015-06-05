@@ -52,7 +52,7 @@ livePadmeArabiaCon()
 # please input the location you're searching for, as shown in the examples below:
 # examples: 
 #locatName <- "Socotra"
-locatName <- "Socotra Archipelago"
+#locatName <- "Socotra Archipelago"
 #locatName <- "Hadibo"
 #locatName <- "Socotra"
 
@@ -68,22 +68,25 @@ locatName <- "Socotra Archipelago"
 # build HERB query
 # Adapted from script_dataGrabSpecieswithFullLatLon.R
 qry1 <- paste0("
-SELECT 'H-' & Herb.id AS ID, 
+SELECT 'H-' & Herb.id AS recID, 
 Team.[name for display] AS collector,
-Herb.[Collector Number] AS collNumFull, 
-Lnam.[Full Name] AS detAs,
+Herb.[Collector Number] AS collNumFull, ",
+# Lnam.[Full Name] AS detAs,
+# HERE the Lnam.FullName is replaced by the ACCEPTED NAME
+# THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+"LnSy.[Full Name] AS detAs,
 Herb.[Latitude 1 Direction] AS lat1Dir,
 Herb.[Latitude 1 Degrees] AS lat1Deg,
 Herb.[Latitude 1 Minutes] AS lat1Min,
 Herb.[Latitude 1 Seconds] AS lat1Sec,
-Herb.[Latitude 1 Decimal] AS lat1Dec,",
+Herb.[Latitude 1 Decimal] AS lat1Dec, ",
 #IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as AnyLat
 "IIf(IsNull(Herb.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Herb.[Latitude 1 Decimal]) AS AnyLat,
 Herb.[Longitude 1 Direction] AS lon1Dir,
 Herb.[Longitude 1 Degrees] AS lon1Deg,
 Herb.[Longitude 1 Minutes] AS lon1Min,
 Herb.[Longitude 1 Seconds] AS lon1Sec,
-Herb.[Longitude 1 Decimal] AS lon1Dec,",
+Herb.[Longitude 1 Decimal] AS lon1Dec, ",
 #IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
 "IIf(IsNull(Herb.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Herb.[Longitude 1 Decimal]) AS AnyLon,
 Herb.[coordinateSource] AS coordSource,
@@ -95,18 +98,23 @@ Herb.[Date 1 Months] AS dateMM,
 Herb.[Date 1 Years] AS dateYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names, Teams x2, CoordinateSources
-"FROM ((((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON Herb.Locality=Geog.ID) 
-  LEFT JOIN [Herbaria] ON Herb.Herbarium=Herbaria.id) 
-    LEFT JOIN [determinations] AS [Dets] ON Herb.id=Dets.[specimen key]) 
-      LEFT JOIN [Synonyms tree] AS [Snym] ON Dets.[latin name key] = Snym.member) 
-        LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id) 
-          LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) 
-            LEFT JOIN [CoordinateSources] AS [Coor] ON Herb.[coordinateSource] = Coor.id)
-              LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id ",
+               "FROM ((((((((Determinations AS Dets 
+RIGHT JOIN [Herbarium specimens] AS Herb ON Dets.[specimen key] = Herb.id) 
+LEFT JOIN [Latin Names] AS Lnam ON Dets.[latin name key] = Lnam.id) 
+LEFT JOIN [Synonyms tree] AS Synm ON Lnam.id = Synm.member) 
+LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id) 
+LEFT JOIN Geography AS Geog ON Herb.Locality = Geog.ID) 
+LEFT JOIN Teams AS Team ON Herb.[Collector Key] = Team.id) 
+LEFT JOIN Herbaria ON Herb.Herbarium = Herbaria.id) 
+LEFT JOIN CoordinateSources AS Coor ON Herb.coordinateSource = Coor.id) 
+LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 # WHERE: 
 "WHERE ",
 # only pull out records with current dets: 
 "Dets.Current=True ",
+
+# REQ: FIX FOR SYNONYMS POPPING UP IN DATA WITH SAME H-IDs
+
 #       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
 #              (to avoid lots of dots at the lat/lon of "Socotra" etc since that's very
 #              unhelpful & doesn't give us a true location, even though it's a precise 
@@ -118,16 +126,15 @@ Geog.fullName AS fullLocation ",
 #       a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
 #               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Herb.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Herb.[Longitude 1 Decimal] IS NOT NULL))) ",
+"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Herb.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Herb.[Longitude 1 Decimal] IS NOT NULL))) AND ((LnSy.[Synonym of]) Is Null) ",
 # ORDER BY ...
 "ORDER BY Team.[name for display];")
-
 
 
 # build FIEL query
 # Adapted from script_dataGrabSpecieswithFullLatLon.R & various fieldObs scripts
 qry2 <- paste0("
-SELECT 'F-' & Fiel.id AS ID,
+SELECT 'F-' & Fiel.id AS recID,
 Team.[name for display] AS collector,
 Fiel.[Collector Number] AS collNumFull,
 Lnam.[Full Name] AS detAs,
@@ -174,13 +181,13 @@ Geog.fullName AS fullLocation ",
 "OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Fiel.[Longitude 1 Decimal] IS NOT NULL))) ",
 # ORDER BY ...
 "ORDER BY Team.[name for display];")
-sqlQuery(con_livePadmeArabia, qry2)
+
 
 
 # build LITR query
 # adapted from script_dataGrabSpecieswithFullLatLon.R
 qry3 <- paste0("
-SELECT 'L-' & Litr.id AS ID, 
+SELECT 'L-' & Litr.id AS recID, 
 Auth.[name for display] AS collector,
 Litr.id AS collNumFull,
 Lnam.[Full Name] AS detAs, 
@@ -242,6 +249,7 @@ ON Litr.id = LRLo.litrecid ",
 herbRex <- sqlQuery(con_livePadmeArabia, qry1) 
 # 03/06/2015 1843 req DMS, 3647 req DM, 8166 w/ IFF, 
 # 04/06/2015 6089 rm Socotra w/o latlon
+# 05/06/2015 6155 with only accepted names
 fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
 # 04/06/2015 12037 rm Socotra w/o latlon
@@ -264,6 +272,7 @@ recGrab <- rbind(herbRex, fielRex, litrRex)
 nrow(recGrab) 
 # 03/06/2015 6445 req DMS, 10432 req DM, 22285 w/ IFF
 # 04/06/2015 19497 rm Socotra w/o latlon
+# 05/06/2015 18843 herb specimens with only accepted names
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 # 4)
