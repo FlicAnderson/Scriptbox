@@ -249,7 +249,8 @@ ON Litr.id = LRLo.litrecid ",
 herbRex <- sqlQuery(con_livePadmeArabia, qry1) 
 # 03/06/2015 1843 req DMS, 3647 req DM, 8166 w/ IFF, 
 # 04/06/2015 6089 rm Socotra w/o latlon
-# 05/06/2015 6155 with only accepted names
+# 05/06/2015 6155 with only accepted names 
+# 08/06/2015 6149 (fixed some latin names taxonomy in padme)
 fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
 # 04/06/2015 12037 rm Socotra w/o latlon
@@ -290,6 +291,24 @@ head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$colle
   # write to .csv file
   # sorted so Edinburgh specimens, then found specimens, displayed ascendingly
 write.csv(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),], file=file.choose(), row.names=FALSE)
+
+
+# Duplicate ID numbers issue fixing: 
+
+# make a table of the counts (table()) of recIDs from recGrab
+a <- as.data.frame(table(recGrab$recID))0
+# subset out all the records where the frequency of the recID is >1 (ie duplicated)
+b <- a[which(a$Freq>1),]; rm(a)
+# subset into chunks to look at records & solve problems
+b[1:25,]
+# SOLVED problems for H- records (~6 occasions of duplication) by looking at the records
+# ... all to do with Justicia:
+# (Justicia heterocarpa // Justicia heterocarpa subsp. heterocarpa - solved by setting J. heterocarpa subsp. heterocarpa as a synonym of J. heterocarpa as no other subsp exist in database & autonyms are same taxon) 
+# (Justicia sp nov A // Justicia alexandri - solved by detting the specimen to J. alexandri, as this specimen 14280 is the HOLOTYPE for this taxon)
+# ONGOING problems for F- records (~1026 occasions of duplication)
+# need to implement accepted names only for the field records & literature records queries!
+
+
 
 
 
