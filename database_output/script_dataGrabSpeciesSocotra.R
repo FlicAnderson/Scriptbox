@@ -6,7 +6,7 @@
 # dependant on: "O://CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R"
 # saved at: O://CMEP\-Projects/Scriptbox/script_dataGrabSpeciesSocotra.R
 #
-# AIM: Pull out records into R for species in Socotra from Padme Arabia using SQL given a [Latin Name].[id], print to console.  Then save as .csv for future use, in order of status in [Herbarium Specimens].[FlicStatus] field.
+# AIM: Pull out records into R for species in Socotra from Padme Arabia using SQL given various inputa, print to console.  Then save as .csv for future use, in order of status in [Herbarium Specimens].[FlicStatus] field.
 #
 # --------------------------------------------------------
 
@@ -14,21 +14,36 @@
 
 # 0) Load libraries, functions, source scripts
 # 1) Input species name
-# 2) Get Latin Names ID for species name
-# 3) Need to 'get higher' taxon ID? 
-# 4) Insert the IDs into the query code
+# 2) Input location name
+# 3) Input any other requirements
+# 4) Insert requirements into the query code
 # 5) Run the query
 # 6) Show the output
 # 7) Save the output to .csv
 
 
-### WARNING: THIS IS STILL PROGRAMMED FOR Dichrostachys dehiscens !!! ###
-### NOT STARTED/FINISHED GENERALISING YET ### 
+###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
-# Coelocarpum
-# [Latin Names].id = 2384
-#  **OR** 
-# [Latin Names].[next higher name] = 2384
+# please input the taxon you're searching for, as shown in the examples below:
+# examples: 
+
+#taxonName <- "Senna%"  # finds all records with 'Senna' as genus & authority  
+#taxonName <- "Compositae Giseke"
+taxonName <- "Dirachma socotrana"
+
+# please input the location you're searching for, as shown in the examples below:
+# examples: 
+locatName <- "Socotra"
+#locatName <- "Socotra Archipelago"
+#locatName <- "Hadibo"
+
+# please input the herbarium you're searching for, as shown in the examples below:
+# examples: 
+herbariumCode <- "E"
+#herbariumCode <- "K"
+#herbariumCode <- "BM"
+
+###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
 
 # load required packages, install if they aren't installed already
@@ -39,34 +54,63 @@ if (!require(RODBC)){
 } 
 
 # open connection to live padme
-source("O://CMEP\ Projects/Scriptbox/function_livePadmeArabiaCon.R")
+source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
 
-# DOES INCLUDE SYNONYMS!
-# Adapted from databasin9.R
-# THIS WORKS 11th July 2014 11am
-qry <- "SELECT Herb.id, 
+# put together qry
+qry <- paste0("
+SELECT 'H-' & Herb.id AS recID, 
 Team.[name for display] AS collector,
 Herb.[Collector Number] AS collNumFull, 
-Herb.[Collection number] & '' & Herb.postfix AS collNum,
-Herbaria.Acronym, 
-Lnam.[Full Name] AS detAs,
-DetTeam.[name for display] AS detBy,
-Geog.fullName, 
-Herb.FlicFound, 
-Herb.FlicStatus, 
-Herb.FlicNotes
-FROM (((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON Herb.Locality=Geog.ID) 
-LEFT JOIN [Herbaria] ON Herb.Herbarium=Herbaria.id) 
-LEFT JOIN [determinations] AS [Dets] ON Herb.id=Dets.[specimen key]) 
-LEFT JOIN [Synonyms tree] AS [Snym] ON Dets.[latin name key] = Snym.member) 
-LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id) 
-LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) 
-LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
-WHERE Geog.fullName LIKE '%Socotra%' AND Dets.Current=True AND AND (Lnam.id = 2384 OR Lnam.[next higher name] = 2384)
-ORDER BY Herb.FlicStatus, Team.[name for display], Herb.[Collection number] & '' & Herb.postfix;"
+Lnam.[Full Name] AS detAs, ",
+# HERE the Lnam.FullName is replaced by the ACCEPTED NAME
+# THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+"LnSy.[Full Name] AS acceptDetAs,
+Herb.[Latitude 1 Direction] AS lat1Dir,
+Herb.[Latitude 1 Degrees] AS lat1Deg,
+Herb.[Latitude 1 Minutes] AS lat1Min,
+Herb.[Latitude 1 Seconds] AS lat1Sec,
+Herb.[Latitude 1 Decimal] AS lat1Dec, ",
+#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as AnyLat
+"IIf(IsNull(Herb.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Herb.[Latitude 1 Decimal]) AS AnyLat,
+Herb.[Longitude 1 Direction] AS lon1Dir,
+Herb.[Longitude 1 Degrees] AS lon1Deg,
+Herb.[Longitude 1 Minutes] AS lon1Min,
+Herb.[Longitude 1 Seconds] AS lon1Sec,
+Herb.[Longitude 1 Decimal] AS lon1Dec, ",
+#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
+"IIf(IsNull(Herb.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Herb.[Longitude 1 Decimal]) AS AnyLon,
+Herb.[coordinateSource] AS coordSource,
+Herb.[coordinateAccuracy] AS coordAccuracy,
+Herb.[coordinateAccuracyUnits] AS coordAccuracyUnits,
+iif(isnull(Herb.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
+Herb.[Date 1 Days] AS dateDD, 
+Herb.[Date 1 Months] AS dateMM, 
+Herb.[Date 1 Years] AS dateYY,
+Geog.fullName AS fullLocation ",
+# Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names, Teams x2, CoordinateSources
+"FROM ((((((((Determinations AS Dets 
+RIGHT JOIN [Herbarium specimens] AS Herb ON Dets.[specimen key] = Herb.id) 
+LEFT JOIN [Latin Names] AS Lnam ON Dets.[latin name key] = Lnam.id) 
+LEFT JOIN [Synonyms tree] AS Synm ON Lnam.id = Synm.member) 
+LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id) 
+LEFT JOIN Geography AS Geog ON Herb.Locality = Geog.ID) 
+LEFT JOIN Teams AS Team ON Herb.[Collector Key] = Team.id) 
+LEFT JOIN Herbaria AS Hrbr ON Herb.Herbarium = Hrbr.id) 
+LEFT JOIN CoordinateSources AS Coor ON Herb.coordinateSource = Coor.id) 
+LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
+# WHERE: 
+"WHERE ",
+# only pull out records with current dets, 
+# and location LIKE '%locatName%, 
+# and determination LIKE 'taxonName%'
+# and the accepted name is not a synonym
+# and the herbarium code is 'herbariumCode'
+"Dets.Current=True AND Geog.fullName LIKE '%", locatName, "%' AND LnSy.[Full Name] LIKE '", taxonName,"%' AND ((LnSy.[Synonym of]) Is Null) AND Hrbr.Acronym='", herbariumCode, "' ",
+# ORDER BY ...
+"ORDER BY Team.[name for display];")
 #remove the following once it stops giving an error:
-#sqlQuery(con, qry)
+#sqlQuery(con_livePadmeArabia, qry)
 # and leave this only:
 recGrab <- sqlQuery(con_livePadmeArabia, qry)
 
