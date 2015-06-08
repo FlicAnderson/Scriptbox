@@ -70,11 +70,11 @@ livePadmeArabiaCon()
 qry1 <- paste0("
 SELECT 'H-' & Herb.id AS recID, 
 Team.[name for display] AS collector,
-Herb.[Collector Number] AS collNumFull, ",
-# Lnam.[Full Name] AS detAs,
+Herb.[Collector Number] AS collNumFull, 
+Lnam.[Full Name] AS detAs, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
-"LnSy.[Full Name] AS detAs,
+"LnSy.[Full Name] AS acceptDetAs,
 Herb.[Latitude 1 Direction] AS lat1Dir,
 Herb.[Latitude 1 Degrees] AS lat1Deg,
 Herb.[Latitude 1 Minutes] AS lat1Min,
@@ -136,11 +136,11 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 qry2 <- paste0("
 SELECT 'F-' & Fiel.id AS recID,
 Team.[name for display] AS collector,
-Fiel.[Collector Number] AS collNumFull, ",
-# Lnam.[Full Name] AS detAs,
+Fiel.[Collector Number] AS collNumFull, 
+Lnam.[Full Name] AS detAs, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
-"LnSy.[Full Name] AS detAs,
+"LnSy.[Full Name] AS acceptDetAs,
 Fiel.[Latitude 1 Direction] AS lat1Dir,
 Fiel.[Latitude 1 Degrees] AS lat1Deg,
 Fiel.[Latitude 1 Minutes] AS lat1Min,
@@ -195,8 +195,12 @@ LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 qry3 <- paste0("
 SELECT 'L-' & Litr.id AS recID, 
 Auth.[name for display] AS collector,
-Litr.id AS collNumFull,
-Lnam.[Full Name] AS detAs, 
+Litr.id AS collNumFull, 
+Lnam.[Full Name] AS detAs,",
+# Lnam.[Full Name] AS detAs,
+# HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
+# THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+"LnSy.[Full Name] AS acceptDetAs, 
 Litr.[Latitude 1 Direction] AS lat1Dir,
 Litr.[Latitude 1 Degrees] AS lat1Deg,
 Litr.[Latitude 1 Minutes] AS lat1Min,
@@ -219,18 +223,20 @@ Litr.[Date 1 Days] AS dateDD,
 Litr.[Date 1 Months] AS dateMM, 
 Litr.[Date 1 Years] AS dateYY,
 Geog.fullName AS fullLocation ",
-# Joining tables: Literature records, Teams, References, Literature Record Locations, geography, latin names
-"FROM (Teams AS [Auth] 
-      RIGHT JOIN ([References] AS [Refr] 
-                  RIGHT JOIN ([Latin Names] AS [Lnam] 
-                              RIGHT JOIN [literature records] AS [Litr] 
-                              ON Lnam.id = Litr.determination) 
-                  ON Refr.id = Litr.Reference) 
-      ON Auth.id = Refr.Authors) 
-LEFT JOIN (Geography AS [Geog] 
-           RIGHT JOIN LiteratureRecordLocations AS [LRLo] 
-           ON Geog.ID = LRLo.locality) 
-ON Litr.id = LRLo.litrecid ",
+# Joining tables: Literature records, Teams, References, Literature Record Locations, geography, latin names x2
+"FROM (((Teams AS Auth 
+RIGHT JOIN ([References] AS Refr 
+RIGHT JOIN ([Latin Names] AS Lnam 
+RIGHT JOIN [literature records] AS Litr 
+ON Lnam.id = Litr.determination) 
+ON Refr.id = Litr.Reference) 
+ON Auth.id = Refr.Authors) 
+LEFT JOIN (Geography AS Geog 
+RIGHT JOIN LiteratureRecordLocations AS LRLo 
+ON Geog.ID = LRLo.locality) 
+ON Litr.id = LRLo.litrecid) 
+LEFT JOIN [Synonyms tree] AS Synm ON Lnam.id = Synm.member) 
+LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 # WHERE: 
 "WHERE ", 
 #       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
@@ -239,14 +245,15 @@ ON Litr.id = LRLo.litrecid ",
 #              lat/lon value.
 #              NB: The smaller islands Darsa & Semhah are allowed as they're small 
 #              enough to be useful location values. Abd Al Kuri is still a bit too big
-"((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa')", 
+"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa')", 
 #       OR location string does just say Socotra or the Archipelago BUT has 
 #       a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
 #               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Litr.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Litr.[Longitude 1 Decimal] IS NOT NULL)))",
+"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Litr.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Litr.[Longitude 1 Decimal] IS NOT NULL))) AND LnSy.[Synonym of] IS NULL) ",
 # ORDER BY ...
-"ORDER BY Auth.[name for display];")
+"ORDER BY Litr.id;")
+
 
 
 # 3)
@@ -264,6 +271,7 @@ fielRex <- sqlQuery(con_livePadmeArabia, qry2)
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
 # 04/06/2015 651 rm Socotra w/o latlon
+# 08/06/2015 649 with accepted names only
 
 # show number of records returned
 nrow(herbRex)
@@ -281,6 +289,9 @@ nrow(recGrab)
 # 03/06/2015 6445 req DMS, 10432 req DM, 22285 w/ IFF
 # 04/06/2015 19497 rm Socotra w/o latlon
 # 05/06/2015 18843 herb specimens with only accepted names
+# 08/06/2015 17762 rm duplicate recIDs; field notes with only accepted names
+# 08/06/2015 17760 literature records with only accepted names
+
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 # 4)
@@ -292,30 +303,37 @@ head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$colle
 
 # 5)
 
-### USER REMINDER: 
-# write.csv() function will ask where to save file and what to call it
-# enter filename including '.csv', & if asked whether to create file, say 'YES' 
-  # write to .csv file
-  # sorted so Edinburgh specimens, then found specimens, displayed ascendingly
-write.csv(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),], file=file.choose(), row.names=FALSE)
+# write to .csv file  
+message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
+write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 
-# Duplicate ID numbers issue fixing: 
+### SUMMARY STATS ###
 
-# make a table of the counts (table()) of recIDs from recGrab
-a <- as.data.frame(table(recGrab$recID))0
-# subset out all the records where the frequency of the recID is >1 (ie duplicated)
-b <- a[which(a$Freq>1),]; rm(a)
-# subset into chunks to look at records & solve problems
-b[1:25,]
-# SOLVED problems for H- records (~6 occasions of duplication) by looking at the records
-# ... all to do with Justicia:
-# (Justicia heterocarpa // Justicia heterocarpa subsp. heterocarpa - solved by setting J. heterocarpa subsp. heterocarpa as a synonym of J. heterocarpa as no other subsp exist in database & autonyms are same taxon) 
-# (Justicia sp nov A // Justicia alexandri - solved by detting the specimen to J. alexandri, as this specimen 14280 is the HOLOTYPE for this taxon)
-# ONGOING problems for F- records (~1026 occasions of duplication)
-# need to implement accepted names only for the field records & literature records queries!
+# Number of taxa:
+length(unique(recGrab$acceptDetAs))
+
+# create object
+taxaListSocotra <- unique(recGrab$acceptDetAs)
+sort(taxaListSocotra)
+
+message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"))
+# write list of unique taxa
+write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"), row.names=FALSE)
 
 
+# Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
+length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
+# 889 @ 08/06/2015
+
+# Number of taxa with >10 unique locations?
+# ?
+
+# Location with greatest number of taxa?
+# ?
+
+# Taxa with greatest number of locations?
+# ?
 
 
 
