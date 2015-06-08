@@ -136,8 +136,11 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 qry2 <- paste0("
 SELECT 'F-' & Fiel.id AS recID,
 Team.[name for display] AS collector,
-Fiel.[Collector Number] AS collNumFull,
-Lnam.[Full Name] AS detAs,
+Fiel.[Collector Number] AS collNumFull, ",
+# Lnam.[Full Name] AS detAs,
+# HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
+# THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+"LnSy.[Full Name] AS detAs,
 Fiel.[Latitude 1 Direction] AS lat1Dir,
 Fiel.[Latitude 1 Degrees] AS lat1Deg,
 Fiel.[Latitude 1 Minutes] AS lat1Min,
@@ -160,11 +163,13 @@ Fiel.[Date 1 Days] AS dateDD,
 Fiel.[Date 1 Months] AS dateMM, 
 Fiel.[Date 1 Years] AS dateYY,
 Geog.fullName AS fullLocation ",
-# Joining tables: Field notes, geography, synonyms tree, latin names, teams
-"FROM ((([Field notes] AS [Fiel] LEFT JOIN [Geography] AS [Geog] ON Fiel.Locality=Geog.ID)
-        LEFT JOIN [Synonyms tree] AS [Snym] ON Fiel.determination = Snym.member)
-         LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id)
-          LEFT JOIN [Teams] AS [Team] ON Fiel.[Collector Key]=Team.id ",
+# Joining tables: Field notes, geography, synonyms tree, latin names x2, teams
+"FROM (((([Field notes] AS Fiel 
+LEFT JOIN Geography AS Geog ON Fiel.Locality = Geog.ID) 
+LEFT JOIN Teams AS Team ON Fiel.[Collector Key] = Team.id) 
+LEFT JOIN [Latin Names] AS Lnam ON Fiel.determination = Lnam.id) 
+LEFT JOIN [Synonyms tree] AS Snym ON Lnam.id = Snym.member) 
+LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 # WHERE: 
 "WHERE ",
 #       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
@@ -173,14 +178,15 @@ Geog.fullName AS fullLocation ",
 #              lat/lon value.
 #              NB: The smaller islands Darsa & Semhah are allowed as they're small 
 #              enough to be useful location values. Abd Al Kuri is still a bit too big
-"((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ", 
+"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ", 
 #       OR      location string does just say Socotra or the Archipelago BUT has 
 #               a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
 #               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Fiel.[Longitude 1 Decimal] IS NOT NULL))) ",
+"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Fiel.[Longitude 1 Decimal] IS NOT NULL))) AND ((LnSy.[Synonym of]) Is Null))",
 # ORDER BY ...
 "ORDER BY Team.[name for display];")
+
 
 
 
@@ -254,6 +260,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
 # 04/06/2015 12037 rm Socotra w/o latlon
+# 08/06/2015 10962 rm duplicate IDs via accepted names only
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
 # 04/06/2015 651 rm Socotra w/o latlon
