@@ -71,7 +71,9 @@ qry1 <- paste0("
 SELECT 'H-' & Herb.id AS recID, 
 Team.[name for display] AS collector,
 Herb.[Collector Number] AS collNumFull, 
+Lnam.[sortName] AS detAsNoAuth,
 Lnam.[Full Name] AS detAs, ",
+Lnam.[sortName] AS detAsNoAuth,
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
 "LnSy.[Full Name] AS acceptDetAs,
@@ -136,7 +138,8 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 qry2 <- paste0("
 SELECT 'F-' & Fiel.id AS recID,
 Team.[name for display] AS collector,
-Fiel.[Collector Number] AS collNumFull, 
+Fiel.[Collector Number] AS collNumFull,
+Lnam.[sortName] AS detAsNoAuth,
 Lnam.[Full Name] AS detAs, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
@@ -196,6 +199,7 @@ qry3 <- paste0("
 SELECT 'L-' & Litr.id AS recID, 
 Auth.[name for display] AS collector,
 Litr.id AS collNumFull, 
+Lnam.[sortName] AS detAsNoAuth,
 Lnam.[Full Name] AS detAs,",
 # Lnam.[Full Name] AS detAs,
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
@@ -300,6 +304,13 @@ recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab
 #   # sorted so Edinburgh specimens, then found specimens float to the top 
 # head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
 head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
+
+#### TO DO (07/07/2015) #################
+ # split out the detAsNoAuth taxon name into:
+ # family/genus only | genus + specific epithet (| vars & subsps?)
+ # separate columns
+#########################################
+
 
 # 5)
 
@@ -413,5 +424,5 @@ filter(by_sps_sum, count>10)
 
 # VERY IMPORTANT!
 # CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
-#odbcCloseAll()
+odbcCloseAll()
 #rm(list=ls())
