@@ -70,13 +70,13 @@ livePadmeArabiaCon()
 qry1 <- paste0("
 SELECT 'H-' & Herb.id AS recID, 
 Team.[name for display] AS collector,
-Herb.[Collector Number] AS collNumFull, 
-Lnam.[sortName] AS detAsNoAuth,
-Lnam.[Full Name] AS detAs, ",
-Lnam.[sortName] AS detAsNoAuth,
-# HERE the Lnam.FullName is replaced by the ACCEPTED NAME
+Herb.[Collector Number] AS collNumFull,
+LnSy.[id] AS lnamID, ",
+# HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
 "LnSy.[Full Name] AS acceptDetAs,
+LnSy.[sortName] AS acceptDetNoAuth,
+Lnam.[Full Name] AS detAs,
 Herb.[Latitude 1 Direction] AS lat1Dir,
 Herb.[Latitude 1 Degrees] AS lat1Deg,
 Herb.[Latitude 1 Minutes] AS lat1Min,
@@ -94,7 +94,7 @@ Herb.[Longitude 1 Decimal] AS lon1Dec, ",
 Herb.[coordinateSource] AS coordSource,
 Herb.[coordinateAccuracy] AS coordAccuracy,
 Herb.[coordinateAccuracyUnits] AS coordAccuracyUnits,
-iif(isnull(Herb.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
+iif(isnull(Herb.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Herb.[Date 1 Days] AS dateDD, 
 Herb.[Date 1 Months] AS dateMM, 
 Herb.[Date 1 Years] AS dateYY,
@@ -114,7 +114,6 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 "WHERE ",
 # only pull out records with current dets: 
 "Dets.Current=True ",
-
 # REQ: FIX FOR SYNONYMS POPPING UP IN DATA WITH SAME H-IDs
 
 #       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
@@ -139,11 +138,12 @@ qry2 <- paste0("
 SELECT 'F-' & Fiel.id AS recID,
 Team.[name for display] AS collector,
 Fiel.[Collector Number] AS collNumFull,
-Lnam.[sortName] AS detAsNoAuth,
-Lnam.[Full Name] AS detAs, ",
+LnSy.[id] AS lnamID, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
 "LnSy.[Full Name] AS acceptDetAs,
+LnSy.[sortName] AS acceptDetNoAuth,
+Lnam.[Full Name] AS detAs,
 Fiel.[Latitude 1 Direction] AS lat1Dir,
 Fiel.[Latitude 1 Degrees] AS lat1Deg,
 Fiel.[Latitude 1 Minutes] AS lat1Min,
@@ -159,7 +159,7 @@ Fiel.[Longitude 1 Decimal] AS lon1Dec,",
 #IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
 "IIf(IsNull(Fiel.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Fiel.[Longitude 1 Decimal]) AS AnyLon,
 Fiel.[coordinateSource] AS coordSource,
-iif(isnull(Fiel.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
+iif(isnull(Fiel.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Fiel.[coordinateAccuracy] AS coordAccuracy,
 Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Fiel.[Date 1 Days] AS dateDD, 
@@ -199,12 +199,12 @@ qry3 <- paste0("
 SELECT 'L-' & Litr.id AS recID, 
 Auth.[name for display] AS collector,
 Litr.id AS collNumFull, 
-Lnam.[sortName] AS detAsNoAuth,
-Lnam.[Full Name] AS detAs,",
-# Lnam.[Full Name] AS detAs,
+LnSy.[id] AS lnamID, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
-"LnSy.[Full Name] AS acceptDetAs, 
+"LnSy.[Full Name] AS acceptDetAs,
+LnSy.[sortName] AS acceptDetNoAuth,
+Lnam.[Full Name] AS detAs,
 Litr.[Latitude 1 Direction] AS lat1Dir,
 Litr.[Latitude 1 Degrees] AS lat1Deg,
 Litr.[Latitude 1 Minutes] AS lat1Min,
@@ -220,7 +220,7 @@ Litr.[Longitude 1 Decimal] AS lon1Dec,",
 #IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
 "IIf(IsNull(Litr.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Litr.[Longitude 1 Decimal]) AS AnyLon,
 Litr.[coordinateSource] AS coordSource,
-iif(isnull(Litr.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
+iif(isnull(Litr.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Litr.[coordinateAccuracy] AS coordAccuracy,
 Litr.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Litr.[Date 1 Days] AS dateDD, 
@@ -305,10 +305,20 @@ recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab
 # head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
 head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
-#### TO DO (07/07/2015) #################
- # split out the detAsNoAuth taxon name into:
- # family/genus only | genus + specific epithet (| vars & subsps?)
- # separate columns
+
+
+# pull out families from Latin Names table
+source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
+getFamilies()
+
+recGrab$genus <- recGrab$acceptDetNoAuth
+
+# pull out genus only
+recGrab$genus <- gsub(" .*", "", recGrab$genus)
+
+# reorder so genus is after acceptDetNoAuth but before the 'detAs'/unaccepted name
+recGrab <<- recGrab[,c(1:6,28,7:27)]
+
 #########################################
 
 
@@ -323,10 +333,11 @@ write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, 
 
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
+# 1249 taxa at 15 July 2015
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
-sort(taxaListSocotra)
+#sort(taxaListSocotra)
 
 message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"))
 # write list of unique taxa
