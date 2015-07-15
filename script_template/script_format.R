@@ -1,15 +1,28 @@
 ## [Project] :: script_format.R
-# ======================================================== 
-# (Day Month YYYY)
+# ============================================================================ #
+# Day Month YYYY
 # Author: Flic Anderson
 #
 # standalone script // dependant on: [filename]
-# saved at: O://CMEP\-Projects/Scriptbox/[filename]
+# saved at: O://CMEP\-Projects/Scriptbox/[folder]/[filename]
+# source: source("O://CMEP\-Projects/Scriptbox/[folder]/[filename]")
 #
-# SCRIPT AIM: What this script is all about, why it was made, what
-# it does, etc.
+# AIM:  What this script is all about, why it was made, what
+# ....  it does, etc.
+# .... 
 #
-# --------------------------------------------------------
+# ---------------------------------------------------------------------------- #
 
-# CODE # 
+# CODE SUMMARY # 
 
+# 0) 
+# 1)  
+# 2) 
+# 3) 
+# 4) 
+# 5) 
+
+# ---------------------------------------------------------------------------- #
+
+
+# 0)
