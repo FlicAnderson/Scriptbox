@@ -1,3 +1,6 @@
+# SHINY APPS TEMPLATE
+# based on http://shiny.rstudio.com/tutorial/
+
 
 # load the library for shiny
 library(shiny)
