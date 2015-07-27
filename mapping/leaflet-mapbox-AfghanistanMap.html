@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>A simple map</title>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<style>
+    #map {height: 400px; height: 600px;}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+var map = L.map('map').setView([34.107, 67.588], 6);
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'flicanderson.dff628e0',
+    accessToken: 'pk.eyJ1IjoiZmxpY2FuZGVyc29uIiwiYSI6IjQ0OTE1ZTJkOTM0ODBmMzVlM2YxYzE5NDJjYWEyMTM3In0._mYLf_9uFIoQyP8y8_LbbA'
+}).addTo(map);
+
+var marker = L.marker([34.85889, 67.840576]).addTo(map);
+marker.bindPopup("<b>Bamyan</b><br>Main city of Bamyan province, Afghanistan").openPopup();
+
+var popup = L.popup();
+
+function onMapClick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(map);
+}
+
+map.on('click', onMapClick);
+
+</script>
+</body>
+</html>
