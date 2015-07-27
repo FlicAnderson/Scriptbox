@@ -105,7 +105,37 @@ server <- function(input, output) {
   
   # reactivity 101: 
   # reactivity automatically occurs whenever you use an input value to render 
-  # an output value!
+    # an output value!
+  
+  # reactive values act as data streams that flow through your app
+  
+  # the input list is a list of reactive values, the variables show you the
+    # current state of the input objects
+  
+  # reactive functions require reactive values, otherwise "ERROR: operation not
+    # allowed without an active reactive context".  You NEED to use a reactive 
+    # function (eg. render*()) with a required reactive value (input$*)
+  
+  # reactivity is 2-step process
+  # 1) reactive values notify the functions that use them when they become 
+    # invalid (process k.a. invalidating)
+  # 2) the objects created by reactive functions respond
+  
+  # REACTIVE TOOLKIT
+  
+  # 1) use a code chunk to build (& rebuild) an object
+    # what code will the function use?
+  # 2) object will respond to changes in a set of reactive values
+    # which reactive values will the object respond to
+ 
+  ## Display output with render*() functions:
+  #renderDataTable() - an interactive table
+  #renderImage() - an image, saved as a link to a source file
+  #renderPlot() - a plot
+  #renderPrint() - a code block of printed output
+  #renderTable() - a table
+  #renderText() - a character string
+  #renderUI() - a Shiny UI element
   
 }
 
