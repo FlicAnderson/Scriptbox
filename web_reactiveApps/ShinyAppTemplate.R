@@ -18,6 +18,8 @@ ui <- fluidPage(
               label="Choose a number",
               value=25, min=1, max=100)
   
+  textInput
+  
   # other input functions:
   #actionButton()
   #submitButton()
@@ -147,3 +149,13 @@ shinyApp(ui = ui, server = server)
   # app.R (needs that EXACT name! This is the script which ends with a call to 
     # shinyApp() as above)
   # + datasets, images, css, helper scripts, etc
+
+
+################################################################################
+
+# examples of render*() functions:
+
+output$hist <- renderPlot({
+  hist(rnorm(input$num), 
+       main = input$title)
+})
