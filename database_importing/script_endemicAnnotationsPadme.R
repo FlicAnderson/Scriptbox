@@ -59,11 +59,11 @@ if(sum(duplicated(sampleCats))==1){
 #       sampleCats <- sampleCats[!duplicated(sampleCats)]
 }
 
-# Ethnographic scoring data and categories from spreadsheet (importSource) 
-# compiled by student Anna Hunt during summer 2014
+# Endemism & ethnographic scoring data and categories from spreadsheet (importSource) 
+# compiled by student Anna Hunt during summer 2014 from Ethnoflora of Socotra
 
 #importSource <- file.choose()
-importSource <- "Z://fufluns//databasin//taxaDataGrab//Socotra SPECIES LIST.xlsx"
+importSource <- "O://CMEP\ Projects//Socotra//Padme\ Data//Socotra SPECIES LIST.xlsx"
 # get the extension
 extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
 
@@ -75,11 +75,11 @@ spsImport <- grepl(".xls|.xlsx", extns)
 # C) extns = comma separated value file = .csv
 csvImport <- grepl(".csv", extns)
 
-# function to read in actual ethnographic scores:
-importEthnog_xlsx <<- function(){  
+# function to read in actual endemic scores:
+importEndemic_xlsx <<- function(){  
         
-        # function to import the ethnographic annotation scores & category names
-        readEthnogInfo <<- function(){
+        # function to import the endemic annotation scores
+        readEndemicInfo <<- function(){
                 # for a subset of columns or rows, enter the indexes required:
                 # headings in row 2
                 startRow <- 5           # data starts row 5
