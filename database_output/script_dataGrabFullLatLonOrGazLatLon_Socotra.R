@@ -311,13 +311,12 @@ head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$colle
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
 getFamilies()
 
-recGrab$genus <- recGrab$acceptDetNoAuth
-
-# pull out genus only
-recGrab$genus <- gsub(" .*", "", recGrab$genus)
+# pull out genus (use non-auth det & then regex the epithet off)
+recGrab$genusName <- recGrab$acceptDetNoAuth
+recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 
 # reorder so genus is after acceptDetNoAuth but before the 'detAs'/unaccepted name
-recGrab <<- recGrab[,c(1:6,28,7:27)]
+recGrab <<- recGrab[,c(1:7,29,8:28)]
 
 #########################################
 
