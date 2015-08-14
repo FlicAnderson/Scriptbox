@@ -336,6 +336,6 @@ recGrab <<- recGrab[,c(1:6,28,7:27)]
 odbcCloseAll()
 #rm(list=ls())
 
-message(" ... datagrab complete!")
+print(" ... datagrab complete!")
 
 ## for summary stats and analysis, go to "O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R"
