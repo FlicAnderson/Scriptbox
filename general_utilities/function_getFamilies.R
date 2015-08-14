@@ -58,7 +58,7 @@ getFamilies <- function(){
 
         # reorder to put familyName in front of detAsNoAuth, detAs and acceptDetAs
         # also drop 'member'
-        recGrab <<- recGrab[,c(1:3,28,5:27)]
+        recGrab <<- recGrab[,c(1:4,28,5:27)]
         #names(recGrab)
         
 }
