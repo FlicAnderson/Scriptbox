@@ -1,14 +1,16 @@
-## FUNCTION :: function_format.R
+## FUNCTION :: function_getFamilies.R
 # ==============================================================================
-# Day Month YYYY
+# 14 August 2015
 # Author: Flic Anderson
 #
-# to call: [function]()
-# objects created: [object1]; [object2] (locally global)
-# saved at: O://CMEP\-Projects/Scriptbox/[folder]/[filename]
+# to call: getFamilies()
+# objects created: families; recGrab(altered)
+# saved at: O://CMEP\-Projects/Scriptbox/general_utilities/function_getFamilies.R
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
 #
-# AIM:  What this script is all about, why it was made, what
-# ....  it does, etc.
+# AIM:  Function which adds taxonomic families to data in recGrab object  
+# ....  previously created from script_dataGrabFullLatLonOrGazLatLon_Socotra.R 
 # .... 
 #
 #
