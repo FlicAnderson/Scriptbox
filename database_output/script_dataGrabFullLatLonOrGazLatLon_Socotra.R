@@ -141,6 +141,8 @@ Fiel.[Collector Number] AS collNumFull,
 LnSy.[id] AS lnamID, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+# NOTE::: THIS MAY NOT BE LEGIT FOR LITERATURE RECORDS OR FIELD RECORDS 
+# SINCE THEY CANNOT BE UPDATED!!  THINK ABOUT THIS!!!
 "LnSy.[Full Name] AS acceptDetAs,
 LnSy.[sortName] AS acceptDetNoAuth,
 Lnam.[Full Name] AS detAs,
@@ -202,6 +204,8 @@ Litr.id AS collNumFull,
 LnSy.[id] AS lnamID, ",
 # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
 # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+# NOTE::: THIS MAY NOT BE LEGIT FOR LITERATURE RECORDS OR FIELD RECORDS 
+# SINCE THEY CANNOT BE UPDATED!!  THINK ABOUT THIS!!!
 "LnSy.[Full Name] AS acceptDetAs,
 LnSy.[sortName] AS acceptDetNoAuth,
 Lnam.[Full Name] AS detAs,
