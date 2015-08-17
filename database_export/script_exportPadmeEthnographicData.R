@@ -34,14 +34,23 @@ if (!require(RODBC)){
         install.packages("RODBC")
         library(RODBC)
 } 
+# {sqldf} - performing SQL SELECT queries on R objects
 if (!require(sqldf)){
         install.packages("sqldf")
         library(sqldf)
 } 
+# {dplyr} - manipulating large data frames as tbl_df objects
 if (!require(dplyr)){
         install.packages("dplyr")
         library(dplyr)
 } 
+# {tidyr} - tools for creating & transforming tidy data
+if (!require(tidyr)){
+        install.packages("tidyr")
+        library(tidyr)
+} 
+
+
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
@@ -296,6 +305,17 @@ noUse
 # lots of the taxa are at family or genus level only
 # need to weed these out, presumably. HOW?!
 
+# pull out minimum dataset of names + uses, with 1 name per use
+# eg Cordia obtusa, Fishing; Cordia obtusa, Food (animal), Indigofera... etc
+datC
+
+select(datC, -familyName, -genusName, -acceptDetNoAuth) %>%
+distinct(acceptDetAs, Anti_title)
+
+
+
+# tidyr may not be required since it's all wordy data anyhow
+#library(tidyr)
 
 
 
