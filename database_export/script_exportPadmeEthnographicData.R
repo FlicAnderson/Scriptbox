@@ -38,6 +38,10 @@ if (!require(sqldf)){
         install.packages("sqldf")
         library(sqldf)
 } 
+if (!require(dplyr)){
+        install.packages("dplyr")
+        library(dplyr)
+} 
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
@@ -206,8 +210,99 @@ tester_output <- unique(tester_output)
         # IF (conditional code required!) Anti_title shows <NA>?
  
 
+datA_records <- recGrab
+
+datA <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.LnamID")
+# tester is long data.  6 records -> 22 rows now due to multiple uses per taxon.
+# Could be widened to avoid replication of lat/lon points? - think about this!
+# ZOMG: When you run this sqldf join on recGrab instead, the object is HUGE!!!!
+#str(sqldf("SELECT * FROM recGrab LEFT JOIN datA_ethnog ON recGrab.lnamID==datA_ethnog.LnamID"))
+# 'data.frame':        159922 obs. of  34 variables:
+
+datA_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title FROM tester")
+
+# use dplyr for handling
+datB <- tbl_df(datA)
+datB
+
+# select only certain columns
+datC <- select(datB, familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title)
+
+# remove extra objects
+rm(Anlm, Anls, Anno, Anse, Anti, Lnam, datA, tester, tester_output)
+
+#group by use category title
+by_useTitle <- group_by(datC, Anti_title)
+# show number of unique taxa (with Authorities) grouped by use category title
+summarize(by_useTitle, uniqueTaxa=n_distinct(acceptDetAs))
+# Source: local data frame [14 x 2]
+# 
+# Anti_title                            uniqueTaxa
+# 1  Animal Food- Specific Livestock        579
+# 2     Animal/ Livestock Management        107
+# 3                 Commercial Value         33
+# 4                     Construction         77
+# 5                          Fishing         10
+# 6                    Food (Animal)        633
+# 7                     Food (Human)        136
+# 8                             Fuel        168
+# 9   Important on a Specific Island        132
+# 10                Material Culture        136
+# 11                        Medicine        137
+# 12          Specifically Important        200
+# 13                            Use?        650
+# 14                              NA        598
+
+summarize(by_useTitle, uniqueTaxa=n_distinct(acceptDetAs), uniqueOrigDet=n_distinct(detAs))
+# Source: local data frame [14 x 3]
+# 
+# Anti_title                            uniqueTaxa uniqueOrigDet
+# 1  Animal Food- Specific Livestock        579           768
+# 2     Animal/ Livestock Management        107           160
+# 3                 Commercial Value         33            45
+# 4                     Construction         77           114
+# 5                          Fishing         10            20
+# 6                    Food (Animal)        633           836
+# 7                     Food (Human)        136           178
+# 8                             Fuel        168           242
+# 9   Important on a Specific Island        132           177
+# 10                Material Culture        136           200
+# 11                        Medicine        137           194
+# 12          Specifically Important        200           275
+# 13                            Use?        650           857
+# 14                              NA        598           649
+
+
+# filter out taxa without uses
+by_acceptTaxa <- group_by(datC, acceptDetAs)
+# unique taxon names with no uses.
+noUse <- summarize(filter(by_acceptTaxa, is.na(Anti_title)))
+noUse
+# Source: local data frame [598 x 1]
+# 
+#                                               acceptDetAs
+# 1                                       Abutilon Mill.
+# 2                                         Acacia Mill.
+# 3                              Acacia negrii Pic.Serm.
+# 4                   Acacia oerfota (Forssk.) Schweinf.
+# 5                Acacia oerfota var. brevifolia Boulos
+# 6                                    Acanthaceae Juss.
+# 7                               Acanthochlamys P.C.Kao
+# 8                    Achyranthes aspera L. var. aspera
+# 9  Achyranthes aspera var. pubescens (Moq.) C.C.Towns.
+# 10                             Achyrocline (Less.) DC.
+# ..                                                 ...
+
+# lots of the taxa are at family or genus level only
+# need to weed these out, presumably. HOW?!
+
+
+
+
+
 
 # VERY IMPORTANT!
 # CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
 odbcCloseAll()
 #rm(list=ls())
+ 
