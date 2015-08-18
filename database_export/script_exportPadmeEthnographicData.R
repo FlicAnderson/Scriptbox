@@ -87,7 +87,7 @@ source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOr
 # get all recs as recGrab (17760 obs. of 29 variables)
 
 # remove unrequired record-groups F, L & H
-rm(fielRex, litrRex, herbRex)
+rm(qry1, qry2, qry3, herbRex, fielRex, litrRex)
 
 ### pull out annotations for all records' taxa.
 # SQLDF this for now after pulling out ALL annotations data into R...
@@ -137,7 +137,10 @@ str(sqldf(qry))
         # NOTE: If this doesn't work, have you commented out the Annotation tables 
         # queries at the top? If so, the sqldf query won't work since it's based on those!
 datA_ethnog <- sqldf(qry)
-# 
+
+##### NEED TO FIX THE "error in statement: duplicate column name: LnamID" PROBLEM ######
+
+
 table(datA_ethnog$Anti.title)
 # Animal Food- Specific Livestock    Animal/ Livestock Management   Commercial Value 
 # 1816                                 167                             97 
@@ -228,7 +231,7 @@ datA <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.
 #str(sqldf("SELECT * FROM recGrab LEFT JOIN datA_ethnog ON recGrab.lnamID==datA_ethnog.LnamID"))
 # 'data.frame':        159922 obs. of  34 variables:
 
-datA_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title FROM tester")
+datA_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title FROM datA")
 
 # use dplyr for handling
 datB <- tbl_df(datA)
