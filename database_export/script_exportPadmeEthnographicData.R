@@ -45,10 +45,10 @@ if (!require(dplyr)){
         library(dplyr)
 } 
 # {tidyr} - tools for creating & transforming tidy data
-if (!require(tidyr)){
-        install.packages("tidyr")
-        library(tidyr)
-} 
+#if (!require(tidyr)){
+#        install.packages("tidyr")
+#        library(tidyr)
+#} 
 
 
 # open connection to live padme
@@ -309,14 +309,21 @@ noUse
 # eg Cordia obtusa, Fishing; Cordia obtusa, Food (animal), Indigofera... etc
 datC
 
-select(datC, -familyName, -genusName, -acceptDetNoAuth) %>%
-distinct(acceptDetAs, Anti_title)
+
+# distinct function will only work from dplyr > 0.4.2
+if(packageVersion("dplyr") < 0.4) stop("... Update <dplyr> package; it's out of date & doesn't contain 'distinct()' function required.") 
 
 
+# get distinct rows of datC
+outList <- 
+  datC %>%
+    select(-familyName, -genusName, -acceptDetNoAuth) %>%
+    distinct(acceptDetAs, Anti_title) %>%
+print
 
-# tidyr may not be required since it's all wordy data anyhow
-#library(tidyr)
+str(outList)
 
+?write.csv(outList, file.choose(), row.names=FALSE, )
 
 
 
