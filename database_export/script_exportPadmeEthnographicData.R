@@ -327,7 +327,8 @@ print
 
 str(outList)
 
-#write.csv(outList, file.choose(), row.names=FALSE, )
+# write the list out to a CSV!
+write.csv(outList, file=file.choose(), row.names=FALSE)
 
 
 
