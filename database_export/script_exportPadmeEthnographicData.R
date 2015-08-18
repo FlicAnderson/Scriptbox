@@ -115,11 +115,11 @@ rm(qry1, qry2, qry3, herbRex, fielRex, litrRex)
 
 # ALL things: 
 qry <- "SELECT 
-        Anse.id, 
-        Anti.title, 
-        Anlm.display, 
-        Lnam.sortName, 
-        Lnam.id AS LnamID 
+        Anse.id AS Anse_id, 
+        Anti.title AS Anti_title, 
+        Anlm.display AS Anlm_display, 
+        Lnam.sortName AS Lnam_sortName, 
+        Lnam.id AS Lnam_id 
 FROM ((Anls INNER JOIN Anlm ON Anls.selectionId = Anlm.id) INNER JOIN (Anti 
         INNER JOIN Anse ON Anti.annotationSetId = Anse.id) ON Anlm.annotationTitleId = Anti.id) 
         LEFT JOIN Lnam ON Anls.latinNameId = Lnam.id 
@@ -141,7 +141,7 @@ datA_ethnog <- sqldf(qry)
 ##### NEED TO FIX THE "error in statement: duplicate column name: LnamID" PROBLEM ######
 
 
-table(datA_ethnog$Anti.title)
+table(datA_ethnog$Anti_title)
 # Animal Food- Specific Livestock    Animal/ Livestock Management   Commercial Value 
 # 1816                                 167                             97 
 # Construction                       Fishing                        Food (Animal) 
@@ -159,7 +159,7 @@ table(datA_ethnog$Anti.title)
 
 datA_records <- head(recGrab)
 
-tester <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.LnamID")
+tester <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.Lnam_id")
 # tester is long data.  6 records -> 22 rows now due to multiple uses per taxon.
 # Could be widened to avoid replication of lat/lon points? - think about this!
 # ZOMG: When you run this sqldf join on recGrab instead, the object is HUGE!!!!
@@ -224,7 +224,8 @@ tester_output <- unique(tester_output)
 
 datA_records <- recGrab
 
-datA <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.LnamID")
+
+datA <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.Lnam_id")
 # tester is long data.  6 records -> 22 rows now due to multiple uses per taxon.
 # Could be widened to avoid replication of lat/lon points? - think about this!
 # ZOMG: When you run this sqldf join on recGrab instead, the object is HUGE!!!!
@@ -326,7 +327,7 @@ print
 
 str(outList)
 
-?write.csv(outList, file.choose(), row.names=FALSE, )
+#write.csv(outList, file.choose(), row.names=FALSE, )
 
 
 
