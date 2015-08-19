@@ -138,8 +138,6 @@ str(sqldf(qry))
         # queries at the top? If so, the sqldf query won't work since it's based on those!
 datA_ethnog <- sqldf(qry)
 
-##### NEED TO FIX THE "error in statement: duplicate column name: LnamID" PROBLEM ######
-
 
 table(datA_ethnog$Anti_title)
 # Animal Food- Specific Livestock    Animal/ Livestock Management   Commercial Value 
@@ -183,7 +181,7 @@ tester <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_record
         # USES - high level use category (Anti.title should suffice?; do not include 'Use?')
 
 
-tester_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title FROM tester")
+tester_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title, Anlm_display FROM tester")
 
 # only unique name + uses (but not the summary category 'Use?')
 # NOTE: syntax of names from annotations has changed from Anti.title -> Anti_title
@@ -232,14 +230,14 @@ datA <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.
 #str(sqldf("SELECT * FROM recGrab LEFT JOIN datA_ethnog ON recGrab.lnamID==datA_ethnog.LnamID"))
 # 'data.frame':        159922 obs. of  34 variables:
 
-datA_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title FROM datA")
+datA_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title, Anlm_display FROM datA")
 
 # use dplyr for handling
 datB <- tbl_df(datA)
 datB
 
 # select only certain columns
-datC <- select(datB, familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title)
+datC <- select(datB, familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title, Anlm_display)
 
 # remove extra objects
 rm(Anlm, Anls, Anno, Anse, Anti, Lnam, datA, tester, tester_output)
@@ -265,6 +263,26 @@ summarize(by_useTitle, uniqueTaxa=n_distinct(acceptDetAs))
 # 12          Specifically Important        200
 # 13                            Use?        650
 # 14                              NA        598
+
+# group by use-display-titles
+by_useDisplay <- group_by(datC, Anlm_display)
+# show number of unique taxa (with Authorities) grouped by use category title
+summarize(by_useDisplay, uniqueTaxa=n_distinct(acceptDetAs))
+# Source: local data frame [72 x 2]
+# 
+# Anlm_display uniqueTaxa
+# 1                     Abd al Kuri         75
+# 2                        Adhesive         36
+# 3              Bedding & Stuffing         24
+# 4                      Bee forage        148
+# 5               Bees nest (Honey)          5
+# 6                    Boats/ Rafts          4
+# 7             Carefully harvested         39
+# 8  Carefully harvested human food         38
+# 9                          Cattle        343
+# 10                       Charcoal         40
+# ..                            ...        ...
+
 
 summarize(by_useTitle, uniqueTaxa=n_distinct(acceptDetAs), uniqueOrigDet=n_distinct(detAs))
 # Source: local data frame [14 x 3]
@@ -318,11 +336,49 @@ datC
 if(packageVersion("dplyr") < 0.4) stop("... Update <dplyr> package; it's out of date & doesn't contain 'distinct()' function required.") 
 
 
-# get distinct rows of datC
+# get distinct rows of datC to find whether category "Animal Food- Specific Livestock" 
+# is repeating "Food (Animal)"
+datC %>%
+        select(-familyName, -genusName, -acceptDetNoAuth, -detAs) %>%
+        distinct(acceptDetAs, Anti_title) %>%
+        filter(Anti_title=="Animal Food- Specific Livestock"|Anti_title=="Food (Animal)") %>%
+print
+# It does seem to be repetitive: 
+
+# 1   Indigofera articulata Gouan Animal Food- Specific Livestock         Donkeys
+# 2   Indigofera articulata Gouan                   Food (Animal) Forage (Browse)
+# 3         Cordia obtusa Balf.f. Animal Food- Specific Livestock          Cattle
+# 4         Cordia obtusa Balf.f.                   Food (Animal)      Bee forage
+# 5        Reseda viridis Balf.f. Animal Food- Specific Livestock           Goats
+# 6        Reseda viridis Balf.f.                   Food (Animal) Forage (Browse)
+
+# so we can probably just use Food (Animal) maybe?
+
+# Anti_title                           
+# 1 (DON'T USE)  Animal Food- Specific Livestock
+# 9 (DON'T USE)     Important on a Specific Island
+# 12 (DON'T USE)            Specifically Important 
+# 13 (DON'T USE)                              Use? 
+# 14 (DON'T USE)                              NA   
+
+# 2     Animal/ Livestock Management        107           160
+# 3                 Commercial Value         33            45
+# 4                     Construction         77           114
+# 5                          Fishing         10            20
+# 6                    Food (Animal)        633           836
+# 7                     Food (Human)        136           178
+# 8                             Fuel        168           242
+# 10                Material Culture        136           200
+# 11                        Medicine        137           194
+
+# categories to ignore:
+ignoreCats <- c("Animal Food- Specific Livestock", "Important on a Specific Island", "Specifically Important", "Use?", "NA")
+
 outList <- 
-  datC %>%
-    select(-familyName, -genusName, -acceptDetNoAuth) %>%
-    distinct(acceptDetAs, Anti_title) %>%
+        datC %>%
+                select(-familyName, -genusName, -acceptDetNoAuth, -detAs) %>%
+                distinct(acceptDetAs, Anti_title) %>%
+                filter(!(Anti_title %in% ignoreCats)) %>%
 print
 
 str(outList)
