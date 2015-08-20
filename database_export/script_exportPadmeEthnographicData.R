@@ -372,15 +372,17 @@ print
 # 11                        Medicine        137           194
 
 # categories to ignore:
-ignoreCats <- c("Animal Food- Specific Livestock", "Important on a Specific Island", "Specifically Important", "Use?", "NA")
+ignoreCats <- c("Animal Food- Specific Livestock", "Important on a Specific Island", "Specifically Important", "Use?", NA)
 
 outList <- 
         datC %>%
-                select(-familyName, -genusName, -acceptDetNoAuth, -detAs) %>%
-                distinct(acceptDetAs, Anti_title) %>%
+                select(-familyName, -genusName, -acceptDetAs, -detAs) %>%
+                distinct(acceptDetNoAuth, Anti_title) %>%
                 filter(!(Anti_title %in% ignoreCats)) %>%
 print
 
+str(outList)
+names(outList) <- c("Taxon", "UseCategory", "DetailedUse")
 str(outList)
 
 # write the list out to a CSV!
