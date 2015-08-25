@@ -7,10 +7,8 @@
 # objects created: [object1]; [object2] (locally global)
 # saved at: O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R
 #
-# AIM:  What this script is all about, why it was made, what
-# ....  it does, etc.
-# .... 
-#
+# AIM:  Takes a user string taxon name & checks it against Latin Names table in 
+# ....  Padme Arabia.  Confirms if exact match and suggests closest fuzzy match.
 #
 # ---------------------------------------------------------------------------- #
 
@@ -18,14 +16,13 @@
 
 # 0) load any requirements
 # 1) check inputs are valid 
-# 2) methods for taxon type options
-# 3) methods for authority options
-# 4) methods for single vs multiple taxa to check
+# 2) methods for taxon type options  (OPTIONAL & INCOMPLETE)
+# 3) methods for authority options  (OPTIONAL & INCOMPLETE)
+# 4) methods for single vs multiple taxa to check (INCOMPLETE)
 # 5) database connections
 # 6) fuzzy match checkMe taxa against Padme Latin Names
 # 7) return matches & state of matches (exact, fuzzy, no match)
-# 8) output matches
-# 9) tidy: remove useless objects/close connections
+# 8) tidy: remove useless objects/close connections
 
 # ---------------------------------------------------------------------------- #
 
@@ -132,22 +129,22 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                 cat("\n", "... opened database connection to Padme Arabia")
         }
         
- # 6)   # matching
+ # 6)   # matching methods
         
-        # pull out all distinct names 
+        # pull out all distinct names {RODBC}
         nameGetQry <- paste0("SELECT DISTINCT ", nameVar, ", id FROM [Latin Names]")
         Lnams <- sqlQuery(con_livePadmeArabia, nameGetQry)
  
-        # matching function
+        # matching function {stringdist}:
         latMatch = function(string, stringVector){
                 stringVector <- as.vector(stringVector)
                 stringVector[amatch(string, stringVector, maxDist=Inf)]
         }
         
+        # store output of matching function latMatch() as variable to return
         possMatch <<- latMatch(testThis, Lnams[,1])
 
- # 7)   
-        # check if checkMe is in Lnams
+ # 7)   # check if user's checkMe input is in Lnams & output match details
         if(checkMe %in% Lnams[,1]){
                 cat("\n", "... checking complete:", testThis[1], "is an EXACT MATCH in Padme Arabia  :D")
         } else {
@@ -155,8 +152,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                 cat("\n", "... >>> did you mean:", possMatch, "?")
         }
         
- # 8)
         
- # 9) 
-        
+ # 8) tidy phase
+        rm(nameVar, possMatch)
 }
