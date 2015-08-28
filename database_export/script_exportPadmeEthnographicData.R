@@ -138,6 +138,24 @@ str(sqldf(qry))
         # queries at the top? If so, the sqldf query won't work since it's based on those!
 datA_ethnog <- sqldf(qry)
 
+################
+# BUG FIX TESTING
+# checker <- tbl_df(datA_ethnog)
+# checker %>%
+#         filter(Lnam_sortName=="Dracaena cinnabari") %>%
+#         print
+# 
+# datA_records <- recGrab
+# 
+# tester <- sqldf("SELECT * FROM datA_ethnog LEFT JOIN datA_records ON datA_ethnog.Lnam_id==datA_records.lnamID")
+# 
+# tester <- tbl_df(tester)
+# checker <- tester %>% 
+#         filter(Lnam_sortName=="Dracaena cinnabari") %>%
+#         print
+# table(checker$Anlm_display)
+################
+
 
 table(datA_ethnog$Anti_title)
 # Animal Food- Specific Livestock    Animal/ Livestock Management   Commercial Value 
@@ -155,22 +173,6 @@ table(datA_ethnog$Anti_title)
 # EXAMPLE: pull out particular category (e.g. Fishing)
 #datA_ethnog[which(datA_ethnog$Anti.title=="Fishing"),]
 
-datA_records <- head(recGrab)
-
-tester <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.Lnam_id")
-# tester is long data.  6 records -> 22 rows now due to multiple uses per taxon.
-# Could be widened to avoid replication of lat/lon points? - think about this!
-# ZOMG: When you run this sqldf join on recGrab instead, the object is HUGE!!!!
-#str(sqldf("SELECT * FROM recGrab LEFT JOIN datA_ethnog ON recGrab.lnamID==datA_ethnog.LnamID"))
-# 'data.frame':        159922 obs. of  34 variables:
-
-
-# POTENTIAL PROBLEM: 
-# Need to re-check how ethnographic data was applied to taxon names & ensure it's CORRECT.  
-# Was anything missed? Why? Was this because it wasn't in the ethnoflora and therefore no data exists?
-# Was it due to a query error?
-
-
 ### output ethnog annotations linked to Latin Names
 # needs to look like: 
         # familyName - accepted family name (from Padme taxonomy)
@@ -180,36 +182,6 @@ tester <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_record
         # detAs - what it's currently determined as in Padme (may be an old name or synonym)
         # USES - high level use category (Anti.title should suffice?; do not include 'Use?')
 
-
-tester_output <- sqldf("SELECT familyName, acceptDetAs, acceptDetNoAuth, genusName, detAs, Anti_title, Anlm_display FROM tester")
-
-# only unique name + uses (but not the summary category 'Use?')
-# NOTE: syntax of names from annotations has changed from Anti.title -> Anti_title
-# so beware of this!
-tester_output <- tester_output[-which(tester_output$Anti_title=="Use?"),]
-tester_output <- unique(tester_output)
-
-#head(tester_output)
-# familyName                 acceptDetAs       acceptDetNoAuth  genusName                       detAs
-# 1   Leguminosae Indigofera articulata Gouan Indigofera articulata Indigofera Indigofera articulata Gouan
-# 4   Leguminosae Indigofera articulata Gouan Indigofera articulata Indigofera Indigofera articulata Gouan
-# 5   Leguminosae Indigofera articulata Gouan Indigofera articulata Indigofera Indigofera articulata Gouan
-# 8  Boraginaceae       Cordia obtusa Balf.f.         Cordia obtusa     Cordia       Cordia obtusa Balf.f.
-# 12 Boraginaceae       Cordia obtusa Balf.f.         Cordia obtusa     Cordia       Cordia obtusa Balf.f.
-# 14 Boraginaceae       Cordia obtusa Balf.f.         Cordia obtusa     Cordia       Cordia obtusa Balf.f.
-# Anti_title
-# 1  Animal Food- Specific Livestock
-# 4                    Food (Animal)
-# 5   Important on a Specific Island
-# 8  Animal Food- Specific Livestock
-# 12    Animal/ Livestock Management
-# 14                    Construction
-
-### NOW TRY WITH ALL DATA!!!!
-# BUT CONSIDER SIZE OF DATA TABLE!
-# THINK ABOUT DPLYR USAGE!
-# .... "'data.frame': 159922 obs. of  34 variables:"
-
 # Problems: 
 # there'll be lots of <NA> uses by the looks; this is due to accepted names 
 # being used - if updated name is applied, it may not have been scored if not in
@@ -218,12 +190,14 @@ tester_output <- unique(tester_output)
         # possible semi-fix/workaround might be to pull the uses of the 
         # 'detAs' (original det) field instead of 'acceptDetAs' (accepted name) 
         # IF (conditional code required!) Anti_title shows <NA>?
- 
+
+# only unique name + uses (but not the summary category 'Use?')
+# NOTE: syntax of names from annotations has changed from Anti.title -> Anti_title
+# so beware of this!
 
 datA_records <- recGrab
 
-
-datA <- sqldf("SELECT * FROM datA_records LEFT JOIN datA_ethnog ON datA_records.lnamID==datA_ethnog.Lnam_id")
+datA <- sqldf("SELECT * FROM datA_ethnog LEFT JOIN datA_records ON datA_ethnog.Lnam_id==datA_records.lnamID")
 # tester is long data.  6 records -> 22 rows now due to multiple uses per taxon.
 # Could be widened to avoid replication of lat/lon points? - think about this!
 # ZOMG: When you run this sqldf join on recGrab instead, the object is HUGE!!!!
@@ -374,11 +348,15 @@ print
 # categories to ignore:
 ignoreCats <- c("Animal Food- Specific Livestock", "Important on a Specific Island", "Specifically Important", "Use?", NA)
 
+ignoreCats2 <- c("Used")
+
 outList <- 
         datC %>%
                 select(-familyName, -genusName, -acceptDetAs, -detAs) %>%
-                distinct(acceptDetNoAuth, Anti_title) %>%
-                filter(!(Anti_title %in% ignoreCats)) %>%
+                distinct(acceptDetNoAuth, Anlm_display) %>%
+                filter(!(Anlm_display %in% ignoreCats2)) %>%
+                filter(!(is.na(acceptDetNoAuth))) %>%
+                arrange(acceptDetNoAuth, Anti_title, Anlm_display) %>%
 print
 
 str(outList)
