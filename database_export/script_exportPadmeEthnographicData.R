@@ -16,10 +16,10 @@
 
 # CODE SUMMARY # 
 
-# 0) 
-# 1)  
-# 2) 
-# 3) 
+# 0) prep
+# 1) source plant records from Padme Arabia => datA_records
+# 2) pull out all annotations by Latin Name => datA_ethnog
+# 3) join data records onto ethnographic data
 # 4) 
 # 5) 
 
@@ -44,26 +44,20 @@ if (!require(dplyr)){
         install.packages("dplyr")
         library(dplyr)
 } 
-# {tidyr} - tools for creating & transforming tidy data
-#if (!require(tidyr)){
-#        install.packages("tidyr")
-#        library(tidyr)
-#} 
+
+### output ethnog annotations linked to Latin Names
+# needs to look like: 
+# familyName - accepted family name (from Padme taxonomy)
+# acceptDetAs - accepted latin name from current determination (from Padme taxonomy)
+# acceptDetNoAuth - accepted latin name from current determination with no authority string
+# genusName - accepted name genus only
+# detAs - what it's currently determined as in Padme (may be an old name or synonym)
+# USES - high level use category (Anti.title should suffice?; do not include 'Use?')
 
 
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
-
-# ## Get structure/names of relevant annotations-related tables
-# Lnam <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Latin Names]")
-# Anse <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [AnnotationSets]")
-# Anti <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [AnnotationTitles]")
-# Anno <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Annotations]")
-# Anls <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [AnnotationListSelections]")
-# Anlm <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [AnnotationListMembers]")
-
-### WORKINGS ###
 
 # pull in the tables required 
 # ... (Sys.sleep(5) included after every database table pull to prevent issues
@@ -81,39 +75,24 @@ Anlm <- sqlQuery(con_livePadmeArabia, query="SELECT * FROM [AnnotationListMember
 #Sys.sleep(5)
 
 
+
+# 1) 
+
 # used pull-out section of this (below) script, not whole thing as that includes summary
 # stats & writeouts
 source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
 # get all recs as recGrab (17760 obs. of 29 variables)
 
+# create datA_records from recGrab object
+datA_records <- recGrab
+
 # remove unrequired record-groups F, L & H
 rm(qry1, qry2, qry3, herbRex, fielRex, litrRex)
 
-### pull out annotations for all records' taxa.
-# SQLDF this for now after pulling out ALL annotations data into R...
 
-# things that are used?
-# qry <- "SELECT 
-#         Anse.id, 
-#         Anti.title, 
-#         Anlm.display, 
-#         Lnam.sortName, 
-#         Lnam.id AS LnamID 
-# FROM ((Anls INNER JOIN Anlm ON Anls.selectionId = Anlm.id) INNER JOIN (Anti 
-#         INNER JOIN Anse ON Anti.annotationSetId = Anse.id) ON Anlm.annotationTitleId = Anti.id) 
-#         LEFT JOIN Lnam ON Anls.latinNameId = Lnam.id 
-# WHERE (((Anse.id)=7) AND ((Anti.title)='Use?'));"
+# 2)
 
-#str(sqldf(qry))
-# 'data.frame':        706 obs. of  5 variables:
-#         $ Anse.id      : int  7 7 7 7 7 7 7 7 7 7 ...
-# $ Anti.title   : chr  "Use?" "Use?" "Use?" "Use?" ...
-# $ Anlm.display : chr  "Used" "Used" "Used" "Used" ...
-# $ Lnam.sortName: chr  "Angkalanthus oligophylla" "Anisotes diversifolius" "Asystasia gangetica" "Ballochia amoena" ...
-# $ LnamID       : int  2596 2597 2598 2599 2600 2601 2602 2603 2604 2607 ...
-
-
-# ALL things: 
+### pull out all annotations for all taxa.
 qry <- "SELECT 
         Anse.id AS Anse_id, 
         Anti.title AS Anti_title, 
@@ -138,25 +117,8 @@ str(sqldf(qry))
         # queries at the top? If so, the sqldf query won't work since it's based on those!
 datA_ethnog <- sqldf(qry)
 
-################
-# BUG FIX TESTING
-# checker <- tbl_df(datA_ethnog)
-# checker %>%
-#         filter(Lnam_sortName=="Dracaena cinnabari") %>%
-#         print
-# 
-# datA_records <- recGrab
-# 
-# tester <- sqldf("SELECT * FROM datA_ethnog LEFT JOIN datA_records ON datA_ethnog.Lnam_id==datA_records.lnamID")
-# 
-# tester <- tbl_df(tester)
-# checker <- tester %>% 
-#         filter(Lnam_sortName=="Dracaena cinnabari") %>%
-#         print
-# table(checker$Anlm_display)
-################
 
-
+# investigate main use-cats
 table(datA_ethnog$Anti_title)
 # Animal Food- Specific Livestock    Animal/ Livestock Management   Commercial Value 
 # 1816                                 167                             97 
@@ -173,14 +135,7 @@ table(datA_ethnog$Anti_title)
 # EXAMPLE: pull out particular category (e.g. Fishing)
 #datA_ethnog[which(datA_ethnog$Anti.title=="Fishing"),]
 
-### output ethnog annotations linked to Latin Names
-# needs to look like: 
-        # familyName - accepted family name (from Padme taxonomy)
-        # acceptDetAs - accepted latin name from current determination (from Padme taxonomy)
-        # acceptDetNoAuth - accepted latin name from current determination with no authority string
-        # genusName - accepted name genus only
-        # detAs - what it's currently determined as in Padme (may be an old name or synonym)
-        # USES - high level use category (Anti.title should suffice?; do not include 'Use?')
+
 
 # Problems: 
 # there'll be lots of <NA> uses by the looks; this is due to accepted names 
@@ -195,7 +150,8 @@ table(datA_ethnog$Anti_title)
 # NOTE: syntax of names from annotations has changed from Anti.title -> Anti_title
 # so beware of this!
 
-datA_records <- recGrab
+
+# 3)
 
 datA <- sqldf("SELECT * FROM datA_ethnog LEFT JOIN datA_records ON datA_ethnog.Lnam_id==datA_records.lnamID")
 # tester is long data.  6 records -> 22 rows now due to multiple uses per taxon.
@@ -358,6 +314,17 @@ outList <-
                 filter(!(is.na(acceptDetNoAuth))) %>%
                 arrange(acceptDetNoAuth, Anti_title, Anlm_display) %>%
 print
+
+datA_ethnog <- tbl_df(datA_ethnog)
+outList2 <- 
+        datA_ethnog %>%
+        select(Lnam_sortName, Anti_title, Anlm_display) %>%
+        distinct(Lnam_sortName, Anlm_display) %>%
+        filter(!(Anlm_display %in% ignoreCats2)) %>%
+        filter(!(is.na(Lnam_sortName))) %>%
+        arrange(Lnam_sortName, Anti_title, Anlm_display) %>%
+        print
+
 
 str(outList)
 names(outList) <- c("Taxon", "UseCategory", "DetailedUse")
