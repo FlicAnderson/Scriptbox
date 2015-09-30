@@ -21,8 +21,8 @@
 # CODE SUMMARY # 
 
 # 0) Load libraries, functions, source scripts
-# 1) 
-# 2) Build query 
+# 1) Take user input
+# 2) Build query with user input
 # 3) Run the query
 # 4) Show the output
 # 5) Save the output to .csv
@@ -114,23 +114,19 @@ LEFT JOIN CoordinateSources AS Coor ON Herb.coordinateSource = Coor.id)
 LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 # WHERE: 
 "WHERE ",
-# only pull out records with current dets: 
+  # ... only pull out records with current dets: 
 "Dets.Current=True ",
-# REQ: FIX FOR SYNONYMS POPPING UP IN DATA WITH SAME H-IDs
-
-#       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
-#              (to avoid lots of dots at the lat/lon of "Socotra" etc since that's very
-#              unhelpful & doesn't give us a true location, even though it's a precise 
-#              lat/lon value.
-#              NB: The smaller islands Darsa & Semhah are allowed as they're small 
-#              enough to be useful location values. Abd Al Kuri is still a bit too big
-"AND ((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ",
-#       OR location string does just say Socotra or the Archipelago BUT has 
-#       a valid lat/lon (tested on longitude). 
-#               This ensures recently imported datasets with GPS/decimal degrees
-#               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Herb.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Herb.[Longitude 1 Decimal] IS NOT NULL))) AND ((LnSy.[Synonym of]) Is Null) ",
-# ORDER BY ...
+  # ... AND location contains locatName as specified at top of script:
+  #     eg. location is ~~~:Arabian Peninsula:~~~ 
+"AND  Geog.fullName LIKE '%", locatName, "%' ",
+  # ... OR location **ends in** locatName BUT has valid lat/lon (tested on longitude) 
+  #     eg. location is ~~~:Arabian Peninsula AND has valid lat/lon
+  #       This ensures recently imported datasets with GPS/decimal degrees high-accuracy
+  #       lat/lon are included!)
+"OR (Geog.fullName LIKE ", locatName, "' AND Herb.[Longitude 1 Decimal] IS NOT NULL) ", 
+  # ... AND no synonyms, accepted names only
+"AND ((LnSy.[Synonym of]) Is Null) ",
+# order by collector string:
 "ORDER BY Team.[name for display];")
 
 
@@ -179,13 +175,8 @@ LEFT JOIN [Synonyms tree] AS Snym ON Lnam.id = Snym.member)
 LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 # WHERE: 
 "WHERE ",
-#       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
-#              (to avoid lots of dots at the lat/lon of "Socotra" etc since that's very
-#              unhelpful & doesn't give us a true location, even though it's a precise 
-#              lat/lon value.
-#              NB: The smaller islands Darsa & Semhah are allowed as they're small 
-#              enough to be useful location values. Abd Al Kuri is still a bit too big
-"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ", 
+# location is locatName as specified at top of script
+"AND  Geog.fullName LIKE '%", locatName, "%' ",
 #       OR      location string does just say Socotra or the Archipelago BUT has 
 #               a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
@@ -249,13 +240,8 @@ LEFT JOIN [Synonyms tree] AS Synm ON Lnam.id = Synm.member)
 LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 # WHERE: 
 "WHERE ", 
-#       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
-#              (to avoid lots of dots at the lat/lon of "Socotra" etc since that's very
-#              unhelpful & doesn't give us a true location, even though it's a precise 
-#              lat/lon value.
-#              NB: The smaller islands Darsa & Semhah are allowed as they're small 
-#              enough to be useful location values. Abd Al Kuri is still a bit too big
-"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa')", 
+# location is locatName as specified at top of script
+"AND  Geog.fullName LIKE '%", locatName, "%' ",
 #       OR location string does just say Socotra or the Archipelago BUT has 
 #       a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
@@ -270,18 +256,11 @@ LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 
 # run query
 herbRex <- sqlQuery(con_livePadmeArabia, qry1) 
-# 03/06/2015 1843 req DMS, 3647 req DM, 8166 w/ IFF, 
-# 04/06/2015 6089 rm Socotra w/o latlon
-# 05/06/2015 6155 with only accepted names 
-# 08/06/2015 6149 (fixed some latin names taxonomy in padme)
+# 
 fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
-# 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
-# 04/06/2015 12037 rm Socotra w/o latlon
-# 08/06/2015 10962 rm duplicate IDs via accepted names only
+# 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
-# 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
-# 04/06/2015 651 rm Socotra w/o latlon
-# 08/06/2015 649 with accepted names only
+# 
 
 # show number of records returned
 nrow(herbRex)
@@ -296,11 +275,7 @@ nrow(litrRex)
 
 recGrab <- rbind(herbRex, fielRex, litrRex)
 nrow(recGrab) 
-# 03/06/2015 6445 req DMS, 10432 req DM, 22285 w/ IFF
-# 04/06/2015 19497 rm Socotra w/o latlon
-# 05/06/2015 18843 herb specimens with only accepted names
-# 08/06/2015 17762 rm duplicate recIDs; field notes with only accepted names
-# 08/06/2015 17760 literature records with only accepted names
+# 
 
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
