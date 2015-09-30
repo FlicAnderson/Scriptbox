@@ -284,18 +284,30 @@ nrow(litrRex)
 
 recGrab <- rbind(herbRex, fielRex, litrRex)
 nrow(recGrab) 
-# 
+# 30/Sept/2015 - 105371
 
+# sort specimens
+#   sorted so Edinburgh specimens, then found specimens float to the top 
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
+
+
 
 # 4)
 
-# # show first 6 records returned 
-#   # sorted so Edinburgh specimens, then found specimens float to the top 
-# head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
+# show first 6 records returned 
+#   sorted so Edinburgh specimens, then found specimens float to the top 
 head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
 
+### Records without a lat/lon are in here...
+  # need to edit queries to prevent gazetteer lat/lon NA's being perpetuated!
+###
+
+### Any duplicate IDs?
+  table(duplicated(recGrab$recID))
+  #  FALSE   TRUE 
+  # 105325     46
+###
 
 # pull out families from Latin Names table
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
