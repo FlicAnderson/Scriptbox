@@ -62,13 +62,13 @@ locatName <- "Arabian Peninsula"
 
 # 2)
 
-# get headings for herbarium specimens and field notes and literature records tables
+# uncomment to get headings for herbarium specimens and field notes and literature records tables
 #Herb <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Herbarium specimens]")
 #Fiel <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [Field notes]")
 #Litr <- sqlQuery(con_livePadmeArabia, query="SELECT TOP 1 * FROM [literature records]")
 
 # build HERB query
-# Adapted from script_dataGrabSpecieswithFullLatLon.R
+# Adapted from script_dataGrabFullLatLonOrGazLatLon_Socotra.R
 qry1 <- paste0("
 SELECT 'H-' & Herb.id AS recID, 
 Team.[name for display] AS collector,
@@ -101,7 +101,7 @@ Herb.[Date 1 Days] AS dateDD,
 Herb.[Date 1 Months] AS dateMM, 
 Herb.[Date 1 Years] AS dateYY,
 Geog.fullName AS fullLocation ",
-# Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names, Teams x2, CoordinateSources
+# Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names x2, Teams x2, CoordinateSources
                "FROM ((((((((Determinations AS Dets 
 RIGHT JOIN [Herbarium specimens] AS Herb ON Dets.[specimen key] = Herb.id) 
 LEFT JOIN [Latin Names] AS Lnam ON Dets.[latin name key] = Lnam.id) 
@@ -131,7 +131,7 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 
 
 # build FIEL query
-# Adapted from script_dataGrabSpecieswithFullLatLon.R & various fieldObs scripts
+# Adapted from script_dataGrabFullLatLonOrGazLatLon_Socotra.R & various fieldObs scripts
 qry2 <- paste0("
 SELECT 'F-' & Fiel.id AS recID,
 Team.[name for display] AS collector,
@@ -175,21 +175,24 @@ LEFT JOIN [Synonyms tree] AS Snym ON Lnam.id = Snym.member)
 LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 # WHERE: 
 "WHERE ",
-# location is locatName as specified at top of script
-"AND  Geog.fullName LIKE '%", locatName, "%' ",
-#       OR      location string does just say Socotra or the Archipelago BUT has 
-#               a valid lat/lon (tested on longitude). 
-#               This ensures recently imported datasets with GPS/decimal degrees
-#               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Fiel.[Longitude 1 Decimal] IS NOT NULL))) AND ((LnSy.[Synonym of]) Is Null))",
-# ORDER BY ...
+# ... location contains locatName as specified at top of script:
+#     eg. location is ~~~:Arabian Peninsula:~~~ 
+"Geog.fullName LIKE '%", locatName, "%' ",
+# ... OR location **ends in** locatName BUT has valid lat/lon (tested on longitude) 
+#     eg. location is ~~~:Arabian Peninsula AND has valid lat/lon
+#       This ensures recently imported datasets with GPS/decimal degrees high-accuracy
+#       lat/lon are included!)
+"OR (Geog.fullName LIKE ", locatName, "' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) ", 
+# ... AND no synonyms, accepted names only
+"AND ((LnSy.[Synonym of]) Is Null) ",
+# order by collector string:
 "ORDER BY Team.[name for display];")
 
 
 
 
 # build LITR query
-# adapted from script_dataGrabSpecieswithFullLatLon.R
+# adapted from script_dataGrabFullLatLonOrGazLatLon_Socotra.R
 qry3 <- paste0("
 SELECT 'L-' & Litr.id AS recID, 
 Auth.[name for display] AS collector,
@@ -240,14 +243,17 @@ LEFT JOIN [Synonyms tree] AS Synm ON Lnam.id = Synm.member)
 LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 # WHERE: 
 "WHERE ", 
-# location is locatName as specified at top of script
-"AND  Geog.fullName LIKE '%", locatName, "%' ",
-#       OR location string does just say Socotra or the Archipelago BUT has 
-#       a valid lat/lon (tested on longitude). 
-#               This ensures recently imported datasets with GPS/decimal degrees
-#               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Litr.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Litr.[Longitude 1 Decimal] IS NOT NULL))) AND LnSy.[Synonym of] IS NULL) ",
-# ORDER BY ...
+# ... location contains locatName as specified at top of script:
+#     eg. location is ~~~:Arabian Peninsula:~~~ 
+"Geog.fullName LIKE '%", locatName, "%' ",
+# ... OR location **ends in** locatName BUT has valid lat/lon (tested on longitude) 
+#     eg. location is ~~~:Arabian Peninsula AND has valid lat/lon
+#       This ensures recently imported datasets with GPS/decimal degrees high-accuracy
+#       lat/lon are included!)
+"OR (Geog.fullName LIKE ", locatName, "' AND Litr.[Longitude 1 Decimal] IS NOT NULL) ", 
+# ... AND no synonyms, accepted names only
+"AND ((LnSy.[Synonym of]) Is Null) ",
+# order by collector string:
 "ORDER BY Litr.id;")
 
 
