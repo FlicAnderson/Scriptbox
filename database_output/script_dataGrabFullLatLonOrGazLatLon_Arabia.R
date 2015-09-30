@@ -299,14 +299,29 @@ recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab
 head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
 
-### Records without a lat/lon are in here...
-  # need to edit queries to prevent gazetteer lat/lon NA's being perpetuated!
-###
+  ### Remove records without a lat/lon (even after AnyLat/AnyLon)...
+  #
+  # could edit queries to prevent gazetteer lat/lon NA's being perpetuated!
+  # OR: temporary(?) hack: remove them after the fact! << did this!
+  #
+  # records which have been given the Gazetteer lat lon as AnyLat but where it's NA:
+  # head(recGrab[which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),])
+  # head of all the records **without** the borked record(s):
+  # head(recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),])
+  #
+# resave recGrab without that erroneous record!
+recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),]
+  #
+  # DONE!
+  ###
 
 ### Any duplicate IDs?
   table(duplicated(recGrab$recID))
   #  FALSE   TRUE 
   # 105325     46
+  #
+  dups <- recGrab[which(duplicated(recGrab$recID)),]
+  dups <- dups[order(dups$recID),]
 ###
 
 # pull out families from Latin Names table
@@ -318,6 +333,8 @@ recGrab$genusName <- recGrab$acceptDetNoAuth
 recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 
 # reorder so genus is after acceptDetNoAuth but before the 'detAs'/unaccepted name
+  # Future fix: ideally do this by using names, instead of indices; this will help if there 
+  # are future code edits
 recGrab <<- recGrab[,c(1:7,29,8:28)]
 
 #########################################
