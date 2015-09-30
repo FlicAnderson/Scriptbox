@@ -118,14 +118,14 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 "Dets.Current=True ",
   # ... AND location contains locatName as specified at top of script:
   #     eg. location is ~~~:Arabian Peninsula:~~~ 
-"AND  Geog.fullName LIKE '%", locatName, "%' ",
+"AND  (Geog.fullName LIKE '%", locatName, "%' ",
   # ... OR location **ends in** locatName BUT has valid lat/lon (tested on longitude) 
   #     eg. location is ~~~:Arabian Peninsula AND has valid lat/lon
   #       This ensures recently imported datasets with GPS/decimal degrees high-accuracy
   #       lat/lon are included!)
-"OR (Geog.fullName LIKE ", locatName, "' AND Herb.[Longitude 1 Decimal] IS NOT NULL) ", 
+"OR (Geog.fullName LIKE ", locatName, "' AND Herb.[Longitude 1 Decimal] IS NOT NULL)) ", 
   # ... AND no synonyms, accepted names only
-"AND ((LnSy.[Synonym of]) Is Null) ",
+"AND LnSy.[Synonym of] Is Null ",
 # order by collector string:
 "ORDER BY Team.[name for display];")
 
@@ -177,14 +177,14 @@ LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 "WHERE ",
 # ... location contains locatName as specified at top of script:
 #     eg. location is ~~~:Arabian Peninsula:~~~ 
-"Geog.fullName LIKE '%", locatName, "%' ",
+"(Geog.fullName LIKE '%", locatName, "%' ",
 # ... OR location **ends in** locatName BUT has valid lat/lon (tested on longitude) 
 #     eg. location is ~~~:Arabian Peninsula AND has valid lat/lon
 #       This ensures recently imported datasets with GPS/decimal degrees high-accuracy
 #       lat/lon are included!)
-"OR (Geog.fullName LIKE ", locatName, "' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) ", 
+"OR (Geog.fullName LIKE ", locatName, "' AND Fiel.[Longitude 1 Decimal] IS NOT NULL)) ", 
 # ... AND no synonyms, accepted names only
-"AND ((LnSy.[Synonym of]) Is Null) ",
+"AND LnSy.[Synonym of] Is Null ",
 # order by collector string:
 "ORDER BY Team.[name for display];")
 
@@ -245,14 +245,14 @@ LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 "WHERE ", 
 # ... location contains locatName as specified at top of script:
 #     eg. location is ~~~:Arabian Peninsula:~~~ 
-"Geog.fullName LIKE '%", locatName, "%' ",
+"(Geog.fullName LIKE '%", locatName, "%' ",
 # ... OR location **ends in** locatName BUT has valid lat/lon (tested on longitude) 
 #     eg. location is ~~~:Arabian Peninsula AND has valid lat/lon
 #       This ensures recently imported datasets with GPS/decimal degrees high-accuracy
 #       lat/lon are included!)
-"OR (Geog.fullName LIKE ", locatName, "' AND Litr.[Longitude 1 Decimal] IS NOT NULL) ", 
+"OR (Geog.fullName LIKE ", locatName, "' AND Litr.[Longitude 1 Decimal] IS NOT NULL)) ", 
 # ... AND no synonyms, accepted names only
-"AND ((LnSy.[Synonym of]) Is Null) ",
+"AND LnSy.[Synonym of] Is Null ",
 # order by collector string:
 "ORDER BY Litr.id;")
 
