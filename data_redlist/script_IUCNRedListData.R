@@ -71,22 +71,9 @@ table(datA$Class)
 # EQUISETOPSIDA     GNETOPSIDA    ISOETOPSIDA     LILIOPSIDA  MAGNOLIOPSIDA      PINOPSIDA POLYPODIOPSIDA 
 #       3              7              5            256            128             12              4 
 
-# higher plants only
-spermatophytes <- c("LILIOPSIDA", "MAGNOLIOPSIDA", "GNETOPSIDA", "PINOPSIDA")
-fernsEtc <- c("EQUISETOPSIDA", "ISOETOPSIDA", "POLYPODIOPSIDA")
-
-#   select(
-#     Species.ID, 
-#     Family, 
-#     Genus, 
-#     Species,
-#     Infraspecific.name,
-#     Authority, 
-#     Red.List.status, 
-#     Red.List.criteria, 
-#     Year.assessed, 
-#     Population.trend
-#     ) %>%
+# if necessary to split spermatophytes/ferns&below apart:
+#spermatophytes <- c("LILIOPSIDA", "MAGNOLIOPSIDA", "GNETOPSIDA", "PINOPSIDA")
+#fernsEtc <- c("EQUISETOPSIDA", "ISOETOPSIDA", "POLYPODIOPSIDA")
 
 # pull out last assessment for each species
 lastAssessed <- 
@@ -105,6 +92,18 @@ datA %>%
   print
 
 
+# 3) 
 
+# analysis bit?
+
+
+# 4)
+
+# show results
+
+
+# 5) 
+
+# save output
 
   
