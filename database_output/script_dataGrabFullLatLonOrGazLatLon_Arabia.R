@@ -58,6 +58,8 @@ livePadmeArabiaCon()
 
 locatName <- "Arabian Peninsula"
 
+#taxonName <- "Opuntia"
+
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
 # 2)
@@ -126,6 +128,8 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 "OR (Geog.fullName LIKE '%", locatName, "' AND Herb.[Longitude 1 Decimal] IS NOT NULL)) ", 
   # ... AND no synonyms, accepted names only
 "AND ((LnSy.[Synonym of]) Is Null) ",
+## pull out specific taxonName
+#"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
 # order by collector string:
 "ORDER BY Team.[name for display];")
 
@@ -185,6 +189,8 @@ LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 "OR (Geog.fullName LIKE '%", locatName, "' AND Fiel.[Longitude 1 Decimal] IS NOT NULL)) ", 
 # ... AND no synonyms, accepted names only
 "AND LnSy.[Synonym of] Is Null ",
+## pull out specific taxonName
+#"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
 # order by collector string:
 "ORDER BY Team.[name for display];")
 
@@ -253,6 +259,8 @@ LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 "OR (Geog.fullName LIKE '%", locatName, "' AND Litr.[Longitude 1 Decimal] IS NOT NULL)) ", 
 # ... AND no synonyms, accepted names only
 "AND LnSy.[Synonym of] Is Null ",
+## pull out specific taxonName
+#"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
 # order by collector string:
 "ORDER BY Litr.id;")
 
@@ -310,7 +318,7 @@ head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$colle
   # head(recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),])
   #
 # resave recGrab without that erroneous record!
-recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),]
+#recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),]
   #
   # DONE!
   ###
@@ -346,6 +354,8 @@ recGrab <<- recGrab[,c(1:7,29,8:28)]
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!
 #message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
 #write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+
+#write.csv(recGrab, file=file.choose(), na="", row.names = FALSE)
 
 
 
