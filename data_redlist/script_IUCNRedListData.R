@@ -38,7 +38,8 @@ if (!require(dplyr)){
 # 1)
 
 # data location
-datLocat <- "O://CMEP\ Projects/IUCN-APSG/Red\ List/IUCN-RedlistData_AlgeriaMoroccoLebanon_Plantae_incSspsVars_native_uncertain/export-64526.csv"
+datLocat <- "O://CMEP\ Projects/IUCN-APSG/Red\ List/IUCN-RedlistData_AlgeriaMoroccoLebanon_Plantae_incSspsV
+ars_native_uncertain/export-64526.csv"
 
 # read data
 datA <- read.csv(datLocat, header=TRUE)
@@ -47,8 +48,63 @@ datA <- read.csv(datLocat, header=TRUE)
 # create tbl_df using dplyr
 datA <- tbl_df(datA)
 datA
+#glimpse(datA)
 
 
 # 2)
 
 # select out useful columns
+
+# check out current columns
+names(datA)
+# [1] "Species.ID"                "Kingdom"                   "Phylum"                   
+# [4] "Class"                     "Order"                     "Family"                   
+# [7] "Genus"                     "Species"                   "Authority"                
+# [10] "Infraspecific.rank"        "Infraspecific.name"        "Infraspecific.authority"  
+# [13] "Stock.subpopulation"       "Synonyms"                  "Common.names..Eng."       
+# [16] "Common.names..Fre."        "Common.names..Spa."        "Red.List.status"          
+# [19] "Red.List.criteria"         "Red.List.criteria.version" "Year.assessed"            
+# [22] "Population.trend"          "Petitioned"
+
+# break down by class
+table(datA$Class)
+# EQUISETOPSIDA     GNETOPSIDA    ISOETOPSIDA     LILIOPSIDA  MAGNOLIOPSIDA      PINOPSIDA POLYPODIOPSIDA 
+#       3              7              5            256            128             12              4 
+
+# higher plants only
+spermatophytes <- c("LILIOPSIDA", "MAGNOLIOPSIDA", "GNETOPSIDA", "PINOPSIDA")
+fernsEtc <- c("EQUISETOPSIDA", "ISOETOPSIDA", "POLYPODIOPSIDA")
+
+#   select(
+#     Species.ID, 
+#     Family, 
+#     Genus, 
+#     Species,
+#     Infraspecific.name,
+#     Authority, 
+#     Red.List.status, 
+#     Red.List.criteria, 
+#     Year.assessed, 
+#     Population.trend
+#     ) %>%
+
+# pull out last assessment for each species
+lastAssessed <- 
+datA %>%
+  # group by species ID 
+  group_by(Species.ID) %>%
+  # show summary (grouped by species.ID) 
+  summarise(
+    # taxa is combo of various name fields
+    taxon=paste(Genus, Species, Infraspecific.name, Family, sep=" "), 
+    # latest is most recent assessement date
+    latest=max(Year.assessed)
+  ) %>%
+  # arrange ascending by taxon
+  arrange(taxon) %>%
+  print
+
+
+
+
+  
