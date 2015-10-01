@@ -1,4 +1,4 @@
-## Socotra Project :: script_dataGrabFullLatLonOrGazLatLon_Arabia.R
+## Padme Output :: script_dataGrabFullLatLonOrGazLatLon_Arabia.R
 # ==============================================================================
 # (30th September 2015)
 # Author: Flic Anderson
@@ -355,7 +355,8 @@ recGrab <<- recGrab[,c(1:7,29,8:28)]
 #message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
 #write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
-#write.csv(recGrab, file=file.choose(), na="", row.names = FALSE)
+#print(" ... browse to location to save output as new .csv file")
+#write.csv(recGrab, file.choose(), na="", row.names = FALSE)
 
 
 
