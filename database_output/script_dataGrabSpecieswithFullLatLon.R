@@ -51,7 +51,9 @@ livePadmeArabiaCon()
 #locatName <- "Socotra"
 #locatName <- "Socotran Archipelago"
 #locatName <- "Hadibo"
-locatName <- "Socotra"
+locatName <- "Arabian Peninsula"
+
+taxonName <- "Opuntia"
 
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
@@ -97,7 +99,7 @@ FROM ((((((([Herbarium Specimens] AS [Herb] LEFT JOIN [Geography] AS [Geog] ON H
           LEFT JOIN [Teams] AS [Team] ON Herb.[Collector Key]=Team.id) 
             LEFT JOIN [CoordinateSources] AS [Coor] ON Herb.[coordinateSource] = Coor.id)
               LEFT JOIN [Teams] AS [DetTeam] ON Dets.[Det by] = DetTeam.id 
-WHERE Dets.Current=True AND Geog.fullName LIKE '%", locatName, "%' 
+WHERE Dets.Current=True AND Geog.fullName LIKE '%", locatName, "%' AND Lnam.sortName LIKE '%", taxonName, "%' 
 ORDER BY Team.[name for display];")
 
 #AND Herb.[Latitude 1 Direction] IS NOT NULL 
@@ -139,7 +141,7 @@ FROM ((([Field notes] AS [Fiel] LEFT JOIN [Geography] AS [Geog] ON Fiel.Locality
         LEFT JOIN [Synonyms tree] AS [Snym] ON Fiel.determination = Snym.member)
          LEFT JOIN [Latin Names] AS [Lnam] ON Snym.[member of] = Lnam.id)
           LEFT JOIN [Teams] AS [Team] ON Fiel.[Collector Key]=Team.id
-WHERE Geog.fullName LIKE '%", locatName, "%'
+WHERE Geog.fullName LIKE '%", locatName, "%' AND Lnam.sortName LIKE '%", taxonName, "%' 
 ORDER BY Team.[name for display];")
 
 
@@ -181,7 +183,7 @@ LEFT JOIN (Geography AS [Geog]
 RIGHT JOIN LiteratureRecordLocations AS [LRLo] 
 ON Geog.ID = LRLo.locality) 
 ON Litr.id = LRLo.litrecid 
-WHERE Geog.fullName LIKE '%", locatName, "%'
+WHERE Geog.fullName LIKE '%", locatName, "%' AND Lnam.sortName LIKE '%", taxonName, "%' 
 ;")
 
 

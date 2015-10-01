@@ -46,14 +46,14 @@ livePadmeArabiaCon()
   #taxonName <- "Cyperaceae" (NB: this will not find things WITHIN Cyperaceae, only det AS Cyperaceae)
   #taxonName <- "Coelocarpum"
   #taxonName <- "Dracaena cinnabari"
-taxonName <- "Ochradenus"
+taxonName <- "Opuntia"
 
 # please input the location you're searching for, as shown in the examples below:
 # examples: 
 #taxonName <- "Socotra"
 #taxonName <- "Socotran Archipelago"
 #taxonName <- "Hadibo"
-locatName <- "Socotra"
+locatName <- "Arabian Peninsula"
 
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
