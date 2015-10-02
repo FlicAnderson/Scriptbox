@@ -106,3 +106,7 @@ table(datA_lebanon$basisofrecord)
 datA_lebanon_filtered <- 
   datA_lebanon %>%
     filter(basisofrecord != "FOSSIL_SPECIMEN")
+
+# check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff
+# check out http://hydrodictyon.eeb.uconn.edu/people/cmerow/home/r_resources_files/AMNH_R_Conference/Scripts/1_Matt_AielloLammens.R for anti-duplicates and such
+# check out http://www.esapubs.org/archive/ecos/C004/004/Rcode.R for species name edits and such
