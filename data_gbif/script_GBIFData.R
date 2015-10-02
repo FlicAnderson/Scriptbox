@@ -48,9 +48,61 @@ if (!require(dplyr)){
 #     EOF within quoted string
 # add argument: quote=""
 
-datA_algeria <- read.csv("O://CMEP\ Projects/IUCN-APSG/HabitatMapping_GBIFData/Algeria_Plantae_0002842-150922153815467/0002842-150922153815467.csv", header=TRUE, sep="\t", quote="", fill=TRUE, encoding="UTF-8", skipNul =TRUE)
+# set working directory to avoid ungainly file location strings:
+setwd("O://CMEP\ Projects/IUCN-APSG/HabitatMapping_GBIFData/")
 
-datA_lebanon <- read.csv("O://CMEP\ Projects/IUCN-APSG/HabitatMapping_GBIFData/Lebanon_Plantae_0002841-150922153815467/0002841-150922153815467.csv", header=TRUE, sep="\t", quote="", fill=TRUE, encoding="UTF-8", skipNul =TRUE)
+datA_algeria <- read.csv(
+  file="Algeria_Plantae_0002842-150922153815467/0002842-150922153815467.csv", 
+  header=TRUE, 
+  sep="\t", 
+  quote="", 
+  fill=TRUE, 
+  encoding="UTF-8", 
+  skipNul=TRUE
+  )
+# 48403 obs x 42 var
 
-datA_morocco <- read.csv("O://CMEP\ Projects/IUCN-APSG/HabitatMapping_GBIFData/Morocco_Plantae_0002839-150922153815467/0002839-150922153815467.csv", header=TRUE, sep="\t", quote="", fill=TRUE, encoding="UTF-8", skipNul =TRUE)
+datA_lebanon <- read.csv(
+  file="Lebanon_Plantae_0002841-150922153815467/0002841-150922153815467.csv", 
+  header=TRUE, 
+  sep="\t", 
+  quote="", 
+  fill=TRUE, 
+  encoding="UTF-8", 
+  skipNul=TRUE
+  )
+# 11869 obs x 42 var
 
+datA_morocco <- read.csv(
+  file="Morocco_Plantae_0002839-150922153815467/0002839-150922153815467.csv", 
+  header=TRUE, 
+  sep="\t", 
+  quote="", 
+  fill=TRUE, 
+  encoding="UTF-8", 
+  skipNul=TRUE
+  )
+# 131056 obs x 42 var
+
+# look at structure of data
+str(datA_lebanon)
+
+# make dplyr objects
+datA_algeria <- tbl_df(datA_algeria)
+datA_lebanon <- tbl_df(datA_lebanon)
+datA_morocco <- tbl_df(datA_morocco)
+
+
+# 2)
+
+# for one set (Lebanon), pull apart & filter out irrelevant data:
+
+# check out structure again
+glimpse(datA_lebanon)
+
+# for instance: need to remove fossil data
+table(datA_lebanon$basisofrecord)
+
+datA_lebanon_filtered <- 
+  datA_lebanon %>%
+    filter(basisofrecord != "FOSSIL_SPECIMEN")
