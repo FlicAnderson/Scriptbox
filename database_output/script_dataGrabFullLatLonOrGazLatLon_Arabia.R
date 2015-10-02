@@ -1,4 +1,4 @@
-## Padme Output :: script_dataGrabFullLatLonOrGazLatLon_Arabia.R
+## Padme Output  :: script_dataGrabFullLatLonOrGazLatLon_Arabia.R
 # ==============================================================================
 # (30th September 2015)
 # Author: Flic Anderson
@@ -318,7 +318,7 @@ head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$colle
   # head(recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),])
   #
 # resave recGrab without that erroneous record!
-#recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),]
+recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$AnyLat)),]
   #
   # DONE!
   ###
