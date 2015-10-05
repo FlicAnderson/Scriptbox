@@ -49,7 +49,8 @@ if (!require(dplyr)){
 # add argument: quote=""
 
 # set working directory to avoid ungainly file location strings:
-setwd("O://CMEP\ Projects/IUCN-APSG/HabitatMapping_GBIFData/")
+setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/GLOBAL/IUCN\ Habitat\ Mapping/HabitatMapping_GBIFData/")
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/GLOBAL/IUCN\ Habitat\ Mapping/HabitatMapping_GBIFData/"
 
 datA_algeria <- read.csv(
   file="Algeria_Plantae_0002842-150922153815467/0002842-150922153815467.csv", 
@@ -137,9 +138,29 @@ datA_lebanon_filtered <-
   
 #glimpse(datA_lebanon_filtered)
 
+# number of distinct taxa
+length(unique(datA_lebanon_filtered$scientificname))
+# 706
+
 # percentage of usable records left:
 round(nrow(datA_lebanon_filtered)/nrow(datA_lebanon)*100, digits=1)
 # 20.1% :P
+
+## write out as CSV for GIS stuff:
+write.csv(
+  datA_lebanon_filtered[
+    order(
+      datA_lebanon_filtered$scientificname, 
+      datA_lebanon_filtered$basisofrecord, 
+      na.last=TRUE),], 
+  file=paste0(
+    fileLocat, 
+    "GBIF_lebanon_filtered_", 
+    Sys.Date(), 
+    ".csv"), 
+  na="", 
+  row.names=FALSE
+)
 
 
 # create filtered ALGERIA dataset:
@@ -157,6 +178,22 @@ datA_algeria_filtered <-
 round(nrow(datA_algeria_filtered)/nrow(datA_algeria)*100, digits=1)
 # 20.3% :P
 
+## write out as CSV for GIS stuff:
+write.csv(
+  datA_algeria_filtered[
+    order(
+      datA_algeria_filtered$scientificname, 
+      datA_algeria_filtered$basisofrecord, 
+      na.last=TRUE),], 
+  file=paste0(
+    fileLocat, 
+    "GBIF_algeria_filtered_", 
+    Sys.Date(), 
+    ".csv"), 
+  na="", 
+  row.names=FALSE
+)
+
 
 # create filtered MOROCCO dataset:
 datA_morocco_filtered <- 
@@ -173,7 +210,21 @@ datA_morocco_filtered <-
 round(nrow(datA_morocco_filtered)/nrow(datA_morocco)*100, digits=1)
 # 48.6% :P
 
-
+## write out as CSV for GIS stuff:
+write.csv(
+  datA_morocco_filtered[
+    order(
+      datA_morocco_filtered$scientificname, 
+      datA_morocco_filtered$basisofrecord, 
+      na.last=TRUE),], 
+  file=paste0(
+    fileLocat, 
+    "GBIF_morocco_filtered_", 
+    Sys.Date(), 
+    ".csv"), 
+  na="", 
+  row.names=FALSE
+)
 
 
 
