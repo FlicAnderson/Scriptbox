@@ -100,12 +100,82 @@ datA_morocco <- tbl_df(datA_morocco)
 # check out structure again
 glimpse(datA_lebanon)
 
-# for instance: need to remove fossil data
-table(datA_lebanon$basisofrecord)
+# # for instance: need to remove fossil data
+#   table(datA_lebanon$basisofrecord)
+#   # 47 fossil specimens
+# 
+# # need to remove NA lat/lons:
+#   
+#   # number of NA decimal latitudes:
+#   nrow(datA_lebanon[which(is.na(datA_lebanon$decimallatitude)),])
+#   #8708
+# 
+#   # number of NA decimal longitudes:
+#   nrow(datA_lebanon[which(is.na(datA_lebanon$decimallongitude)),])
+#   #8708
+# 
+# # need to remove "0" value lat/lons: 
+#   
+#   # number of "0" value latitudes:
+#   nrow(datA_lebanon[which(datA_lebanon$decimallatitude==0),])
+#   # 771
+#   
+#   # number of "0" value longitudes:
+#   nrow(datA_lebanon[which(datA_lebanon$decimallongitude==0),])
+#   # 771
+  
 
+
+# create filtered LEBANON dataset:
 datA_lebanon_filtered <- 
   datA_lebanon %>%
-    filter(basisofrecord != "FOSSIL_SPECIMEN")
+    filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
+    filter(!is.na(decimallatitude)) %>%
+    filter(!is.na(decimallongitude)) %>%
+    filter(decimallatitude != 0) %>%
+    filter(decimallongitude != 0) 
+  
+#glimpse(datA_lebanon_filtered)
+
+# percentage of usable records left:
+round(nrow(datA_lebanon_filtered)/nrow(datA_lebanon)*100, digits=1)
+# 20.1% :P
+
+
+# create filtered ALGERIA dataset:
+datA_algeria_filtered <- 
+  datA_algeria %>%
+  filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
+  filter(!is.na(decimallatitude)) %>%
+  filter(!is.na(decimallongitude)) %>%
+  filter(decimallatitude != 0) %>%
+  filter(decimallongitude != 0) 
+
+#glimpse(datA_algeria_filtered)
+
+# percentage of usable records left:
+round(nrow(datA_algeria_filtered)/nrow(datA_algeria)*100, digits=1)
+# 20.3% :P
+
+
+# create filtered MOROCCO dataset:
+datA_morocco_filtered <- 
+  datA_morocco %>%
+  filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
+  filter(!is.na(decimallatitude)) %>%
+  filter(!is.na(decimallongitude)) %>%
+  filter(decimallatitude != 0) %>%
+  filter(decimallongitude != 0) 
+
+#glimpse(datA_morocco_filtered)
+
+# percentage of usable records left:
+round(nrow(datA_morocco_filtered)/nrow(datA_morocco)*100, digits=1)
+# 48.6% :P
+
+
+
+
 
 # check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff
 # check out http://hydrodictyon.eeb.uconn.edu/people/cmerow/home/r_resources_files/AMNH_R_Conference/Scripts/1_Matt_AielloLammens.R for anti-duplicates and such
