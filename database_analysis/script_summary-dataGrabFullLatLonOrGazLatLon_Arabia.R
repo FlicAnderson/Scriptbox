@@ -95,6 +95,20 @@ arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
 # no easy example here
 
 
+# exclude NON-socotra data & show 
+arabiaData %>%
+  filter(grepl("*Socotra*", fullLocation)==TRUE) %>%
+  select(recID, fullLocation)
+# 20,279 obs @ 06/Oct/2015
+
+# exclude Socotran data fully & reload this as arabiaData; show
+arabiaData <- 
+  arabiaData %>%
+    filter(grepl("*Socotra*", fullLocation)==FALSE)
+arabiaData %>%
+  select(recID, fullLocation)
+# 85,091 obs @ 06/Oct/2015
+
 # group_by(data, grouping variable)
 group_by(arabiaData, acceptDetAs)
 
@@ -117,18 +131,21 @@ by_sps_sum
 
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
-#1844 @ 06/Oct/2015
+# 1608 @ 06/Oct/2015
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
-#1706 @ 06/Oct/2015
+# 1513 @ 06/Oct/2015
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 2265 taxa with >10 unique latlon locations @ 06/Oct/2015
+# 1956 taxa with >10 unique latlon locations @ 06/Oct/2015
 
 # Location with greatest number of taxa?
 # ?
 
 # Taxa with greatest number of locations?
 # ?
+
+# unique datapoints(excl herbarium-dups, badSQL-dups, mult.entry-dups, etc)
+
