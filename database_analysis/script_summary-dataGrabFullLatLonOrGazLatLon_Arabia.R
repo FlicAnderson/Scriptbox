@@ -9,7 +9,7 @@
 #
 # AIM:  Summarises data from script_dataGrabFullLatLonOrGazLatLon_Arabia.R script
 # ....  number of unique datapoints, various info on types of records, families, 
-# ....  breakdown by collector, 
+# ....  breakdown by collector 
 #
 # ---------------------------------------------------------------------------- #
 
