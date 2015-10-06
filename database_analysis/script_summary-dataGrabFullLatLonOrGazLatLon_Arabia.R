@@ -149,3 +149,12 @@ filter(by_sps_sum, count>10)
 
 # unique datapoints(excl herbarium-dups, badSQL-dups, mult.entry-dups, etc)
 
+
+# grasses vs non-grasses
+arabiaData %>% 
+  filter(familyName=="Gramineae")
+  # 15,605 grasses 
+# percentage of all records which are grasses :
+  round(100*(nrow(arabiaData %>% filter(familyName=="Gramineae"))/nrow(arabiaData)), digits=1)
+  # 18.3% of all records
+  
