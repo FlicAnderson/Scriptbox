@@ -16,8 +16,8 @@
 
 # CODE SUMMARY # 
 
-# 0) 
-# 1)  
+# 0) install/load packages
+# 1) load data
 # 2) 
 # 3) 
 # 4) 
@@ -39,6 +39,9 @@ if (!require(dplyr)){
 
 source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Arabia.R")
 
+
+# 2) diagnostic stuff
+
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
 # 5254 taxa at 6 October 2015
@@ -47,24 +50,13 @@ length(unique(recGrab$acceptDetAs))
 taxaListArabia <- unique(recGrab$acceptDetAs)
 #head(sort(taxaListArabia))
 
-#message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/taxaListArabia_", Sys.Date(), ".csv"))
 # write list of unique taxa
+#message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/taxaListArabia_", Sys.Date(), ".csv"))
 #write.csv(sort(taxaListArabia), file=paste0("O://CMEP\ Projects/taxaListArabia_", Sys.Date(), ".csv"), row.names=FALSE)
-
 
 # Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
 length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
 # 6323 @ 06/Oct/2015
-
-# Number of taxa with >10 unique locations?
-# 1706 unique named locations OR 2265 unique lat+lon combos @ 06/07/2015, see below
-
-# Location with greatest number of taxa?
-# ?
-
-# Taxa with greatest number of locations?
-# ?
-
 
 # use DPLYR to manipulate data
 
@@ -74,26 +66,34 @@ arabiaData <- tbl_df(recGrab)
 # get names of variables
 names(arabiaData)
 
+### dplyr showcase START ###
+
 #?manip  # gives info on manipulation functions
 
 # select() {dplyr} function:
-# pulls out only some variables
+  # pulls out only some variables
+  # select(datasource, column1, column2, column5)
+  select(arabiaData, acceptDetAs, collector, collNumFull)
 
-# select(datasource, column1, column2, column5)
-select(arabiaData, acceptDetAs, collector, collNumFull)
+# filter() {dplyr} function:
+  # filter by specific criteria
+  # filter(datasource, column1 subset, column5 subset)
+  filter(arabiaData, acceptDetAs=="Aerva revoluta Balf.f.")
 
-# filter(datasource, column1 subset, column5 subset)
-filter(arabiaData, acceptDetAs=="Aerva revoluta Balf.f.")
+# arrange() {dplyr} function:
+  # sort & order columns, but don't need to stick to original display order of columns
+  # arrange(datasource, column5 in ascending order, desc(column2) in descending order)
+  arrange(arabiaData, acceptDetAs, dateYY, collector)
 
-# arrange(datasource, column5 in ascending order, desc(column2) in descending order)
-arrange(arabiaData, acceptDetAs, dateYY, collector)
-
-# mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
-arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+# mutate() {dplyr} function:
+  # create new columns as functions of other columns
+  # mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
+  arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
 
 # summarize(datasource, summarizingcolumn = summarizing function(column3))
-# no easy example here
+  # no easy example here
 
+### dplyr showcase END ###
 
 # exclude NON-socotra data & show 
 arabiaData %>%
@@ -158,3 +158,6 @@ arabiaData %>%
   round(100*(nrow(arabiaData %>% filter(familyName=="Gramineae"))/nrow(arabiaData)), digits=1)
   # 18.3% of all records
   
+
+# list taxa & number of unique points (by field, herb, literature)
+# split by collector
