@@ -4,8 +4,7 @@
 # Author: Flic Anderson
 #
 # dependant on: O://CMEP\-Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Arabia.R
-# saved at: O://CMEP\ Projects/Scriptbox/database_analysis/script_summary-dataGrabFullLatLonOrGazLatLon_Arabia.R
-# source: 
+#
 # source("O:/CMEP\ Projects/Scriptbox/database_analysis/script_summary-dataGrabFullLatLonOrGazLatLon_Arabia.R")
 #
 # AIM:  Summarises data from script_dataGrabFullLatLonOrGazLatLon_Arabia.R script
@@ -39,6 +38,8 @@ if (!require(dplyr)){
 
 source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Arabia.R")
 
+# remove non-useful stuff
+rm(qry1, qry2, qry3, locat_livePadmeArabia, herbRex, fielRex, litrRex)
 
 # 2) diagnostic stuff
 
@@ -161,3 +162,4 @@ arabiaData %>%
 
 # list taxa & number of unique points (by field, herb, literature)
 # split by collector
+
