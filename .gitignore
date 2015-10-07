@@ -21,5 +21,5 @@
 */.Rproj.user/*
 
 # API tokens
-web_APIs/API-token_*.txt
+.Renviron
 
