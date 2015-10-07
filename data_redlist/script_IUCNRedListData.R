@@ -38,8 +38,7 @@ if (!require(dplyr)){
 # 1)
 
 # data location
-datLocat <- "O://CMEP\ Projects/IUCN-APSG/Red\ List/IUCN-RedlistData_AlgeriaMoroccoLebanon_Plantae_incSspsV
-ars_native_uncertain/export-64526.csv"
+datLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/GLOBAL/IUCN\ Habitat\ Mapping/Red\ List/IUCN-RedlistData_AlgeriaMoroccoLebanon_Plantae_incSspsVars_native_uncertain/export-64526.csv"
 
 # read data
 datA <- read.csv(datLocat, header=TRUE)
@@ -94,7 +93,17 @@ datA %>%
 
 # 3) 
 
-# analysis bit?
+# pull out species names for 3 threatened categories:
+threatenedTaxa <- 
+        datA %>%
+                group_by(Species.ID) %>%
+                filter(Red.List.status=="CR"|Red.List.status=="EN"|Red.List.status=="VU") %>%
+                summarise(
+                        # taxa is combo of various name fields (trimmed whitespace out)
+                        taxon=trimws(paste(Genus, Species, Infraspecific.name, sep=" "))
+                ) %>%
+                arrange(taxon) %>%
+                print
 
 
 # 4)
@@ -105,5 +114,10 @@ datA %>%
 # 5) 
 
 # save output
-
+write.csv(
+        threatenedTaxa, 
+        file=paste0("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/GLOBAL/IUCN\ Habitat\ Mapping/Red\ List/", "IUCNthreatenedTaxa_AlgeriaMoroccoLebanon.csv"), 
+        na="", 
+        row.names=FALSE
+)
   
