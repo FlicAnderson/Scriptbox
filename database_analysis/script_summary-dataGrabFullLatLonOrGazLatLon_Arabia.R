@@ -44,11 +44,11 @@ rm(qry1, qry2, qry3, locat_livePadmeArabia, herbRex, fielRex, litrRex)
 # 2) diagnostic stuff
 
 # Number of taxa:
-length(unique(recGrab$acceptDetAs))
+#length(unique(recGrab$acceptDetAs))
 # 5254 taxa at 6 October 2015
 
 # create object
-taxaListArabia <- unique(recGrab$acceptDetAs)
+#taxaListArabia <- unique(recGrab$acceptDetAs)
 #head(sort(taxaListArabia))
 
 # write list of unique taxa
@@ -56,7 +56,7 @@ taxaListArabia <- unique(recGrab$acceptDetAs)
 #write.csv(sort(taxaListArabia), file=paste0("O://CMEP\ Projects/taxaListArabia_", Sys.Date(), ".csv"), row.names=FALSE)
 
 # Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
-length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
+#length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
 # 6323 @ 06/Oct/2015
 
 # use DPLYR to manipulate data
@@ -74,22 +74,22 @@ names(arabiaData)
 # select() {dplyr} function:
   # pulls out only some variables
   # select(datasource, column1, column2, column5)
-  select(arabiaData, acceptDetAs, collector, collNumFull)
+#  select(arabiaData, acceptDetAs, collector, collNumFull)
 
 # filter() {dplyr} function:
   # filter by specific criteria
   # filter(datasource, column1 subset, column5 subset)
-  filter(arabiaData, acceptDetAs=="Aerva revoluta Balf.f.")
+#  filter(arabiaData, acceptDetAs=="Aerva revoluta Balf.f.")
 
 # arrange() {dplyr} function:
   # sort & order columns, but don't need to stick to original display order of columns
   # arrange(datasource, column5 in ascending order, desc(column2) in descending order)
-  arrange(arabiaData, acceptDetAs, dateYY, collector)
+#  arrange(arabiaData, acceptDetAs, dateYY, collector)
 
 # mutate() {dplyr} function:
   # create new columns as functions of other columns
   # mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
-  arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+#  arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
 
 # summarize(datasource, summarizingcolumn = summarizing function(column3))
   # no easy example here
@@ -98,7 +98,10 @@ names(arabiaData)
 
 
   # 3)
-   
+
+# make LatLon column from concat'd AnyLat & AnyLon
+arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))  
+
  
 # exclude NON-socotra data & show 
 arabiaData %>%
