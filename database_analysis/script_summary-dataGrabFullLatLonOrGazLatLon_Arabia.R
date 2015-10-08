@@ -17,8 +17,8 @@
 
 # 0) install/load packages
 # 1) load data
-# 2) 
-# 3) 
+# 2) tbl_df() data for use by dplyr
+# 3) remove Socotra data (it'd skew community stuff)
 # 4) 
 # 5) 
 
@@ -96,6 +96,10 @@ names(arabiaData)
 
 ### dplyr showcase END ###
 
+
+  # 3)
+   
+ 
 # exclude NON-socotra data & show 
 arabiaData %>%
   filter(grepl("*Socotra*", fullLocation)==TRUE) %>%
