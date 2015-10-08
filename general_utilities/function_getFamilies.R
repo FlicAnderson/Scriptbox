@@ -45,9 +45,9 @@ getFamilies <- function(){
         # run query, store as 'families' object
         families <- sqlQuery(con_livePadmeArabia, qry)
  
-        message("... family names got: object named 'families' - ")
-        message("... link to LnSy.lnamID for finding families of accepted names") 
-        message("... or Herb.lnamID for not accepted names")
+        #message("... family names got: object named 'families' - ")
+        #message("... link to LnSy.lnamID for finding families of accepted names") 
+        #message("... or Herb.lnamID for not accepted names")
         
         # does recGrab object exist?  
         exists("recGrab")
