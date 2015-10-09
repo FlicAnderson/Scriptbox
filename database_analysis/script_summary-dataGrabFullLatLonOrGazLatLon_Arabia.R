@@ -169,4 +169,18 @@ arabiaData %>%
 
 # list taxa & number of unique points (by field, herb, literature)
 # split by collector
+  
+  # to split by source:
+  grepl("H-*", head(arabiaData$recID))
 
+  # pull out herbarium records only
+arabiaData %>%
+        filter(grepl("H-*", recID))
+
+# pull out field obs records only
+arabiaData %>%
+        filter(grepl("F-*", recID))
+
+# pull out literature records only
+arabiaData %>%
+        filter(grepl("L-*", recID))
