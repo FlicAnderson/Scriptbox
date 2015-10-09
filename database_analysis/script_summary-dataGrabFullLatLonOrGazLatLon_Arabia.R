@@ -39,7 +39,7 @@ if (!require(dplyr)){
 source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Arabia.R")
 
 # remove non-useful stuff
-rm(qry1, qry2, qry3, locat_livePadmeArabia, herbRex, fielRex, litrRex)
+rm(qry1, qry2, qry3, locat_livePadmeArabia, herbRex, fielRex, litrRex, dups)
 
 # 2) diagnostic stuff
 
