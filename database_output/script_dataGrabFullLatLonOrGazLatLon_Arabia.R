@@ -199,8 +199,9 @@ LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 
 # build LITR query
 # adapted from script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# 'SELECT DISTINCT' as opposed to just 'SELECT' to reduce duplicate records where same location is listed multiple times in ONE literature record. See note below query for more details.
 qry3 <- paste0("
-SELECT 'L-' & Litr.id AS recID, 
+SELECT DISTINCT 'L-' & Litr.id AS recID, 
 Auth.[name for display] AS collector,
 Litr.id AS collNumFull, 
 LnSy.[id] AS lnamID, ",
@@ -264,6 +265,8 @@ LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 # order by collector string:
 "ORDER BY Litr.id;")
 
+# NB: Literature records can contain MORE THAN ONE LOCATION, so you'll get 1 record ID listed multiple times & it's due to having one record per location!  These aren't true duplicated records, these are LEGIT. (Or I can't do anything about them because it's designed that way, at any rate...)
+
 
 
 # 3)
@@ -325,12 +328,22 @@ recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$
 
 ### Any duplicate IDs?
   table(duplicated(recGrab$recID))
-  #  FALSE   TRUE 
-  # 105325     46
+  # FALSE   TRUE 
+  # 105324    15
 
   # use forward and backward duplicated() to pull in all duplicates
   dups <- bind_rows(recGrab[which(duplicated(recGrab$recID)),], recGrab[which(duplicated(recGrab$recID, fromLast=TRUE)),])
   dups <- dups[order(dups$recID),]
+
+  #blackListTaxon_Medicago_coronata <- factor("H-45383", "H-74502", "H-74503", "H-74504")
+
+  # NB: Literature records can contain MORE THAN ONE LOCATION, so you'll get 1 record ID listed multiple times & it's due to having one record per location!  These aren't true duplicated records, these are LEGIT. (Or I can't do anything about them because it's designed that way, at any rate...)
+
+# FIX: remove problematic duplicate records (blacklist recIDs go into the grepl as OR options):
+recGrab <- 
+  recGrab %>% 
+        filter(grepl("H-45383|H-74502|H-74503|H-74504", recID)==FALSE)
+  
 ###
 
 # pull out families from Latin Names table
