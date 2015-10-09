@@ -171,7 +171,7 @@ arabiaData %>%
 # split by collector
   
   # to split by source:
-  grepl("H-*", head(arabiaData$recID))
+  #grepl("H-*", head(arabiaData$recID))
 
   # pull out herbarium records only
 arabiaData %>%
@@ -184,3 +184,7 @@ arabiaData %>%
 # pull out literature records only
 arabiaData %>%
         filter(grepl("L-*", recID))
+
+
+# data > sort by collector
+
