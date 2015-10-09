@@ -327,8 +327,9 @@ recGrab <- recGrab[-which(recGrab$coordSourcePlus=="Gazetteer" && is.na(recGrab$
   table(duplicated(recGrab$recID))
   #  FALSE   TRUE 
   # 105325     46
-  #
-  dups <- recGrab[which(duplicated(recGrab$recID)),]
+
+  # use forward and backward duplicated() to pull in all duplicates
+  dups <- bind_rows(recGrab[which(duplicated(recGrab$recID)),], recGrab[which(duplicated(recGrab$recID, fromLast=TRUE)),])
   dups <- dups[order(dups$recID),]
 ###
 
