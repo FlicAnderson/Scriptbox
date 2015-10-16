@@ -17,12 +17,20 @@ checkNames_csv <- function(){
   # for dets where no other original dets exist, list all taxon names from importSource where taxon name is NOT in Padme taxa list (nameZ) 
   # => "crrntDetREQFIX"
   
+  # fixed version
+    crrntDetREQFIX <<- data.frame(Taxon=crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),])
+  
   # vvvvvvvvvvvvvv  THIS ROW NEEDS CHECKING!!!  vvvvvvvvvvvvvvvvvv
-  crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),]
+  #crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),]
   # ^^^^^^^^^^^^^^  THIS ROW NEEDS CHECKING!!!  ^^^^^^^^^^^^^^^^^^
   #line above replaces line below:
   #crrntDetREQFIX <<- crrntDet[which(crrntDet$Taxon %in% nameZ$sortName == FALSE),]
-  
+
+  # length(crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),])
+  #tested <<- data.frame(crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),])
+  #tester <- data.frame(crrntDet[which(crrntDet$Taxon %in% nameZ[,1] == FALSE),])
+    
+    
   # output list of names which need to be fixed/examined
   if(nrow(crrntDetREQFIX)!=0){
     print(paste0(
@@ -39,6 +47,7 @@ checkNames_csv <- function(){
     )
   }
     
+  
   #print(paste0("...", length(origNameREQFIX), " names need to be fixed from original names << ",importSource))
 }
 
