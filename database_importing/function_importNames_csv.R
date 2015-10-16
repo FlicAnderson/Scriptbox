@@ -91,6 +91,9 @@ if(inputFormat[1]==TRUE && inputFormat[2]==TRUE && inputFormat[3]==TRUE){
         # pattern which finds end spaces:
         # pattern_endspace <- "[ ]$"
         fullnames <- gsub("([ ])+$", "", fullnames)
+        
+        # I think this belongs here?
+        crrntDet$Taxon <<- fullnames
 }
 
 # if ALL columns different:
@@ -109,15 +112,53 @@ if(inputFormat[1]==FALSE && inputFormat[2]==FALSE && inputFormat[3]==TRUE){
         colIndex <- c(colIndexSp, colIndexSsp)
         
         # join columns A (sp) to BC (ssp & auth)
+        
+        
+        
 }
 
 # if auth is different:
 if(inputFormat[1]==TRUE && inputFormat[2]==FALSE && inputFormat[3]==FALSE){        
         # auth is different
+        
         # set column index (takes account of whether auth is 0 (ie absent)):
         invisible(ifelse(colIndexAuth==0, colIndex <- c(colIndexSp), colIndex <- c(colIndexSp, colIndexAuth)))
         
-        # join columns AB (sp & ssp) to C (auth)
+        # sp & ssp are the same column, and there is NO Authority:
+        
+        # import the file
+        #check it pulls out the right data: strings NOT as.factors; ""=>NA
+        crrntDet <<- read.csv(file=importSource, header=TRUE, as.is=TRUE, na.strings="", nrows=as.numeric(rowIndexLast))
+        # preserve dataframe structure & call variable "Taxon"
+        crrntDet <<- data.frame(Taxon=crrntDet[as.numeric(rowIndex), as.numeric(colIndex)])
+        
+        # change variable name
+        # change the column names using <<- operator to allow the changes to be
+        # accessible from outside the function
+        if(names(crrntDet)[1]!="Taxon"){
+        names(crrntDet)[1] <<- "Taxon"   # use global env
+        names(crrntDet)[1] <- "Taxon"    # use local env
+        }
+        
+        # missing values
+        # are there any NA values in Species_Name column?
+        if(anyNA(crrntDet)){                                    # << this is broken. Fix somehow!
+                # find rows where is.NA for column 2 is TRUE
+                crrntDet[which(is.na(crrntDet[,1])==TRUE),]
+                # set these cells to empty string
+                #crrntDet[which(is.na(crrntDet[,1])),1] <- ""
+                # STILL TO FIGURE OUT WHAT TO DO WITH THESE OR HOW TO REMOVE
+                # remove the rows entirely
+                #        crrntDet <- crrntDet[-which(is.na(crrntDet)),]
+        }
+        
+        # recreating the 'full' subspecific names:
+        fullnames <- crrntDet
+
+        # if Auth is NOT 0, join columns AB (sp & ssp) to C (auth)
+        # To Be Coded...
+        
+        
 }
 
 # if ssp is different: 
@@ -259,7 +300,7 @@ if(inputFormat[1]==FALSE && inputFormat[2]==TRUE && inputFormat[3]==FALSE){
 
 print(".... name format not checked (TEMPORARY MEASURE), but data loaded in.")
 #   
-crrntDet$Taxon <<- fullnames
+#crrntDet$Taxon <<- fullnames
 #if(exists("crrntDet$Species_Name")){crrntDet$Species_Name <- NULL}
 
 #  #dim(crrntDet)
