@@ -85,6 +85,19 @@ datA_morocco <- read.csv(
   )
 # 131056 obs x 42 var
 
+datA_spain <- read.csv(
+        file="Spain_0000543-151016162008034/0000543-151016162008034.csv", 
+        header=TRUE, 
+        sep="\t", 
+        quote="", 
+        fill=TRUE, 
+        encoding="UTF-8", 
+        skipNul=TRUE
+)
+# 2927728 obs x 42 var
+
+
+
 # look at structure of data
 str(datA_lebanon)
 
@@ -92,6 +105,7 @@ str(datA_lebanon)
 datA_algeria <- tbl_df(datA_algeria)
 datA_lebanon <- tbl_df(datA_lebanon)
 datA_morocco <- tbl_df(datA_morocco)
+datA_spain <- tbl_df(datA_spain)
 
 
 # 2)
@@ -224,6 +238,45 @@ write.csv(
     ".csv"), 
   na="", 
   row.names=FALSE
+)
+
+
+# create filtered SPAIN (Andalucian region) dataset:
+datA_spain_filtered <- 
+        datA_spain %>%
+        filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
+        filter(!is.na(decimallatitude)) %>%
+        filter(!is.na(decimallongitude)) %>%
+        filter(decimallatitude != 0) %>%
+        filter(decimallongitude != 0) %>%
+        filter(decimallatitude > 35.9) %>%
+        filter(decimallatitude < 38.8) %>%
+        filter(decimallongitude > -7.6) %>%
+        filter(decimallongitude < -1.6) %>%
+        filter(year > 2000)
+               
+
+
+#glimpse(datA_spain_filtered)
+
+# percentage of usable records left:
+round(nrow(datA_spain_filtered)/nrow(datA_spain)*100, digits=1)
+# 99.9% :P
+
+## write out as CSV for GIS stuff:
+write.csv(
+        datA_spain_filtered_[
+                order(
+                        datA_spain_filtered$scientificname, 
+                        datA_spain_filtered$basisofrecord, 
+                        na.last=TRUE),], 
+        file=paste0(
+                fileLocat, 
+                "GBIF_spain_filtered_", 
+                Sys.Date(), 
+                ".csv"), 
+        na="", 
+        row.names=FALSE
 )
 
 
