@@ -188,3 +188,15 @@ arabiaData %>%
 
 # data > sort by collector
 
+
+### 23 Oct 2015
+# Alan requires output thus:
+
+# For all taxa with >5 unique occurences
+# By family
+#       list each species       column of unique dots
+# possibly add column with 'Y' if there are also over 10 unique occurrences
+
+# for 'unique occurence', maybe do function:
+# unique occurrence = different(collector, collectionNumber, date, location, taxon)
+
