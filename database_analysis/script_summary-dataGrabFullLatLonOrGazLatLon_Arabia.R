@@ -200,3 +200,33 @@ arabiaData %>%
 # for 'unique occurence', maybe do function:
 # unique occurrence = different(collector, collectionNumber, date, location, taxon)
 
+# don't need recGrab object any more
+rm(recGrab)
+
+#<- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+
+
+# records by family, species & listing ~unique records (where there are >5 unique location points/'dots on map')
+arabiaData %>%
+        mutate(recordInfo=paste(acceptDetAs, collector, LatLon)) %>%
+        group_by(familyName, acceptDetAs) %>%        # group by familyName AND accepted det
+        arrange(acceptDetAs) %>%         # sort by acceptDetAs
+        summarize(count=n(),
+                  #collectedBy=n_distinct(collector), 
+                  #mostRecentCollection=max(dateYY, na.rm=TRUE), 
+                  uniqueLatLon=n_distinct(LatLon),
+                  AppxUniqueRex=n_distinct(recordInfo)
+                  #uniqueLocation=n_distinct(fullLocation)
+        ) %>%
+        filter(uniqueLatLon>5) # only show taxa where there are over 5 unique Lat/Lon combos
+        #head
+
+
+
+
+## pull out data for 1 taxon:
+#arabiaData %>% 
+#        filter(acceptDetAs=="Asystasia guttata (Forssk.) Brummitt") %>%
+#        glimpse
+
+        
