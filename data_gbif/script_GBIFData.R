@@ -96,6 +96,28 @@ datA_spain <- read.csv(
 )
 # 2927728 obs x 42 var
 
+datA_egypt <- read.csv(
+        file="Egypt_0010477-151016162008034/0010477-151016162008034.csv", 
+        header=TRUE, 
+        sep="\t", 
+        quote="", 
+        fill=TRUE, 
+        encoding="UTF-8", 
+        skipNul=TRUE
+)
+# 6524 obs x 42 var
+
+datA_tunisia <- read.csv(
+        file="Tunisia_0010478-151016162008034/0010478-151016162008034.csv", 
+        header=TRUE, 
+        sep="\t", 
+        quote="", 
+        fill=TRUE, 
+        encoding="UTF-8", 
+        skipNul=TRUE
+)
+# 10194 obs x 42 var
+
 
 
 # look at structure of data
@@ -106,6 +128,8 @@ datA_algeria <- tbl_df(datA_algeria)
 datA_lebanon <- tbl_df(datA_lebanon)
 datA_morocco <- tbl_df(datA_morocco)
 datA_spain <- tbl_df(datA_spain)
+datA_egypt <- tbl_df(datA_egypt)
+datA_tunisia <- tbl_df(datA_tunisia)
 
 
 # 2)
@@ -273,6 +297,70 @@ write.csv(
         file=paste0(
                 fileLocat, 
                 "GBIF_spain_filtered_", 
+                Sys.Date(), 
+                ".csv"), 
+        na="", 
+        row.names=FALSE
+)
+
+
+# create filtered EGYPT dataset:
+datA_egypt_filtered <- 
+        datA_egypt %>%
+        filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
+        filter(!is.na(decimallatitude)) %>%
+        filter(!is.na(decimallongitude)) %>%
+        filter(decimallatitude != 0) %>%
+        filter(decimallongitude != 0) 
+
+#glimpse(datA_egypt_filtered)
+
+# percentage of usable records left:
+round(nrow(datA_egypt_filtered)/nrow(datA_egypt)*100, digits=1)
+# 96.9% :P
+
+## write out as CSV for GIS stuff:
+write.csv(
+        datA_egypt_filtered[
+                order(
+                        datA_egypt_filtered$scientificname, 
+                        datA_egypt_filtered$basisofrecord, 
+                        na.last=TRUE),], 
+        file=paste0(
+                fileLocat, 
+                "datA_egypt_filtered_", 
+                Sys.Date(), 
+                ".csv"), 
+        na="", 
+        row.names=FALSE
+)
+
+
+# create filtered TUNISIA dataset:
+datA_tunisia_filtered <- 
+        datA_tunisia %>%
+        filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
+        filter(!is.na(decimallatitude)) %>%
+        filter(!is.na(decimallongitude)) %>%
+        filter(decimallatitude != 0) %>%
+        filter(decimallongitude != 0) 
+
+#glimpse(datA_tunisia_filtered)
+
+# percentage of usable records left:
+round(nrow(datA_tunisia_filtered)/nrow(datA_tunisia)*100, digits=1)
+# 99.5% :P
+
+## write out as CSV for GIS stuff:
+write.csv(
+        datA_egypt_filtered[
+                order(
+                        datA_tunisia_filtered$scientificname, 
+                        datA_tunisia_filtered$basisofrecord, 
+                        na.last=TRUE),], 
+        file=paste0(
+                fileLocat, 
+                "datA_tunisia_filtered_", 
                 Sys.Date(), 
                 ".csv"), 
         na="", 
