@@ -207,6 +207,7 @@ rm(recGrab)
 
 
 # records by family, species & listing ~unique records (where there are >5 unique location points/'dots on map')
+filteredArabiaData <- 
 arabiaData %>%
         mutate(recordInfo=paste(acceptDetAs, collector, LatLon)) %>%
         group_by(familyName, acceptDetAs) %>%        # group by familyName AND accepted det
@@ -221,12 +222,21 @@ arabiaData %>%
         filter(uniqueLatLon>5) # only show taxa where there are over 5 unique Lat/Lon combos
         #head
 
-
-
+# write this out to CSV
+write.csv(
+        filteredArabiaData,
+        file=file.choose(),
+        na="", 
+        row.names=FALSE
+)
 
 ## pull out data for 1 taxon:
 #arabiaData %>% 
 #        filter(acceptDetAs=="Asystasia guttata (Forssk.) Brummitt") %>%
 #        glimpse
 
-        
+
+# VERY IMPORTANT!
+# CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
+odbcCloseAll()
+#rm(list=ls())
