@@ -131,6 +131,9 @@ precisSource <- precis
 # then drop first column, then levels=c(X, Y, Precision) or something
 # then maybe sth like *apply or whatever to use regex to gsub(pattern, "", data)?
 
+locatInfo <- datA_SocITA[1:4,]
+
+
 
 # 3)
 
