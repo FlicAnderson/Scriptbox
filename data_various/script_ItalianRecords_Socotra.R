@@ -83,7 +83,7 @@ head(datA_SocITA[,1:10])
 str(datA_SocITA)
 
 # make dplyr objects
-datA_SocITA <- tbl_df(datA_SocITA)
+#datA_SocITA <- tbl_df(datA_SocITA)
 
 # 2)
 
@@ -119,13 +119,17 @@ precis <- precis[3:length(precis)]      # only use precision info
 precisSize <- precis
         # keep only first part of string 
         # keep everything before the ';' (eg. "1Km")
-
+gsub("[0-9A-Za-z]*\;", "", precisSize)
 
 precisSource <- precis
         # keep only second part of the string
         # keep only everything after the ';' (eg. "according the map of...")
 
 
+
+# actually maybe better to pull out the first 4 rows, 
+# then drop first column, then levels=c(X, Y, Precision) or something
+# then maybe sth like *apply or whatever to use regex to gsub(pattern, "", data)?
 
 
 # 3)
