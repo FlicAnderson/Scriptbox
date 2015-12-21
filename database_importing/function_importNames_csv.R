@@ -14,9 +14,15 @@ importNames_csv <- function(){
 
 # REQUIRE USER INPUT FOR ROW SUBSET
 # get first row:
-rowIndexFirst <<- as.numeric(readline(prompt="........ enter FIRST ROW index to read in from - format '1' ... "))
+message("........ enter FIRST ROW index to read in from")
+message("........ headings are NOT counted, so 1 as first row is fine")
+message("........ format: 1")
+rowIndexFirst <<- as.numeric(readline(prompt="........ enter FIRST ROW index... "))
 # get second row:
-rowIndexLast <<- as.numeric(readline(prompt="........ enter LAST ROW index to read in - format '295' (if uncertain as to exact number, overestimate slightly!) ... "))
+message("........ enter LAST ROW index to read in")
+message("........ if uncertain as to exact number, overestimate slightly!")
+message("........ format: 295")
+rowIndexLast <<- as.numeric(readline(prompt="........ enter LAST ROW index... "))
 # fix character -> numeric problem
 rowIndex <<- rowIndexFirst:rowIndexLast
 # rowIndex now contains range of rows to pull in and check.
@@ -24,17 +30,28 @@ rowIndex <<- rowIndexFirst:rowIndexLast
 
 # get column where species names are held (sp):
 # colIndexSp holds sp
-message("........ enter species name (sp) COLUMN index, for example: column 10 contains 'Adenium obesum' - format '10'")
+message("........ enter species name (sp) COLUMN index")
+message("........ for example: column 10 contains 'Adenium obesum'")
+message("........ format: 10")
 colIndexSp <<- as.numeric(readline(prompt="........ enter species name (sp) COLUMN index... "))
 
 # get column where subspecific names (ssp) are held:
 # colIndexSsp holds ssp
-message("........ enter subspecific epithets (ssp) COLUMN index, for example column 11 contains 'subsp. sokotranum'; these may be in a separate column, or the same column as species names. If there are NO subspecific epithets or you are unsure, enter the same column as your species names - format '11'")
+message("........ enter subspecific epithets (ssp) COLUMN index")
+message("........ for example column 11 contains 'subsp. sokotranum'")
+message("........ subspecific names may be in separate column, or same column as species names")
+message("........ NOTE: if there are NO subspecific epithets, enter same column as species names")
+message("........ NOTE: if you are unsure, enter same column as species names")
+message("........ format: 11")
 colIndexSsp <<- as.numeric(readline(prompt="........ enter subspecific epithets (ssp) COLUMN index... "))
 
 # get column where authorities are held (auth): 
 # colIndexAuth holds auth
-message("........ enter COLUMN index for taxon authorities (auth),  for example column 12 contains '(Vierh.) Lav.' - format '12'; authorities may be in a separate column, or the same column as species names. If there is NO authority information, enter '0'")
+message("........ enter COLUMN index for taxon authorities (auth)")
+message("........ for example column 12 contains '(Vierh.) Lav.'")
+message("........ authorities may be in separate column, or same column as species names")
+message("........ format: 12")
+message("........ NOTE: if there is NO authority information, enter: 0")
 colIndexAuth <<- as.numeric(readline(prompt="........ enter taxon authority name (auth) COLUMN index... "))
 
 
@@ -298,7 +315,8 @@ if(inputFormat[1]==FALSE && inputFormat[2]==TRUE && inputFormat[3]==FALSE){
 # #  ## Unfinished: need to implement a way of fixing format or outputting 
 # #  ## those with formatting issues.  It's probably best to do this by hand
 
-print(".... name format not checked (TEMPORARY MEASURE), but data loaded in.")
+print("... name format not checked (TEMPORARY MEASURE), but data loaded in")
+print("... this doesn't alter name checking process.")
 #   
 #crrntDet$Taxon <<- fullnames
 #if(exists("crrntDet$Species_Name")){crrntDet$Species_Name <- NULL}
