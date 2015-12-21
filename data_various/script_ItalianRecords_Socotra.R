@@ -32,6 +32,11 @@ if (!require(dplyr)){
   install.packages("dplyr")
   library(dplyr)
 }
+if (!require(xlsx)){
+        install.packages("xlsx")
+        library(xlsx)
+}
+
 
 
 # 1)
@@ -49,25 +54,27 @@ if (!require(dplyr)){
 # add argument: quote=""
 
 # set working directory to avoid ungainly file location strings:
-setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records/")
-fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records/"
+setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/ToImport_ItalianData")
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/ToImport_ItalianData"
 
-datA_KUFS <- read.csv(
-  file="KUFS.csv", 
-  header=TRUE, 
-  sep="", 
+datA_SocITA <- read.csv(
+  file="IMPORTCOPY_Socotra_dataplot_17112015.csv", 
+  header=FALSE, 
+  sep=",", 
   quote="", 
   fill=TRUE, 
   encoding="UTF-8", 
   skipNul=TRUE
   )
-# 23428 obs x 1 var
+# 484 obs x 437 var
 
-dat_KUFS <- read.xlsx(
-        file="KUFS.csv", 
+head(datA_SocITA)
+
+dat_SocITA <- read.xlsx(
+        file="IMPORTCOPY_Socotra_dataplot_17112015.csv", 
         sheetIndex = 1,
         
-        )
+)
 
 
 
