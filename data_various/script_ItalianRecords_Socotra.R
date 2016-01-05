@@ -145,9 +145,13 @@ precisSize <- precision
         # keep everything before the ';' (eg. "1Km")
 #gsub("[0-9A-Za-z]*\;", "", precisSize)         # doesn't work fully yet
 
+# try strsplit()
+precisSize <- unlist(strsplit(precision, "; "))
+
 precisSource <- precision
         # keep only second part of the string
         # keep only everything after the ';' (eg. "according the map of...")
+
 
 
 # put everything together in one dataframe that's set out nicely:
@@ -161,8 +165,8 @@ locatDat <- data.frame(relvNum=relvNum, x=xCoords, y=yCoords, precision=precisio
 # X = Eastings?
 # Y = Northings?
 
-# req proj4 package.
-# or req rgdal package
+# req proj4 package (THIS WASN'T EASY TO USE!)
+# or req rgdal package (THIS WAS BETTER!)
 
 
 # using proj4:
@@ -189,15 +193,32 @@ locatDat <- cbind(locatDat, longlatcoor)
 # fix names of new columns
 names(locatDat)[5]<- "Lon_dec"
 names(locatDat)[6] <- "Lat_dec"
-# show first five rows
-locatDat[1:5,]
+# show first six rows
+head(locatDat)
 
 
+# Precision info
+# using {reshape2} package with colsplit() function...
+# split into:
+#       precision-size
+#       location info source  
+
+locatDat <- transform(
+                locatDat, 
+                precision=colsplit(
+                        precision, 
+                        pattern="; ", 
+                        names=c("value", "source")
+                        )
+                )
+
+head(locatDat)
 
 
 # 3)
 
 # filter out missing co-ords probably => filtered_datA_SocITA
+
 
 
 # write this out to CSV
