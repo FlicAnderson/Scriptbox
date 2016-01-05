@@ -32,11 +32,11 @@ if (!require(dplyr)){
   install.packages("dplyr")
   library(dplyr)
 }
-# {proj4} - mapping and projection library, for converting UTM to DMS
-if (!require(proj4)){
-        install.packages("proj4")
-        library(proj4)
-}
+# # {proj4} - mapping and projection library, for converting UTM to DMS
+# if (!require(proj4)){
+#         install.packages("proj4")
+#         library(proj4)
+# }
 # {rgdal} - also methods for converting UTM to DMS
 if (!require(rgdal)){
         install.packages("rgdal")
@@ -79,7 +79,7 @@ fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2
 
 datA_SocITA <- read.csv(
   file="IMPORTCOPY_Socotra_dataplot_17112015.csv", 
-  header=TRUE, # no headers since these things are a bit screwed up
+  header=FALSE, # no headers since these things are a bit screwed up
   sep=",", 
   quote="\"",
   fill=TRUE, 
@@ -87,7 +87,7 @@ datA_SocITA <- read.csv(
   encoding="UTF-8", 
   skipNul=TRUE
   )
-# 484 obs x 437 var
+# 484 obs x 437/?398? var
 
 # show a little of the data
 head(datA_SocITA[,1:10])
@@ -121,18 +121,37 @@ str(datA_SocITA)
 #glimpse(datA_SocITA)
 
 ## Releve number
-#releveNum <- datA_SocITA[1,]                    # pull out first row
-#releveNum <- releveNum[3:length(releveNum)]     # only include releve numbers
-## this is OUT OF DATE, since headers are now the releve number, eg. X1=1st, etc
+relvNum <- datA_SocITA[1,3:ncol(datA_SocITA)]  # only use releve numbers (rm 1st 2 junkCols)
+relvNum <- as.vector(relvNum, mode="numeric")
+
+xCoords <- datA_SocITA[2,3:ncol(datA_SocITA)]  # only use X co-ord numbers (rm 1st 2 junkCols)
+xCoords <- as.vector(xCoords, mode="numeric")
+
+yCoords <- datA_SocITA[3,3:ncol(datA_SocITA)]  # only use Y co-ord numbers (rm 1st 2 junkCols)
+yCoords <- as.vector(yCoords, mode="numeric")
 
 
-# X co-ords
-xCoords <- datA_SocITA[1,]                    # pull out first row
-xCoords <- xCoords[3:length(xCoords)]         # only use X co-ord numbers (rm 1st 2 junkCols)
+precision <- datA_SocITA[4,3:ncol(datA_SocITA)]  # precision info (rm 1st 2 junkCols)
+precision <- as.vector(precision, mode="character")
 
-# Y co-ords
-yCoords <- datA_SocITA[2,]                    # pull out second row
-yCoords <- yCoords[2:length(yCoords)]         # only use Y co-ord numbers (rm 1st 2 junkCols)
+# Precision info
+# split into:
+#       precision-size
+#       location info source             
+
+
+precisSize <- precision
+        # keep only first part of string 
+        # keep everything before the ';' (eg. "1Km")
+#gsub("[0-9A-Za-z]*\;", "", precisSize)         # doesn't work fully yet
+
+precisSource <- precision
+        # keep only second part of the string
+        # keep only everything after the ';' (eg. "according the map of...")
+
+
+# put everything together in one dataframe that's set out nicely:
+locatDat <- data.frame(relvNum=relvNum, x=xCoords, y=yCoords, precision=precision)
 
 
 ## CONVERT UTM Eastings and Northings to Lat & Lon DMS!
@@ -146,44 +165,32 @@ yCoords <- yCoords[2:length(yCoords)]         # only use Y co-ord numbers (rm 1s
 # or req rgdal package
 
 
+# using proj4:
+# # create a matrix from columns X & Y and use project as in the question
+# project(as.matrix(dataset[,c("X","Y")]), "+proj=utm +zone=51 ellps=WGS84")
+# #             [,1]    [,2]
+# # [1,]   -48636.65 1109577
+# # [2,]   213372.05 5546301
+# # ...
+#project(as.matrix(locatDat[, c("x", "y")]), "+proj=utm +zone=39")
 
+# using rgdal
+library(rgdal)
 
-# Precision info
-# split into:
-#       precision-size
-#       location info source             
+# NB: presuming zone 39 was used, even though some of the Eastern side of 
+# Socotra seems to fall into zone 40.  I think it's still possible to use 39 projection tho
 
-precis <- datA_SocITA[3,]               # pull out third row
-precis <- precis[3:length(precis)]      # only use precision info
-
-precisSize <- precis
-        # keep only first part of string 
-        # keep everything before the ';' (eg. "1Km")
-#gsub("[0-9A-Za-z]*\;", "", precisSize)         # doesn't work fully yet
-
-precisSource <- precis
-        # keep only second part of the string
-        # keep only everything after the ';' (eg. "according the map of...")
-
-
-
-# actually maybe better to pull out the first 4 rows, 
-# then drop first column, then levels=c(X, Y, Precision) or something
-# then maybe sth like *apply or whatever to use regex to gsub(pattern, "", data)?
-
-locatInfo <- datA_SocITA[1:3,]
-locatInfo <- data.frame(datA_SocITA[1:3,])
-locatInfo <- locatInfo[,2:ncol(locatInfo)] # drop useless first column
-
-#transpose rows to columns
-locatInfo <- t(locatInfo)
-# gives:
-#                   1           2           
-# Relev.e9..number "X"         "Y"         
-# X1               "822460.62" "1396027.91"
-# X2               "822478.39" "1396957.73"
-
-
+# create spatial points object using coordinate reference system string UTM & zone specification
+utmcoor <- SpatialPoints(cbind(locatDat$x, locatDat$y), proj4string=CRS("+proj=utm +zone=39"))
+# transform coordinates to longitude, latitude (x, y)
+longlatcoor <- spTransform(utmcoor, CRS("+proj=longlat"))
+# bind longs and lats to the rest of the data
+locatDat <- cbind(locatDat, longlatcoor)
+# fix names of new columns
+names(locatDat)[5]<- "Lon_dec"
+names(locatDat)[6] <- "Lat_dec"
+# show first five rows
+locatDat[1:5,]
 
 
 
