@@ -32,6 +32,16 @@ if (!require(dplyr)){
   install.packages("dplyr")
   library(dplyr)
 }
+# {proj4} - mapping and projection library, for converting UTM to DMS
+if (!require(proj4)){
+        install.packages("proj4")
+        library(proj4)
+}
+# {rgdal} - also methods for converting UTM to DMS
+if (!require(rgdal)){
+        install.packages("rgdal")
+        library(rgdal)
+}
 #if (!require(xlsx)){
 #        install.packages("xlsx")
 #        library(xlsx)
@@ -56,18 +66,24 @@ if (!require(dplyr)){
 ## To get rid of error message:
 #       Error in read.table(file = file, header = header, sep = sep, quote = quote,  : 
 #       more columns than column names
-# change argument: header=TRUE to header=FALSE
+# change argument: header=TRUE to header=FALSE 
+# OR BETTER YET...
+# leave argument quote= set to default (quote="\"") instead of disabling with quote=""
+# this prevents issues from diacritics etc as found with probable-breaker "Relevé"
 
 # set working directory to avoid ungainly file location strings:
 setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/ToImport_ItalianData")
 fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/ToImport_ItalianData"
 
+
+
 datA_SocITA <- read.csv(
   file="IMPORTCOPY_Socotra_dataplot_17112015.csv", 
-  header=FALSE, # no headers since these things are a bit screwed up
+  header=TRUE, # no headers since these things are a bit screwed up
   sep=",", 
-  quote="", 
+  quote="\"",
   fill=TRUE, 
+  stringsAsFactors=FALSE,
   encoding="UTF-8", 
   skipNul=TRUE
   )
@@ -79,11 +95,22 @@ head(datA_SocITA[,1:10])
 
 
 
-# look at structure of data
+# look at structure of a little of the data
 str(datA_SocITA)
+
+
+## it's all sideways and messed up
+## fix this by transposing using t()
+#datA_SocITA <- t(datA_SocITA)
 
 # make dplyr objects
 #datA_SocITA <- tbl_df(datA_SocITA)
+# not yet...
+
+####testobj <- datA_SocITA
+
+
+
 
 # 2)
 
@@ -91,20 +118,33 @@ str(datA_SocITA)
 # releve numbers
 
 # check out structure again
-glimpse(datA_SocITA)
+#glimpse(datA_SocITA)
 
-# Releve number
-releveNum <- datA_SocITA[1,]                    # pull out first row
-releveNum <- releveNum[3:length(releveNum)]     # only include releve numbers
+## Releve number
+#releveNum <- datA_SocITA[1,]                    # pull out first row
+#releveNum <- releveNum[3:length(releveNum)]     # only include releve numbers
+## this is OUT OF DATE, since headers are now the releve number, eg. X1=1st, etc
 
 
 # X co-ords
-xCoords <- datA_SocITA[2,]                    # pull out second row
-xCoords <- xCoords[3:length(xCoords)]         # only use X co-ord numbers
+xCoords <- datA_SocITA[1,]                    # pull out first row
+xCoords <- xCoords[3:length(xCoords)]         # only use X co-ord numbers (rm 1st 2 junkCols)
 
 # Y co-ords
-yCoords <- datA_SocITA[3,]                    # pull out third row
-yCoords <- yCoords[3:length(yCoords)]         # only use Y co-ord numbers
+yCoords <- datA_SocITA[2,]                    # pull out second row
+yCoords <- yCoords[2:length(yCoords)]         # only use Y co-ord numbers (rm 1st 2 junkCols)
+
+
+## CONVERT UTM Eastings and Northings to Lat & Lon DMS!
+
+# Zones 39 or 40...
+# Northern Hemisphere
+# X = Eastings?
+# Y = Northings?
+
+# req proj4 package.
+# or req rgdal package
+
 
 
 
@@ -113,13 +153,13 @@ yCoords <- yCoords[3:length(yCoords)]         # only use Y co-ord numbers
 #       precision-size
 #       location info source             
 
-precis <- datA_SocITA[4,]               # pull out fourth row
+precis <- datA_SocITA[3,]               # pull out third row
 precis <- precis[3:length(precis)]      # only use precision info
 
 precisSize <- precis
         # keep only first part of string 
         # keep everything before the ';' (eg. "1Km")
-gsub("[0-9A-Za-z]*\;", "", precisSize)
+#gsub("[0-9A-Za-z]*\;", "", precisSize)         # doesn't work fully yet
 
 precisSource <- precis
         # keep only second part of the string
@@ -131,7 +171,20 @@ precisSource <- precis
 # then drop first column, then levels=c(X, Y, Precision) or something
 # then maybe sth like *apply or whatever to use regex to gsub(pattern, "", data)?
 
-locatInfo <- datA_SocITA[1:4,]
+locatInfo <- datA_SocITA[1:3,]
+locatInfo <- data.frame(datA_SocITA[1:3,])
+locatInfo <- locatInfo[,2:ncol(locatInfo)] # drop useless first column
+
+#transpose rows to columns
+locatInfo <- t(locatInfo)
+# gives:
+#                   1           2           
+# Relev.e9..number "X"         "Y"         
+# X1               "822460.62" "1396027.91"
+# X2               "822478.39" "1396957.73"
+
+
+
 
 
 
