@@ -27,26 +27,22 @@
 # 0) 
 
 # load required packages, install if they aren't installed already
+
 # {dplyr} - manipulating data & large data frames as tbl_df objects
 if (!require(dplyr)){
   install.packages("dplyr")
   library(dplyr)
 }
-# # {proj4} - mapping and projection library, for converting UTM to DMS
-# if (!require(proj4)){
-#         install.packages("proj4")
-#         library(proj4)
-# }
-# {rgdal} - also methods for converting UTM to DMS
+# {rgdal} - easy methods for converting UTM to DMS
 if (!require(rgdal)){
         install.packages("rgdal")
         library(rgdal)
 }
-#if (!require(xlsx)){
-#        install.packages("xlsx")
-#        library(xlsx)
-#}
-
+# reshape allows columns to be split up easily and data to be wrangled
+if (!require(reshape2)){
+        install.packages("reshape2")
+        library(reshape2)
+}
 
 
 # 1)
