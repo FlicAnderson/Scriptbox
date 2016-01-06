@@ -136,7 +136,7 @@ locatDat <- data.frame(
 )
 
 # tidy up
-rm(info)
+#rm(info)
 
 # 3) Change the coordinate system
 
@@ -148,7 +148,8 @@ rm(info)
 # Y = Northings
 
 # NB: presuming zone 39 was used, even though some of the Eastern side of 
-# Socotra seems to fall into zone 40.  I think it's still possible to use 39 projection tho
+# Socotra seems to fall into zone 40.  
+# Tried all this with zone 40 & not a single point was on land. Definitely zone 39.
 
 
 # using rgdal package (tried {proj4} but it wasn't easy to use)
@@ -211,25 +212,56 @@ head(locatDat)
 
 # 4) Show the output
 
-# filter out missing co-ords probably => filtered_datA_SocITA
+# filter out missing co-ords probably => filtered_SocITA
 
 # create tbl_df object to use dplyr for filtering and manipulation
 locatDat <- tbl_df(locatDat)
 
 # remove "0" lat/lons etc
+filtered_SocITA <- 
+        locatDat %>%
+                filter(y != 0 & x != 0)
+
+# temp
+locatDat <- 
+        locatDat %>%
+        filter(y != 0 & x != 0)
+
+# pull all zerolat/lons into one object to investigate later
+zeroGeorefLocatDat <- 
+        locatDat %>%
+                filter(y == 0 | x == 0)
+  # Odd thing: for some reason, even when x and y are 0, DMS is non-0 (eg 46E). 
+  # *shrugs* Maths :P
+
+
+# Error hunting...
+
+
+# map it out!
+library(leaflet)
+
+mapDat <- leaflet() %>%
+        # use default OpenStreetMap tiles
+        addTiles() %>%  
+        # add decimal degrees points (filtered ones with no zero-lat/lon)
+        addMarkers(lng=filtered_SocITA$Lon_dec, lat=filtered_SocITA$Lat_dec) %>%
+mapDat
+
+
 
 
 
 
 # 5) write out
 
-# write this out to CSV
-write.csv(
-        filtered_datA_SocITA,
-        file=file.choose(),
-        na="", 
-        row.names=FALSE
-)
+# # write this out to CSV
+# write.csv(
+#         filtered_datA_SocITA,
+#         file=file.choose(),
+#         na="", 
+#         row.names=FALSE
+# )
 
 
 # check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff
