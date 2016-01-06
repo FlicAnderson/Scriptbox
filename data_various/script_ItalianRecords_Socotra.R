@@ -41,10 +41,20 @@ if (!require(rgdal)){
         install.packages("rgdal")
         library(rgdal)
 }
-# reshape allows columns to be split up easily and data to be wrangled
+# {reshape} - allows columns to be split up easily and data to be wrangled
 if (!require(reshape2)){
         install.packages("reshape2")
         library(reshape2)
+}
+# {leaflet} - for mapping things out nicely
+if (!require(leaflet)){
+        install.packages("leaflet")
+        library(leaflet)
+}
+# {magrittr} - gives the chaining operator %>%
+if (!require(magrittr)){
+        install.packages("magrittr")
+        library(magrittr)
 }
 
 
@@ -239,14 +249,13 @@ zeroGeorefLocatDat <-
 
 
 # map it out!
-library(leaflet)
 
 mapDat <- leaflet() %>%
         # use default OpenStreetMap tiles
         addTiles() %>%  
         # add decimal degrees points (filtered ones with no zero-lat/lon)
         addMarkers(lng=filtered_SocITA$Lon_dec, lat=filtered_SocITA$Lat_dec) %>%
-mapDat
+        print
 
 
 
