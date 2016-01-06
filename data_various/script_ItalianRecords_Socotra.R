@@ -135,7 +135,8 @@ locatDat <- data.frame(
         )
 )
 
-
+# tidy up
+rm(info)
 
 # 3) Change the coordinate system
 
@@ -166,6 +167,9 @@ colnames(locatDat)[which(names(locatDat) == "coords.x2")] <- "Lat_dec"
 # names(data)[3] <- newname or whatever, 
 # since order changes cause breakage
 
+# tidy up
+# rm(utmcoor, longlatcoor, xCoords, yCoords)
+
 # {dplyr} function rename() 
 # rename(tbl_dfData, newColumnName=oldColumnName)
 #rename(locatDat, Lon_dec=coords.x1)
@@ -173,6 +177,34 @@ colnames(locatDat)[which(names(locatDat) == "coords.x2")] <- "Lat_dec"
 # BUT this doesn't work unless the data is already a tbl_df & the newname=oldname order is odd
 
 # show first six rows
+head(locatDat)
+
+# add Lat Deg/Min/Sec/Dir & Lon... etc columns for ease at import stage
+# use edited script developed by Daniela Cianci at http://www.edenextdata.com
+        # NOTE: data needs to work with this line for script to work:
+        #coord<-data.frame(latitude=locatDat$Lat_dec, longitude=locatDat$Lon_dec)
+source("O://CMEP\ Projects/Scriptbox/data_various/script_deg_to_dms.R")
+
+# split Longitude D, M & S
+DMSLon=colsplit(
+        DMSoutput$dms.lon,
+        pattern=":", 
+        names=c("Lon_deg", "Lon_min", "Lon_sec")
+)
+
+# split Latitude D, M & S
+DMSLat=colsplit(
+        DMSoutput$dms.lat,
+        pattern=":", 
+        names=c("Lat_deg", "Lat_min", "Lat_sec")
+)
+
+# join new DMS format onto locatDat
+locatDat <- cbind(locatDat, DMSLon, DMSLat)
+# rearrange the columns into this order: 
+# NOTE: LATITUDE THEN LONGITUDE NOW!! y then x. BE AWARE!
+locatDat <- locatDat[,c("relvNum", "y", "x", "Lat_deg", "Lat_min", "Lat_sec", "Lat_dec", "Lon_deg", "Lon_min", "Lon_sec", "Lon_dec", "info.precision", "info.source")]
+
 head(locatDat)
 
 
@@ -184,7 +216,7 @@ head(locatDat)
 # create tbl_df object to use dplyr for filtering and manipulation
 locatDat <- tbl_df(locatDat)
 
-
+# remove "0" lat/lons etc
 
 
 
