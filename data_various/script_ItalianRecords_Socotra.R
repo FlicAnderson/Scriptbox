@@ -99,10 +99,10 @@ datA_SocITA <- read.csv(
 # 484 obs x 398 var
 
 # show a little of the data
-head(datA_SocITA[,1:10])
+#head(datA_SocITA[,1:10])
 
 # look at structure of a little of the data
-str(datA_SocITA)
+#str(datA_SocITA)
 # (it's all sideways and messed up...)
 
 
@@ -188,7 +188,7 @@ colnames(locatDat)[which(names(locatDat) == "coords.x2")] <- "Lat_dec"
 # BUT this doesn't work unless the data is already a tbl_df & the newname=oldname order is odd
 
 # show first six rows
-head(locatDat)
+#head(locatDat)
 
 # add Lat Deg/Min/Sec/Dir & Lon... etc columns for ease at import stage
 # use edited script developed by Daniela Cianci at http://www.edenextdata.com
@@ -202,6 +202,10 @@ DMSLon=colsplit(
         pattern=":", 
         names=c("Lon_deg", "Lon_min", "Lon_sec")
 )
+# separate Direction off Degrees
+DMSLon$Lon_dir <- gsub(pattern="[0-9]", replacement="", DMSLon$Lon_deg)
+DMSLon$Lon_deg <- gsub(pattern="[A-Z]", replacement="", DMSLon$Lon_deg)
+
 
 # split Latitude D, M & S
 DMSLat=colsplit(
@@ -209,14 +213,19 @@ DMSLat=colsplit(
         pattern=":", 
         names=c("Lat_deg", "Lat_min", "Lat_sec")
 )
+# separate Direction off Degrees
+DMSLat$Lat_dir <- gsub(pattern="[0-9]", replacement="", DMSLat$Lat_deg)
+DMSLat$Lat_deg <- gsub(pattern="[A-Z]", replacement="", DMSLat$Lat_deg)
+
+
 
 # join new DMS format onto locatDat
 locatDat <- cbind(locatDat, DMSLon, DMSLat)
 # rearrange the columns into this order: 
 # NOTE: LATITUDE THEN LONGITUDE NOW!! y then x. BE AWARE!
-locatDat <- locatDat[,c("relvNum", "y", "x", "Lat_deg", "Lat_min", "Lat_sec", "Lat_dec", "Lon_deg", "Lon_min", "Lon_sec", "Lon_dec", "info.precision", "info.source")]
+locatDat <- locatDat[,c("relvNum", "y", "x", "Lat_dir", "Lat_deg", "Lat_min", "Lat_sec", "Lat_dec", "Lon_dir", "Lon_deg", "Lon_min", "Lon_sec", "Lon_dec", "info.precision", "info.source")]
 
-head(locatDat)
+#head(locatDat)
 
 
 
@@ -226,47 +235,72 @@ head(locatDat)
 
 # create tbl_df object to use dplyr for filtering and manipulation
 locatDat <- tbl_df(locatDat)
-
-# remove "0" lat/lons etc
-filtered_SocITA <- 
-        locatDat %>%
-                filter(y != 0 & x != 0)
-
-# temp
-locatDat <- 
-        locatDat %>%
-        filter(y != 0 & x != 0)
+# 396 obs x 15 var
 
 # pull all zerolat/lons into one object to investigate later
 zeroGeorefLocatDat <- 
         locatDat %>%
-                filter(y == 0 | x == 0)
-  # Odd thing: for some reason, even when x and y are 0, DMS is non-0 (eg 46E). 
-  # *shrugs* Maths :P
+        filter(y == 0 | x == 0)
+# Odd thing: for some reason, even when x and y are 0, DMS is non-0 (eg 46E). 
+# *shrugs* Maths :P
 
+# remove "0" lat/lons etc
+locatDat <- 
+        locatDat %>%
+                filter(y != 0 & x != 0)
+# goes down to 382 obs x 15 var
 
 # Error hunting...
 
-
 # map it out!
+leaflet() %>%
+# use default OpenStreetMap tiles
+        addTiles() %>%  
+        # add decimal degrees points (filtered ones with no zero-lat/lon)
+        addMarkers(lng=locatDat$Lon_dec, lat=locatDat$Lat_dec) %>%
+        print
 
-mapDat <- leaflet() %>%
+# use table to find wildly out of range points
+table(locatDat$Lat_deg)
+# 1  12   6 
+# 3 378   1 
+# 1 and 6 degrees N are not useful!
+
+table(locatDat$Lon_deg)
+# 53  54  59 
+# 182 196   4 
+# 59 degrees E is in the sea!
+
+# pull out dodgy records with these
+locatDat[which(locatDat$Lat_deg==1),]
+locatDat[which(locatDat$Lat_deg==6),]
+# releve numbers with BADLATS:
+# 165, 166, 296 
+locatDat[which(locatDat$Lon_deg==59),]
+# releve numbers with BADLONS:
+# 165, 166, 207, 229
+
+# Blacklist those 4 bad georef releves:
+filtered_SocITA <- 
+        locatDat %>%
+        filter(relvNum !=165, relvNum !=166, relvNum !=207, relvNum !=229)
+# this filter isn't elegant :c  but it's a hassle to get the logic alright otherwise
+# 378 obs x 15 var
+ 
+# map out filtered data to doublecheck!
+leaflet() %>%
         # use default OpenStreetMap tiles
         addTiles() %>%  
         # add decimal degrees points (filtered ones with no zero-lat/lon)
         addMarkers(lng=filtered_SocITA$Lon_dec, lat=filtered_SocITA$Lat_dec) %>%
         print
 
-
-
-
-
-
+ 
 # 5) write out
 
 # # write this out to CSV
 # write.csv(
-#         filtered_datA_SocITA,
+#         filtered_SocITA,
 #         file=file.choose(),
 #         na="", 
 #         row.names=FALSE
