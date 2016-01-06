@@ -146,7 +146,7 @@ locatDat <- data.frame(
 )
 
 # tidy up
-#rm(info)
+rm(info)
 
 # 3) Change the coordinate system
 
@@ -179,7 +179,7 @@ colnames(locatDat)[which(names(locatDat) == "coords.x2")] <- "Lat_dec"
 # since order changes cause breakage
 
 # tidy up
-# rm(utmcoor, longlatcoor, xCoords, yCoords)
+rm(utmcoor, longlatcoor, xCoords, yCoords)
 
 # {dplyr} function rename() 
 # rename(tbl_dfData, newColumnName=oldColumnName)
@@ -237,12 +237,12 @@ locatDat <- locatDat[,c("relvNum", "y", "x", "Lat_dir", "Lat_deg", "Lat_min", "L
 locatDat <- tbl_df(locatDat)
 # 396 obs x 15 var
 
-# pull all zerolat/lons into one object to investigate later
-zeroGeorefLocatDat <- 
-        locatDat %>%
-        filter(y == 0 | x == 0)
-# Odd thing: for some reason, even when x and y are 0, DMS is non-0 (eg 46E). 
-# *shrugs* Maths :P
+# # pull all zerolat/lons into one object to investigate later
+# zeroGeorefLocatDat <- 
+#         locatDat %>%
+#         filter(y == 0 | x == 0)
+# # Odd thing: for some reason, even when x and y are 0, DMS is non-0 (eg 46E). 
+# # *shrugs* Maths :P
 
 # remove "0" lat/lons etc
 locatDat <- 
@@ -295,13 +295,22 @@ leaflet() %>%
         addMarkers(lng=filtered_SocITA$Lon_dec, lat=filtered_SocITA$Lat_dec) %>%
         print
 
- 
+# tidy up
+rm(DMSLat, DMSLon, DMSoutput)
+
+
+
 # 5) write out
 
 # # write this out to CSV
 # write.csv(
 #         filtered_SocITA,
-#         file=file.choose(),
+#         #file=file.choose(),
+#         file=paste0(
+#                 fileLocat, 
+#                 "locationData_SocITA_filtered", 
+#                 Sys.Date(), 
+#                 ".csv"), 
 #         na="", 
 #         row.names=FALSE
 # )
