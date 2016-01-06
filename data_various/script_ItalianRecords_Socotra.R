@@ -18,11 +18,14 @@
 # 0) Load libraries, functions, source scripts
 # 1) Load import copy of data
 # 2) Mung/wrangle data into useful format
-# 3) Change coordinate system(? - uncertain if poss to do here, otherwise via GIS)
-# 4) Show the output
-# 5) Save the output to .csv
+# 3) Change coordinate system
+# 4) Filter out non-useful records (those without coordinates)
+# 5) Show the output
+# 6) Save the output to .csv
 
 # ---------------------------------------------------------------------------- #
+
+
 
 # 0) 
 
@@ -43,6 +46,7 @@ if (!require(reshape2)){
         install.packages("reshape2")
         library(reshape2)
 }
+
 
 
 # 1)
@@ -71,8 +75,7 @@ if (!require(reshape2)){
 setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/ToImport_ItalianData")
 fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/ToImport_ItalianData"
 
-
-
+#import csv
 datA_SocITA <- read.csv(
   file="IMPORTCOPY_Socotra_dataplot_17112015.csv", 
   header=FALSE, # no headers since these things are a bit screwed up
@@ -83,28 +86,14 @@ datA_SocITA <- read.csv(
   encoding="UTF-8", 
   skipNul=TRUE
   )
-# 484 obs x 437/?398? var
+# 484 obs x 398 var
 
 # show a little of the data
 head(datA_SocITA[,1:10])
 
-
-
-
 # look at structure of a little of the data
 str(datA_SocITA)
-
-
-## it's all sideways and messed up
-## fix this by transposing using t()
-#datA_SocITA <- t(datA_SocITA)
-
-# make dplyr objects
-#datA_SocITA <- tbl_df(datA_SocITA)
-# not yet...
-
-####testobj <- datA_SocITA
-
+# (it's all sideways and messed up...)
 
 
 
@@ -126,60 +115,42 @@ xCoords <- as.vector(xCoords, mode="numeric")
 yCoords <- datA_SocITA[3,3:ncol(datA_SocITA)]  # only use Y co-ord numbers (rm 1st 2 junkCols)
 yCoords <- as.vector(yCoords, mode="numeric")
 
-
-precision <- datA_SocITA[4,3:ncol(datA_SocITA)]  # precision info (rm 1st 2 junkCols)
-precision <- as.vector(precision, mode="character")
-
-# Precision info
-# split into:
-#       precision-size
-#       location info source             
-
-
-precisSize <- precision
-        # keep only first part of string 
-        # keep everything before the ';' (eg. "1Km")
-#gsub("[0-9A-Za-z]*\;", "", precisSize)         # doesn't work fully yet
-
-# try strsplit()
-precisSize <- unlist(strsplit(precision, "; "))
-
-precisSource <- precision
-        # keep only second part of the string
-        # keep only everything after the ';' (eg. "according the map of...")
-
-
+info <- datA_SocITA[4,3:ncol(datA_SocITA)]  # precision info (rm 1st 2 junkCols)
+info <- as.vector(info, mode="character")
 
 # put everything together in one dataframe that's set out nicely:
-locatDat <- data.frame(relvNum=relvNum, x=xCoords, y=yCoords, precision=precision)
+# AND split precision info into:
+#       precision-value
+#       location info source     
+# using {reshape2} package with colsplit() function...
 
+locatDat <- data.frame(
+        relvNum=relvNum, 
+        x=xCoords, 
+        y=yCoords, 
+        info=colsplit(
+                info,
+                pattern="; ", 
+                names=c("precision", "source")
+        )
+)
+
+
+
+# 3) Change the coordinate system
 
 ## CONVERT UTM Eastings and Northings to Lat & Lon DMS!
 
 # Zones 39 or 40...
 # Northern Hemisphere
-# X = Eastings?
-# Y = Northings?
-
-# req proj4 package (THIS WASN'T EASY TO USE!)
-# or req rgdal package (THIS WAS BETTER!)
-
-
-# using proj4:
-# # create a matrix from columns X & Y and use project as in the question
-# project(as.matrix(dataset[,c("X","Y")]), "+proj=utm +zone=51 ellps=WGS84")
-# #             [,1]    [,2]
-# # [1,]   -48636.65 1109577
-# # [2,]   213372.05 5546301
-# # ...
-#project(as.matrix(locatDat[, c("x", "y")]), "+proj=utm +zone=39")
-
-# using rgdal
-library(rgdal)
+# X = Eastings
+# Y = Northings
 
 # NB: presuming zone 39 was used, even though some of the Eastern side of 
 # Socotra seems to fall into zone 40.  I think it's still possible to use 39 projection tho
 
+
+# using rgdal package (tried {proj4} but it wasn't easy to use)
 # create spatial points object using coordinate reference system string UTM & zone specification
 utmcoor <- SpatialPoints(cbind(locatDat$x, locatDat$y), proj4string=CRS("+proj=utm +zone=39"))
 # transform coordinates to longitude, latitude (x, y)
@@ -187,35 +158,38 @@ longlatcoor <- spTransform(utmcoor, CRS("+proj=longlat"))
 # bind longs and lats to the rest of the data
 locatDat <- cbind(locatDat, longlatcoor)
 # fix names of new columns
-names(locatDat)[5]<- "Lon_dec"
-names(locatDat)[6] <- "Lat_dec"
+# {base R} version:
+#colnames(dataframe)[which(names(dataframe) == "oldColumnName")] <- "newColumnName"
+colnames(locatDat)[which(names(locatDat) == "coords.x1")] <- "Lon_dec"
+colnames(locatDat)[which(names(locatDat) == "coords.x2")] <- "Lat_dec"
+# Note: this version is better than:
+# names(data)[3] <- newname or whatever, 
+# since order changes cause breakage
+
+# {dplyr} function rename() 
+# rename(tbl_dfData, newColumnName=oldColumnName)
+#rename(locatDat, Lon_dec=coords.x1)
+#rename(locatDat, Lat_dec=coords.x2)
+# BUT this doesn't work unless the data is already a tbl_df & the newname=oldname order is odd
+
 # show first six rows
 head(locatDat)
 
 
-# Precision info
-# using {reshape2} package with colsplit() function...
-# split into:
-#       precision-size
-#       location info source  
 
-locatDat <- transform(
-                locatDat, 
-                precision=colsplit(
-                        precision, 
-                        pattern="; ", 
-                        names=c("value", "source")
-                        )
-                )
-
-head(locatDat)
-
-
-# 3)
+# 4) Show the output
 
 # filter out missing co-ords probably => filtered_datA_SocITA
 
+# create tbl_df object to use dplyr for filtering and manipulation
+locatDat <- tbl_df(locatDat)
 
+
+
+
+
+
+# 5) write out
 
 # write this out to CSV
 write.csv(
