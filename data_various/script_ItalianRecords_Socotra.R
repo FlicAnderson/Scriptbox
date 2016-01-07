@@ -446,18 +446,19 @@ filtered_SocITA <-
 
 # 5) write out
 
-# # write this out to CSV
-# write.csv(
-#         filtered_SocITA,
-#         #file=file.choose(),
-#         file=paste0(
-#                 fileLocat, 
-#                 "locationData_SocITA_filtered", 
-#                 Sys.Date(), 
-#                 ".csv"), 
-#         na="", 
-#         row.names=FALSE
-# )
+# write this out to CSV
+write.csv(
+        filtered_SocITA,
+        #file=file.choose(),
+        file=paste0(
+                fileLocat, 
+                "/",
+                "SocITAfiltered-", 
+                Sys.Date(), 
+                ".csv"), 
+        na="", 
+        row.names=FALSE
+)
 
 
 # check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff
