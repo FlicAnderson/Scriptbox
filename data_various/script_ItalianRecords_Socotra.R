@@ -321,6 +321,24 @@ source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatche
 # check scientific names
 latinNamesMatcher(4:485,2, 2, 0, "SocITA")
 
+# dodgy names
+badNames <- c(
+        "Olea hochstetteri",     
+                # African taxon - not in Ethnoflora, Padme, or Brown/Mies Socotra book
+        "Urochloa deflexa",      
+                # Species (& indeed that GENUS) not in Ethnoflora or Brown/Mies
+        "Hypoestes sokotrana",   
+                # Not in Ethnoflora or Brown/Mies, Padme has it (H. socotrana[sic]) as syn of H. pubescens Balf.f.
+        "Setaria adhaerens",     
+                # PROBABLY should be "Setaria verticillata" according to Flora of the Arabian Peninsula and Socotra Vol 5 pt 1, pg 221. This taxon name ("Setaria adhaerens") not found in Ethnoflora, Padme, or Brown/Mies Socotra book
+        "0"
+                # probably a typo which erased the actual name...
+)
+
+
+
+
+
 
 # deal with 1/0 presence data and link to locatDat
         # join to locatDat then filter out 0/bad latlons again to write out
