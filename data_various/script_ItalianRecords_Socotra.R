@@ -299,6 +299,39 @@ leaflet() %>%
 rm(DMSLat, DMSLon, DMSoutput)
 
 
+# deal with species names
+        # latinnamesmatcher.r
+
+# source latinNamesMatcher function (Note: NOT script_latinNamesMatcher.R!)
+source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatcher.R")
+
+# Call format:
+# latinNamesMatcher(rowIndex, colIndexSp, colIndexSsp, colIndexAuth, "oneWordDescription", ...)
+# help:
+        # rowIndex contains vertical range of rows to pull in and check (where species names are held)
+        # colIndexSp holds species names (sp)
+        # colIndexSsp holds subspecific names (ssp)
+                # NOTE: if there are NO subspecific epithets, enter same column as species names
+                # NOTE: if you are unsure, enter same column as species names
+        # colIndexAuth holds authorities (auth)
+                # NOTE: if there is NO authority information, enter: 0
+        # oneWordDescription should be a string with no spaces
+                # NOTE: underscores are ok, make description useful (eg. "SocotraVegSurvey_2008")
+
+# check scientific names
+latinNamesMatcher(4:485,2, 2, 0, "SocITA")
+
+
+# deal with 1/0 presence data and link to locatDat
+        # join to locatDat then filter out 0/bad latlons again to write out
+
+
+
+# create longform dataset
+
+
+
+
 
 # 5) write out
 
