@@ -56,8 +56,16 @@ if (!require(magrittr)){
         install.packages("magrittr")
         library(magrittr)
 }
-
-
+# {tidyr} - further data manipulation
+if (!require(tidyr)){
+        install.packages("tidyr")
+        library(tidyr)
+}
+# {sqldf} - SQL operations on R data frames
+if (!require(sqldf)){
+        install.packages("sqldf")
+        library(sqldf)
+}
 
 # 1)
 
@@ -145,6 +153,11 @@ locatDat <- data.frame(
         )
 )
 
+# change the names of info.precision and info.source to avoid sqldf problems with the dots later
+colnames(locatDat)[which(names(locatDat) == "info.precision")] <- "info_precision"
+colnames(locatDat)[which(names(locatDat) == "info.source")] <- "info_source"
+
+
 # tidy up
 rm(info)
 
@@ -223,7 +236,7 @@ DMSLat$Lat_deg <- gsub(pattern="[A-Z]", replacement="", DMSLat$Lat_deg)
 locatDat <- cbind(locatDat, DMSLon, DMSLat)
 # rearrange the columns into this order: 
 # NOTE: LATITUDE THEN LONGITUDE NOW!! y then x. BE AWARE!
-locatDat <- locatDat[,c("relvNum", "y", "x", "Lat_dir", "Lat_deg", "Lat_min", "Lat_sec", "Lat_dec", "Lon_dir", "Lon_deg", "Lon_min", "Lon_sec", "Lon_dec", "info.precision", "info.source")]
+locatDat <- locatDat[,c("relvNum", "y", "x", "Lat_dir", "Lat_deg", "Lat_min", "Lat_sec", "Lat_dec", "Lon_dir", "Lon_deg", "Lon_min", "Lon_sec", "Lon_dec", "info_precision", "info_source")]
 
 #head(locatDat)
 
@@ -335,19 +348,99 @@ badNames <- c(
                 # probably a typo which erased the actual name...
 )
 
-
-
-
-
+# blacklist badNames
+# filtered ....
+# TO DO
 
 # deal with 1/0 presence data and link to locatDat
-        # join to locatDat then filter out 0/bad latlons again to write out
+        # join to locatDat then filter out 0/bad latlons again & badNames to write out
 
+# create species dataset
+spsDat <- data.frame(datA_SocITA[6:nrow(datA_SocITA),2:ncol(datA_SocITA)])
 
+# rename fields
+names(spsDat)[1] <- "taxon"
+names(spsDat)[2:ncol(spsDat)] <- relvNum
+#names(spsDat)[1:10]
+#names(spsDat)
 
 # create longform dataset
 
+# gather presence values into one column
+spsDat <- spsDat %>%
+        # gather releve numbers into a column (releveNum) 
+                # create presence column (presence) 
+                        # don't gather taxon names (- taxon)
+                                # leave NA values in
+        gather(releveNum, presence, -taxon, na.rm=FALSE)
 
+head(spsDat)
+
+# how many records absence, how many presence
+table(spsDat$presence)
+# NA       1 
+# 182458 7226
+
+
+# convert to tbl_df
+spsDat <- tbl_df(spsDat)
+
+# only present taxa
+spsDat <- 
+        spsDat %>%
+                filter(presence==1)
+
+
+
+# join releve locations onto the sps data
+totalDat <- 
+        sqldf(
+                "SELECT 
+                        taxon, 
+                        presence, 
+                        releveNum, 
+                        y AS Northing_UTM39WGS84, 
+                        x AS Easting_UTM39WGS84, 
+                        Lat_dir, 
+                        Lat_deg, 
+                        Lat_min, 
+                        Lat_sec, 
+                        Lat_dec, 
+                        Lon_dir, 
+                        Lon_deg, 
+                        Lon_min, 
+                        Lon_sec, 
+                        Lon_dec, 
+                        info_precision, 
+                        info_source 
+                FROM spsDat 
+                LEFT JOIN locatDat 
+                        ON spsDat.releveNum = locatDat.relvNum"
+        )
+# 7226 obs x 17 var (07/01/2016)
+
+# view a chunk (10 x 10)
+totalDat[2000:2010,1:10]
+
+# filter totalDat to avoid badNames and badLatLons
+# Blacklist those 4 bad georef releves:
+filtered_SocITA <- 
+        totalDat %>%
+                filter(
+                        Northing_UTM39WGS84 != 0, # no zero
+                        Easting_UTM39WGS84 != 0,  # no zero
+                        releveNum != 165,  # exclude bad latlons
+                        releveNum != 166,  # "
+                        releveNum != 207,  # "
+                        releveNum != 229,  # "
+                        taxon != "Olea hochstetteri",  # remove uncertain taxa
+                        taxon != "Urochloa deflexa",    # "
+                        taxon != "Hypoestes sokotrana", # " 
+                        taxon != "Setaria adhaerens",   # "
+                        taxon != "0"                    # this taxon has NO NAME :P
+                )
+# this filter isn't elegant :c  but it's a hassle to get the logic alright otherwise
+# 6893 obs x 17 var
 
 
 
