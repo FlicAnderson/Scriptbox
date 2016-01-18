@@ -36,10 +36,16 @@ if (!require(RODBC)){
   install.packages("RODBC")
   library(RODBC)
 } 
+# {sqldf} - using SQL query style to manipulate R objects & data frames
 if (!require(sqldf)){
         install.packages("sqldf")
         library(sqldf)
 } 
+# {dplyr} - manipulating data & large data frames as tbl_df objects
+if (!require(dplyr)){
+        install.packages("dplyr")
+        library(dplyr)
+}
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
@@ -272,6 +278,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 04/06/2015 6089 rm Socotra w/o latlon
 # 05/06/2015 6155 with only accepted names 
 # 08/06/2015 6149 (fixed some latin names taxonomy in padme)
+# 18/01/2016 6172 (after adding some specimens)
 fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
 # 04/06/2015 12037 rm Socotra w/o latlon
@@ -321,6 +328,20 @@ recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 
 # reorder so genus is after acceptDetNoAuth but before the 'detAs'/unaccepted name
 recGrab <<- recGrab[,c(1:7,29,8:28)]
+
+
+# pull out taxonomic rank from Latin Names table & apply to all recGrab records
+source('O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R')
+getRanks()
+
+# split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
+source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
+getDetReqSpx()
+
+# add herbarium info to herbarium specimens (in herbSpxReqDet object)
+source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
+getHerbariumCode()
+
 
 #########################################
 
