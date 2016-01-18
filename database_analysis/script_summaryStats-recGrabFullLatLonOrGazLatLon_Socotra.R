@@ -22,10 +22,15 @@ if (!require(RODBC)){
         install.packages("RODBC")
         library(RODBC)
 } 
-
-# open connection to live padme
-source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
-livePadmeArabiaCon()
+# {dplyr} - data manupulation
+if (!require(dplyr)){
+        install.packages("dplyr")
+        library(dplyr)
+} 
+# 
+# # open connection to live padme
+# source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
+# livePadmeArabiaCon()
 
 
 # 1)
@@ -58,6 +63,7 @@ write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/taxaLis
 # Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
 length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
 # 889 @ 08/06/2015
+# 907 @ 18/01/2015
 
 # Number of taxa with >10 unique locations?
 # 175 unique named locations OR 255 unique lat+lon combos @ 06/07/2015, see below
@@ -71,18 +77,17 @@ length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
 
 # use DPLYR to manipulate data
 
-# load required packages, install if they aren't installed already
-# {dplyr} - data manupulation
-if (!require(dplyr)){
-        install.packages("dplyr")
-        library(dplyr)
-} 
-
 # load the data into a dataframe tbl data object aka tbl-df
 socotraData <- tbl_df(recGrab)
 
 # get names of variables
 names(socotraData)
+# [1] "recID"      "collector"          "collNumFull"        "lnamID"             "taxRank"           
+# [6] "familyName" "acceptDetAs"        "acceptDetNoAuth"    "genusName"          "detAs"             
+# [11] "lat1Dir"   "lat1Deg"            "lat1Min"            "lat1Sec"            "lat1Dec"           
+# [16] "AnyLat"    "lon1Dir"            "lon1Deg"            "lon1Min"            "lon1Sec"           
+# [21] "lon1Dec"   "AnyLon"             "coordSource"        "coordAccuracy"      "coordAccuracyUnits"
+# [26] "coordSourcePlus" "dateDD"       "dateMM"             "dateYY"             "fullLocation"  
 
 #?manip  # gives info on manipulation functions
 
@@ -126,7 +131,7 @@ by_sps_sum
 
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
-#255
+#258
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
@@ -134,7 +139,7 @@ filter(by_sps_sum, uniqueLocation>10)
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 350 taxa with >10 unique latlon locations
+# 352 taxa with >10 unique latlon locations
 # NB: shows Adenium with 193 occurrences, and Adenium obesum with 103 & Adenium 
 # obesum subsp sokotranum with 44 occurrences.  These should all come under one 
 # taxa - Adenium obesum subsp sokotranum w/ 340 occurences!
