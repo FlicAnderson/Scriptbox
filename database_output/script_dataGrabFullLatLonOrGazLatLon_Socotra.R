@@ -343,22 +343,59 @@ source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R
 getHerbariumCode()
 
 
+# still need to filter out the herbarium specimens for sorting though.
+# KEEP: 
+# ones which have geolocation
+# ones at E (or no-herbarium-code, since that's probably a lot)
+# 
+
+# add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object)
+source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
+getFlicsFields()
+
+
 #########################################
 
 
 # 5)
 
-# write to .csv file  
+# write ALL >>>recGrab<<< to .csv file  
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!
 #message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
 #write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 
+# write >>>herbSpxReqDet<<<to .csv file  
+# UNCOMMENT THESE TWO LINES TO WRITE OUT!
+#message(paste0(" ... saving species-level-det-requiring herbarium records to: O://CMEP\ Projects/Socotra/DeterminationRequired_herbariumSpecimens-Socotra_", Sys.Date(), ".csv"))
+#write.csv(herbSpxReqDet[order(herbSpxReqDet$collector, herbSpxReqDet$dateYY, herbSpxReqDet$collNumFull, herbSpxReqDet$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/DeterminationRequired_herbariumSpecimens-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+
+
 
 # VERY IMPORTANT!
-# CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
+# CLOSE DATABASE CONNECTIONS
 odbcCloseAll()
+
+# REMOVE ALL OBJECTS FROM WORKSPACE!
 #rm(list=ls())
+
+# REMOVE SOME OBJECTS FROM WORKSPACE!
+        # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
+        # (eg. connections, recGrab, etc):
+rm(list=setdiff(ls(), 
+                c(
+                "recGrab", 
+                "herbSpxReqDet", 
+                "taxaListSocotra",
+                "con_livePadmeArabia", 
+                "livePadmeArabiaCon"
+                )
+        )
+)
+
+# VERY IMPORTANT!
+# CLOSE THE CONNECTION!
+odbcCloseAll()
 
 print(" ... datagrab complete!")
 
