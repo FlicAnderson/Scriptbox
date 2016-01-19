@@ -404,6 +404,18 @@ getFlicsFields()
 # recGrab unaltered
 # herbSpxReqDet 666 x 35 var & order changed
 
+str(herbSpxReqDet)
+herbSpxReqDet <- tbl_df(herbSpxReqDet)
+herbSpxReqDet
+
+table(herbSpxReqDet$herbariumCode, useNA="ifany")
+# BM    E       HNT     K       UPS     <NA> 
+#  5    358     8       1       36      258
+# we only can determine specimens at E, really
+
+
+
+
 
 #########################################
 
