@@ -58,16 +58,50 @@ getHerbariumCode <- function(){
         # join ranks to recGrab records
         herbSpxReqDet <- sqldf("SELECT * FROM herbSpxReqDet LEFT JOIN herbariaInfo ON herbSpxReqDet.origID=herbariaInfo.herbspecID")
         
-        #names(herbSpxReqDet)
-        
         # it shows herbariumCode: <NA> where there's no herbarium code, 
         # also shows herbspecID: NA - this doesn't matter, since the logic is OK :)
         # inner join doesn't include records with no herbarium code & is therefore inappropriate!
-        
-        # remove additional herbspecID column
-        herbSpxReqDet <<- herbSpxReqDet[,c(1:3,33,4:30)]
+ 
+        # remove additional herbspecID column & final column order:
+        herbSpxReqDet <<- herbSpxReqDet[,c(
+                "recID", 
+                "collector", 
+                "collNumFull", 
+                "herbariumCode", 
+                "lnamID", 
+                "taxRank", 
+                "familyName", 
+                "acceptDetAs", 
+                "acceptDetNoAuth", 
+                "genusName", 
+                "detAs", 
+                "lat1Dir", 
+                "lat1Deg", 
+                "lat1Min", 
+                "lat1Sec", 
+                "lat1Dec", 
+                "AnyLat", 
+                "lon1Dir", 
+                "lon1Deg", 
+                "lon1Min", 
+                "lon1Sec", 
+                "lon1Dec", 
+                "AnyLon", 
+                "coordSource", 
+                "coordAccuracy",
+                "coordAccuracyUnits", 
+                "coordSourcePlus", 
+                "dateDD", 
+                "dateMM", 
+                "dateYY",
+                "fullLocation"
+                )]
         
         # output message
-        message(paste0("... herbarium code info added to the ", nrow(herbSpxReqDet), " herbarium specimens requiring species-level determination"))
+        message(paste0(
+                "... herbarium code info added to the ", 
+                nrow(herbSpxReqDet), 
+                " herbarium specimens requiring species-level determination"
+                ))
         
 }
