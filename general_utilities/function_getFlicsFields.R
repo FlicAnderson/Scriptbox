@@ -59,6 +59,50 @@ getFlicsFields <- function(){
         
         #names(herbSpxReqDet)
         
-        # remove additional herbspecID & origID columns
-        herbSpxReqDet <<- herbSpxReqDet[,c(1:31, 34:37)]
-}
+        # remove additional herbspecID & origID columns & final column order:
+        herbSpxReqDet <<- herbSpxReqDet[,c(
+                "recID", 
+                "collector", 
+                "collNumFull", 
+                "herbariumCode", 
+                "lnamID", 
+                "taxRank", 
+                "familyName", 
+                "acceptDetAs", 
+                "acceptDetNoAuth", 
+                "genusName", 
+                "detAs", 
+                "lat1Dir", 
+                "lat1Deg", 
+                "lat1Min", 
+                "lat1Sec", 
+                "lat1Dec", 
+                "AnyLat", 
+                "lon1Dir", 
+                "lon1Deg", 
+                "lon1Min", 
+                "lon1Sec", 
+                "lon1Dec", 
+                "AnyLon", 
+                "coordSource", 
+                "coordAccuracy",
+                "coordAccuracyUnits", 
+                "coordSourcePlus", 
+                "dateDD", 
+                "dateMM", 
+                "dateYY",
+                "fullLocation", 
+                "FlicFound", 
+                "FlicStatus", 
+                "FlicNotes", 
+                "FlicIssue" 
+        )]
+        
+        # output message
+        message(paste0(
+                "... Flic's fields info added to the ", 
+                nrow(herbSpxReqDet), 
+                " herbarium specimens requiring species-level determination"
+        ))
+        
+        }
