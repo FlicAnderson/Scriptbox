@@ -306,41 +306,90 @@ nrow(recGrab)
 # 05/06/2015 18843 herb specimens with only accepted names
 # 08/06/2015 17762 rm duplicate recIDs; field notes with only accepted names
 # 08/06/2015 17760 literature records with only accepted names
+# 19/01/2016 17783 x 27 var (a few more herbarium specimens were added)
 
+# sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 # 4)
 
-# # show first 6 records returned 
-#   # sorted so Edinburgh specimens, then found specimens float to the top 
-# head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
+# show first 6 records returned 
+        # sort so recent specimens & collector groups float to the top 
 head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
+# alternate sort & show first 6 records 
+# sorted so Edinburgh specimens, then found specimens float to the top 
+# head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
+
+##names(recGrab)
+#  [1] "recID"              "collector"          "collNumFull"        "lnamID"             "acceptDetAs"
+#  [6] "acceptDetNoAuth"    "detAs"              "lat1Dir"            "lat1Deg"            "lat1Min"    
+# [11] "lat1Sec"            "lat1Dec"            "AnyLat"             "lon1Dir"            "lon1Deg"  
+# [16] "lon1Min"            "lon1Sec"            "lon1Dec"            "AnyLon"             "coordSource  
+# [21] "coordAccuracy"      "coordAccuracyUnits" "coordSourcePlus"    "dateDD"             "dateMM"      
+# [26] "dateYY"             "fullLocation"  
 
 
 # pull out families from Latin Names table
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
 getFamilies()
+# recGrab 17783 x 28 var
 
 # pull out genus (use non-auth det & then regex the epithet off)
 recGrab$genusName <- recGrab$acceptDetNoAuth
 recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 
-# reorder so genus is after acceptDetNoAuth but before the 'detAs'/unaccepted name
-recGrab <<- recGrab[,c(1:7,29,8:28)]
-
+# reorder columns so genus is after acceptDetNoAuth but before 'detAs'/unaccepted name:
+# NOTE: reorder done longform with names as opp to indices to avoid hassle later!
+recGrab <<- recGrab[,c(
+        "recID", 
+        "collector", 
+        "collNumFull", 
+        "lnamID", 
+        "familyName", 
+        "acceptDetAs", 
+        "acceptDetNoAuth", 
+        "genusName", 
+        "detAs", 
+        "lat1Dir", 
+        "lat1Deg", 
+        "lat1Min", 
+        "lat1Sec", 
+        "lat1Dec", 
+        "AnyLat", 
+        "lon1Dir", 
+        "lon1Deg", 
+        "lon1Min", 
+        "lon1Sec", 
+        "lon1Dec", 
+        "AnyLon", 
+        "coordSource", 
+        "coordAccuracy",
+        "coordAccuracyUnits", 
+        "coordSourcePlus", 
+        "dateDD", 
+        "dateMM", 
+        "dateYY",
+        "fullLocation"
+)]
 
 # pull out taxonomic rank from Latin Names table & apply to all recGrab records
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R')
 getRanks()
+# recGrab 17783 obs x 30 var
 
 # split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
 getDetReqSpx()
+# recGrab still 17783 x 30 & names() order the same as directly above
+# herbSpxReqDet 666 x 30 & names() order still the same
+
 
 # add herbarium info to herbarium specimens (in herbSpxReqDet object)
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
 getHerbariumCode()
+# recGrab unaltered 17783 x 30
+# herbSpxReqDet 666 x 31 var & order changed
 
 
 # still need to filter out the herbarium specimens for sorting though.
@@ -352,6 +401,8 @@ getHerbariumCode()
 # add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object)
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
 getFlicsFields()
+# recGrab unaltered
+# herbSpxReqDet 666 x 35 var & order changed
 
 
 #########################################
