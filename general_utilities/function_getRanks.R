@@ -65,7 +65,40 @@ getRanks <- function(){
                 
                 # reorder to put taxRank in front of familyName
                 # also drops/removes 'tempLnamID' column
-                recGrab <<- recGrab[,c(1:4,31,5:29)]
+                #recGrab <<- recGrab[,c(1:4,31,5:29)]
+                
+                recGrab <<- recGrab[,c(
+                        "recID", 
+                        "collector", 
+                        "collNumFull", 
+                        "lnamID", 
+                        "taxRank",
+                        "familyName", 
+                        "acceptDetAs", 
+                        "acceptDetNoAuth", 
+                        "genusName", 
+                        "detAs", 
+                        "lat1Dir", 
+                        "lat1Deg", 
+                        "lat1Min", 
+                        "lat1Sec", 
+                        "lat1Dec", 
+                        "AnyLat", 
+                        "lon1Dir", 
+                        "lon1Deg", 
+                        "lon1Min", 
+                        "lon1Sec", 
+                        "lon1Dec", 
+                        "AnyLon", 
+                        "coordSource", 
+                        "coordAccuracy",
+                        "coordAccuracyUnits", 
+                        "coordSourcePlus", 
+                        "dateDD", 
+                        "dateMM", 
+                        "dateYY",
+                        "fullLocation"
+                )]
                 
         } else {
                 # if getFamilies() has NOT been run already, do this:
@@ -78,7 +111,37 @@ getRanks <- function(){
                 
                 # reorder to put taxRank in front of acceptDetAs
                 # also drops/removes 'tempLnamID' column
-                recGrab <<- recGrab[,c(1:4,29,5:27)]
+                #recGrab <<- recGrab[,c(1:4,29,5:27)]
+                recGrab <<- recGrab[,c(
+                        "recID", 
+                        "collector", 
+                        "collNumFull", 
+                        "lnamID", 
+                        "taxRank",
+                        "acceptDetAs", 
+                        "acceptDetNoAuth", 
+                        "detAs", 
+                        "lat1Dir", 
+                        "lat1Deg", 
+                        "lat1Min", 
+                        "lat1Sec", 
+                        "lat1Dec", 
+                        "AnyLat", 
+                        "lon1Dir", 
+                        "lon1Deg", 
+                        "lon1Min", 
+                        "lon1Sec", 
+                        "lon1Dec", 
+                        "AnyLon", 
+                        "coordSource", 
+                        "coordAccuracy",
+                        "coordAccuracyUnits", 
+                        "coordSourcePlus", 
+                        "dateDD", 
+                        "dateMM", 
+                        "dateYY",
+                        "fullLocation"
+                )]
                 
         }
 
