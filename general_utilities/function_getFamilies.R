@@ -59,8 +59,38 @@ getFamilies <- function(){
         #names(recGrab)
 
         # reorder to put familyName in front of detAsNoAuth, detAs and acceptDetAs
-        # also drop 'member'
-        recGrab <<- recGrab[,c(1:4,28,5:27)]
+        # also drop temp column 'member'
+        recGrab <<- recGrab[,c(
+                "recID", 
+                "collector", 
+                "collNumFull", 
+                "lnamID", 
+                "familyName", 
+                "acceptDetAs", 
+                "acceptDetNoAuth", 
+                "detAs", 
+                "lat1Dir", 
+                "lat1Deg", 
+                "lat1Min", 
+                "lat1Sec", 
+                "lat1Dec", 
+                "AnyLat", 
+                "lon1Dir", 
+                "lon1Deg", 
+                "lon1Min", 
+                "lon1Sec", 
+                "lon1Dec", 
+                "AnyLon", 
+                "coordSource", 
+                "coordAccuracy",
+                "coordAccuracyUnits", 
+                "coordSourcePlus", 
+                "dateDD", 
+                "dateMM", 
+                "dateYY",
+                "fullLocation"
+        )]
+        
         #names(recGrab)
         
 }
