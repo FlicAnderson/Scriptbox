@@ -33,11 +33,19 @@
 
 getHerbariumCode <- function(){
         
-        # does recGrab object exist?  
-        exists("recGrab")
         
-        # does herbSpxReqDet object exist?  (ie has getDetReqSpx() been run?)
-        exists("herbSpxReqDet")
+        # check the connection is still open
+        # informative error if connection not created
+        if(!exists("con_livePadmeArabia")) stop("... ERROR: connection to the database not open")
+        
+        # check for recGrab object
+        # informative error if it doesn't exist
+        if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
+        
+        # check for herbSpxReqDet object?  (ie has getDetReqSpx() been run?)
+        # informative error if it doesn't exist
+        if(!exists("herbSpxReqDet")) stop("... ERROR: herbSpxReqDet object doesn't exist")
+
 
         # recreate original herbarium specimen table ID 
         herbSpxReqDet <- 
