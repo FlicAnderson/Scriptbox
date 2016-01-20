@@ -35,7 +35,12 @@
 getFlicsFields <- function(){
  
         # check for herbSpxReqDet object
-        exists("herbSpxReqDet")
+        # informative error if it doesn't exist
+        if(!exists("herbSpxReqDet")) stop("... ERROR: herbSpxReqDet object doesn't exist")
+        
+        # check the connection is still open
+        # informative error if connection not created
+        if(!exists("con_livePadmeArabia")) stop("... ERROR: connection to the database not open")
         
         # recreate original herbarium specimen table ID (AGAIN!) 
         herbSpxReqDet <- 
