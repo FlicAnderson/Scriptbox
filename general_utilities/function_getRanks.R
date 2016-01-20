@@ -33,6 +33,15 @@
 
 getRanks <- function(){
         
+        # check for recGrab object
+        # informative error if it doesn't exist
+        if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
+        
+        
+        # check the connection is still open
+        # informative error if connection not created
+        if(!exists("con_livePadmeArabia")) stop("... ERROR: connection to the database not open")
+        
         # create query
         qry <- "SELECT 
         [Latin Names].[id] AS tempLnamID,
@@ -49,10 +58,7 @@ getRanks <- function(){
         
         # run query, store as 'nameRanks' object
         nameRanks <- sqlQuery(con_livePadmeArabia, qry)
-        
-        # does recGrab object exist?  
-        exists("recGrab")
-        
+
         # getRanks()
         if("familyName" %in% names(recGrab)){
                 # if getFamilies() has been run already, do this:
