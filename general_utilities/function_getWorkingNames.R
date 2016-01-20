@@ -8,7 +8,7 @@
 # saved at: O://CMEP\-Projects/Scriptbox/general_utilities/function_getWorkingNames.R
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
-#
+# source("O://CMEP\-Projects/Scriptbox/general_utilities/function_getWorkingNames.R")
 #
 # AIM:  Function which pulls out working name field info for 
 # ....  required herbarium specimen records needing sps-level dets 
@@ -99,6 +99,9 @@ getWorkingNames <- function(){
                 "FlicNotes", 
                 "FlicIssue" 
         )]
+        
+        # remove huge needless object :)
+        rm(workingNamesInfo)
         
         # output message
         message(paste0(
