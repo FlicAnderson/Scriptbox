@@ -32,6 +32,14 @@
 
 getFamilies <- function(){
         
+        # check for recGrab object
+        # informative error if it doesn't exist
+        if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
+        
+        # check the connection is still open
+        # informative error if connection not created
+        if(!exists("con_livePadmeArabia")) stop("... ERROR: connection to the database not open")
+        
         # create query
         qry <- "SELECT 
                 [Latin Names].sortName AS familyName, 
