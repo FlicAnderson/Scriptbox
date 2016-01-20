@@ -414,7 +414,8 @@ table(herbSpxReqDet$herbariumCode, useNA="ifany")
 # we only can determine specimens at E, really
 
 
-
+# make list for dets
+source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_Socotra-Jan2016.R")
 
 
 #########################################
