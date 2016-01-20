@@ -443,19 +443,19 @@ odbcCloseAll()
 # REMOVE ALL OBJECTS FROM WORKSPACE!
 #rm(list=ls())
 
-# REMOVE SOME OBJECTS FROM WORKSPACE!
-        # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
-        # (eg. connections, recGrab, etc):
-rm(list=setdiff(ls(), 
-                c(
-                "recGrab", 
-                "herbSpxReqDet", 
-                "taxaListSocotra",
-                "con_livePadmeArabia", 
-                "livePadmeArabiaCon"
-                )
-        )
-)
+# # REMOVE SOME OBJECTS FROM WORKSPACE!
+#         # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
+#         # (eg. connections, recGrab, etc):
+# rm(list=setdiff(ls(), 
+#                 c(
+#                 "recGrab", 
+#                 "herbSpxReqDet", 
+#                 "taxaListSocotra",
+#                 "con_livePadmeArabia", 
+#                 "livePadmeArabiaCon"
+#                 )
+#         )
+# )
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
