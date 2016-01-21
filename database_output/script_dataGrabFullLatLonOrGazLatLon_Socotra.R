@@ -5,7 +5,7 @@
 #
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
 # saved at: O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R
-# source: source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
+# source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
 #
 # AIM: Pull out records into R for species in Socotra from 
 # .... Padme Arabia using SQL via the RODBC connection set up in another script. 
@@ -388,8 +388,8 @@ getDetReqSpx()
 # add herbarium info to herbarium specimens (in herbSpxReqDet object)
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
 getHerbariumCode()
-# recGrab unaltered 17783 x 30
-# herbSpxReqDet 666 x 31 var & order changed
+# recGrab unaltered 17778 x 30
+# herbSpxReqDet 657 x 31 var & order changed
 
 
 # still need to filter out the herbarium specimens for sorting though.
@@ -410,7 +410,7 @@ herbSpxReqDet
 
 table(herbSpxReqDet$herbariumCode, useNA="ifany")
 # BM    E       HNT     K       UPS     <NA> 
-#  5    358     8       1       36      258
+#  5    353     8       1       36      254
 # we only can determine specimens at E, really
 
 
