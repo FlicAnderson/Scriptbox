@@ -3,7 +3,7 @@
 # 20 January 2016
 # Author: Flic Anderson
 #
-# to call: getWorkingNames.R()
+# to call: getWorkingNames()
 # objects created: herbSpxReqDet(altered)
 # saved at: O://CMEP\-Projects/Scriptbox/general_utilities/function_getWorkingNames.R
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
