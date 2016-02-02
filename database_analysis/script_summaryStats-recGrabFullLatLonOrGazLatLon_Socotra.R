@@ -35,8 +35,14 @@ if (!require(dplyr)){
 
 # 1)
 
-# pull in data & create recGrab object: 
-source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
+# check for herbSpxReqDet object
+# informative error if it doesn't exist
+if(!exists("recGrab")){ 
+        #stop("... ERROR: recGrab object doesn't exist")
+        
+        # pull in data & create recGrab object: 
+        source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
+}
 
 
 # 2)
