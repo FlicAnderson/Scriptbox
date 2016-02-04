@@ -5,9 +5,10 @@
 #
 # to call: livePadmeArabiaCon()
 # objects created: locat_livePadmeArabia; con_livePadmeArabia (locally global)
-# saved at: O://CMEP\-Projects/Scriptbox/function_livePadmeArabiaCon.R
+# saved at: O://CMEP\-Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R
 #
-# FUNCTION AIM: Set up and open connection to import copy of THULIN DATASET database, return confirmation.
+# FUNCTION AIM: Set up and open connection to live Padme Arabia 
+# ............. database, return confirmation.
 #
 # --------------------------------------------------------
 
