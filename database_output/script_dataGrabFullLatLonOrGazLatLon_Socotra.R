@@ -88,22 +88,22 @@ Herb.[Latitude 1 Degrees] AS lat1Deg,
 Herb.[Latitude 1 Minutes] AS lat1Min,
 Herb.[Latitude 1 Seconds] AS lat1Sec,
 Herb.[Latitude 1 Decimal] AS lat1Dec, ",
-#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as AnyLat
-"IIf(IsNull(Herb.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Herb.[Latitude 1 Decimal]) AS AnyLat,
+#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as anyLat
+"IIf(IsNull(Herb.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Herb.[Latitude 1 Decimal]) AS anyLat,
 Herb.[Longitude 1 Direction] AS lon1Dir,
 Herb.[Longitude 1 Degrees] AS lon1Deg,
 Herb.[Longitude 1 Minutes] AS lon1Min,
 Herb.[Longitude 1 Seconds] AS lon1Sec,
 Herb.[Longitude 1 Decimal] AS lon1Dec, ",
-#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
-"IIf(IsNull(Herb.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Herb.[Longitude 1 Decimal]) AS AnyLon,
+#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as anyLon
+"IIf(IsNull(Herb.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Herb.[Longitude 1 Decimal]) AS anyLon,
 Herb.[coordinateSource] AS coordSource,
 Herb.[coordinateAccuracy] AS coordAccuracy,
 Herb.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 iif(isnull(Herb.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Herb.[Date 1 Days] AS dateDD, 
 Herb.[Date 1 Months] AS dateMM, 
-Herb.[Date 1 Years] AS dateYY,
+Herb.[Date 1 Years] AS dateYYYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names, Teams x2, CoordinateSources
                "FROM ((((((((Determinations AS Dets 
@@ -157,22 +157,22 @@ Fiel.[Latitude 1 Degrees] AS lat1Deg,
 Fiel.[Latitude 1 Minutes] AS lat1Min,
 Fiel.[Latitude 1 Seconds] AS lat1Sec,
 Fiel.[Latitude 1 Decimal] AS lat1Dec,",
-#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as AnyLat
-"IIf(IsNull(Fiel.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Fiel.[Latitude 1 Decimal]) AS AnyLat,
+#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as anyLat
+"IIf(IsNull(Fiel.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Fiel.[Latitude 1 Decimal]) AS anyLat,
 Fiel.[Longitude 1 Direction] AS lon1Dir,
 Fiel.[Longitude 1 Degrees] AS lon1Deg,
 Fiel.[Longitude 1 Minutes] AS lon1Min,
 Fiel.[Longitude 1 Seconds] AS lon1Sec,
 Fiel.[Longitude 1 Decimal] AS lon1Dec,", 
-#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
-"IIf(IsNull(Fiel.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Fiel.[Longitude 1 Decimal]) AS AnyLon,
+#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as anyLon
+"IIf(IsNull(Fiel.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Fiel.[Longitude 1 Decimal]) AS anyLon,
 Fiel.[coordinateSource] AS coordSource,
 iif(isnull(Fiel.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Fiel.[coordinateAccuracy] AS coordAccuracy,
 Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Fiel.[Date 1 Days] AS dateDD, 
 Fiel.[Date 1 Months] AS dateMM, 
-Fiel.[Date 1 Years] AS dateYY,
+Fiel.[Date 1 Years] AS dateYYYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Field notes, geography, synonyms tree, latin names x2, teams
 "FROM (((([Field notes] AS Fiel 
@@ -220,22 +220,22 @@ Litr.[Latitude 1 Degrees] AS lat1Deg,
 Litr.[Latitude 1 Minutes] AS lat1Min,
 Litr.[Latitude 1 Seconds] AS lat1Sec,
 Litr.[Latitude 1 Decimal] AS lat1Dec,", 
-#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as AnyLat
-"IIf(IsNull(Litr.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Litr.[Latitude 1 Decimal]) AS AnyLat,
+#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as anyLat
+"IIf(IsNull(Litr.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Litr.[Latitude 1 Decimal]) AS anyLat,
 Litr.[Longitude 1 Direction] AS lon1Dir,
 Litr.[Longitude 1 Degrees] AS lon1Deg,
 Litr.[Longitude 1 Minutes] AS lon1Min,
 Litr.[Longitude 1 Seconds] AS lon1Sec,
 Litr.[Longitude 1 Decimal] AS lon1Dec,", 
-#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as AnyLon
-"IIf(IsNull(Litr.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Litr.[Longitude 1 Decimal]) AS AnyLon,
+#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as anyLon
+"IIf(IsNull(Litr.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Litr.[Longitude 1 Decimal]) AS anyLon,
 Litr.[coordinateSource] AS coordSource,
 iif(isnull(Litr.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Litr.[coordinateAccuracy] AS coordAccuracy,
 Litr.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Litr.[Date 1 Days] AS dateDD, 
 Litr.[Date 1 Months] AS dateMM, 
-Litr.[Date 1 Years] AS dateYY,
+Litr.[Date 1 Years] AS dateYYYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Literature records, Teams, References, Literature Record Locations, geography, latin names x2
 "FROM (((Teams AS Auth 
@@ -279,7 +279,20 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 05/06/2015 6155 with only accepted names 
 # 08/06/2015 6149 (fixed some latin names taxonomy in padme)
 # 18/01/2016 6172 (after adding some specimens)
-fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
+
+#fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
+#"HY001 -1011 [Microsoft][ODBC Microsoft Access Driver] System resource exceeded."
+# query is now too large!
+
+source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R")
+TESTPadmeArabiaCon()
+qry0 <- "SELECT * FROM FieldRexTemp"
+fielRex <- sqlQuery(con_TESTPadmeArabia, qry0) 
+# 04/02/2016 24233 obs 28 var
+# remove ID field
+# TO DO
+
+
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
 # 04/06/2015 12037 rm Socotra w/o latlon
 # 08/06/2015 10962 rm duplicate IDs via accepted names only
@@ -309,13 +322,13 @@ nrow(recGrab)
 # 19/01/2016 17783 x 27 var (a few more herbarium specimens were added)
 
 # sort so recent specimens & collector groups float to the top 
-recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
+recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 # 4)
 
 # show first 6 records returned 
         # sort so recent specimens & collector groups float to the top 
-head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
+head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
 # alternate sort & show first 6 records 
 # sorted so Edinburgh specimens, then found specimens float to the top 
@@ -324,10 +337,10 @@ head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$colle
 ##names(recGrab)
 #  [1] "recID"              "collector"          "collNumFull"        "lnamID"             "acceptDetAs"
 #  [6] "acceptDetNoAuth"    "detAs"              "lat1Dir"            "lat1Deg"            "lat1Min"    
-# [11] "lat1Sec"            "lat1Dec"            "AnyLat"             "lon1Dir"            "lon1Deg"  
-# [16] "lon1Min"            "lon1Sec"            "lon1Dec"            "AnyLon"             "coordSource  
+# [11] "lat1Sec"            "lat1Dec"            "anyLat"             "lon1Dir"            "lon1Deg"  
+# [16] "lon1Min"            "lon1Sec"            "lon1Dec"            "anyLon"             "coordSource  
 # [21] "coordAccuracy"      "coordAccuracyUnits" "coordSourcePlus"    "dateDD"             "dateMM"      
-# [26] "dateYY"             "fullLocation"  
+# [26] "dateYYYY"             "fullLocation"  
 
 
 # pull out families from Latin Names table
@@ -356,20 +369,20 @@ recGrab <<- recGrab[,c(
         "lat1Min", 
         "lat1Sec", 
         "lat1Dec", 
-        "AnyLat", 
+        "anyLat", 
         "lon1Dir", 
         "lon1Deg", 
         "lon1Min", 
         "lon1Sec", 
         "lon1Dec", 
-        "AnyLon", 
+        "anyLon", 
         "coordSource", 
         "coordAccuracy",
         "coordAccuracyUnits", 
         "coordSourcePlus", 
         "dateDD", 
         "dateMM", 
-        "dateYY",
+        "dateYYYY",
         "fullLocation"
 )]
 
@@ -426,13 +439,13 @@ source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_So
 # write ALL >>>recGrab<<< to .csv file  
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!
 #message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
-#write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+#write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 
 # write >>>herbSpxReqDet<<<to .csv file  
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!
 #message(paste0(" ... saving species-level-det-requiring herbarium records to: O://CMEP\ Projects/Socotra/DeterminationRequired_herbariumSpecimens-Socotra_", Sys.Date(), ".csv"))
-#write.csv(herbSpxReqDet[order(herbSpxReqDet$collector, herbSpxReqDet$dateYY, herbSpxReqDet$collNumFull, herbSpxReqDet$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/DeterminationRequired_herbariumSpecimens-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+#write.csv(herbSpxReqDet[order(herbSpxReqDet$collector, herbSpxReqDet$dateYYYY, herbSpxReqDet$collNumFull, herbSpxReqDet$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/DeterminationRequired_herbariumSpecimens-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 
 
