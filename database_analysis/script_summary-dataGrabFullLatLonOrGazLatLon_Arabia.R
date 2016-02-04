@@ -84,7 +84,7 @@ names(arabiaData)
 # arrange() {dplyr} function:
   # sort & order columns, but don't need to stick to original display order of columns
   # arrange(datasource, column5 in ascending order, desc(column2) in descending order)
-#  arrange(arabiaData, acceptDetAs, dateYY, collector)
+#  arrange(arabiaData, acceptDetAs, dateYYYY, collector)
 
 # mutate() {dplyr} function:
   # create new columns as functions of other columns
@@ -122,8 +122,8 @@ group_by(arabiaData, acceptDetAs)
 
 # group by species & summarize by 1 variable
 by_sps <- group_by(arabiaData, acceptDetAs)
-summarize(by_sps, avgCollctn=round(mean(dateYY, na.rm=TRUE), digits=0))  # average year of collection by species :)
-summarize(by_sps, mednCollctn=round(median(dateYY, na.rm=TRUE), digits=0))  # median year of collection by species :)
+summarize(by_sps, avgCollctn=round(mean(dateYYYY, na.rm=TRUE), digits=0))  # average year of collection by species :)
+summarize(by_sps, mednCollctn=round(median(dateYYYY, na.rm=TRUE), digits=0))  # median year of collection by species :)
 
 # group by species and summarize by multiple variables
 datA <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
@@ -131,7 +131,7 @@ by_sps <- group_by(datA, acceptDetAs)
 by_sps_sum <- summarize(by_sps, 
                         count=n(),
                         collectedBy=n_distinct(collector), 
-                        mostRecentCollection=max(dateYY, na.rm=TRUE), 
+                        mostRecentCollection=max(dateYYYY, na.rm=TRUE), 
                         uniqueLatLon=n_distinct(LatLon),
                         uniqueLocation=n_distinct(fullLocation)
 )
@@ -214,7 +214,7 @@ arabiaData %>%
         arrange(acceptDetAs) %>%         # sort by acceptDetAs
         summarize(count=n(),
                   #collectedBy=n_distinct(collector), 
-                  #mostRecentCollection=max(dateYY, na.rm=TRUE), 
+                  #mostRecentCollection=max(dateYYYY, na.rm=TRUE), 
                   uniqueLatLon=n_distinct(LatLon),
                   AppxUniqueRex=n_distinct(recordInfo)
                   #uniqueLocation=n_distinct(fullLocation)

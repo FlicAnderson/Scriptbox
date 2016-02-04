@@ -118,7 +118,7 @@ MillerSpx <- tbl_df(MillerSpx)
 MillerSpx <- 
         MillerSpx %>%
                 arrange(FlicFound, collNum) %>%
-                select(recID, collector, collNumFull, herbariumCode, taxRank, herbrFamilyNum, familyName, acceptDetAs, detAs, workingName, dateDD, dateMM, dateYY, FlicFound, FlicStatus, FlicNotes, FlicIssue, fullLocation) 
+                select(recID, collector, collNumFull, herbariumCode, taxRank, herbrFamilyNum, familyName, acceptDetAs, detAs, workingName, dateDD, dateMM, dateYYYY, FlicFound, FlicStatus, FlicNotes, FlicIssue, fullLocation) 
 
 # write out MillerSpx
 # write >>>MillerSpx<<<to .csv file  
@@ -135,7 +135,7 @@ NonMillerSpx <- tbl_df(NonMillerSpx)
 NonMillerSpx <- 
         NonMillerSpx %>%
         arrange(familyName, detAs, collector) %>%
-        select(recID, collector, collNumFull, herbariumCode, taxRank, herbrFamilyNum, familyName, acceptDetAs, detAs, workingName, dateDD, dateMM, dateYY, FlicFound, FlicStatus, FlicNotes, FlicIssue, fullLocation) 
+        select(recID, collector, collNumFull, herbariumCode, taxRank, herbrFamilyNum, familyName, acceptDetAs, detAs, workingName, dateDD, dateMM, dateYYYY, FlicFound, FlicStatus, FlicNotes, FlicIssue, fullLocation) 
 
 # write >>>NonMillerSpx<<<to .csv file  
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!

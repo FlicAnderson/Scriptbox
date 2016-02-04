@@ -101,7 +101,7 @@ getHerbariumCode <- function(){
                 "coordSourcePlus", 
                 "dateDD", 
                 "dateMM", 
-                "dateYY",
+                "dateYYYY",
                 "fullLocation"
                 )]
         

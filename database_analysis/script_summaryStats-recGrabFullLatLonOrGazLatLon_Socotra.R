@@ -93,7 +93,7 @@ names(socotraData)
 # [11] "lat1Dir"   "lat1Deg"            "lat1Min"            "lat1Sec"            "lat1Dec"           
 # [16] "AnyLat"    "lon1Dir"            "lon1Deg"            "lon1Min"            "lon1Sec"           
 # [21] "lon1Dec"   "AnyLon"             "coordSource"        "coordAccuracy"      "coordAccuracyUnits"
-# [26] "coordSourcePlus" "dateDD"       "dateMM"             "dateYY"             "fullLocation"  
+# [26] "coordSourcePlus" "dateDD"       "dateMM"             "dateYYYY"             "fullLocation"  
 
 #?manip  # gives info on manipulation functions
 
@@ -107,7 +107,7 @@ select(socotraData, acceptDetAs, collector, collNumFull)
 filter(socotraData, acceptDetAs=="Aerva revoluta Balf.f.")
 
 # arrange(datasource, column5 in ascending order, desc(column2) in descending order)
-arrange(socotraData, acceptDetAs, dateYY, collector)
+arrange(socotraData, acceptDetAs, dateYYYY, collector)
 
 # mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
 socotraData <- mutate(socotraData, LatLon=paste(AnyLat, AnyLon, sep=" "))
@@ -121,7 +121,7 @@ group_by(socotraData, acceptDetAs)
 
 # group by species & summarize by 1 variable
 by_sps <- group_by(socotraData, acceptDetAs)
-summarize(by_sps, mean(dateYY, na.rm=TRUE))  # average year of collection by species :)
+summarize(by_sps, mean(dateYYYY, na.rm=TRUE))  # average year of collection by species :)
 
 # group by species and summarize by multiple variables
 socDat <- mutate(socotraData, LatLon=paste(AnyLat, AnyLon, sep=" "))
@@ -129,7 +129,7 @@ by_sps <- group_by(socDat, acceptDetAs)
 by_sps_sum <- summarize(by_sps, 
                         count=n(),
                         collectedBy=n_distinct(collector), 
-                        mostRecentCollection=max(dateYY, na.rm=TRUE), 
+                        mostRecentCollection=max(dateYYYY, na.rm=TRUE), 
                         uniqueLatLon=n_distinct(LatLon),
                         uniqueLocation=n_distinct(fullLocation)
 )

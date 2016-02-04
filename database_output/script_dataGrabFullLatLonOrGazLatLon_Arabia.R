@@ -101,7 +101,7 @@ Herb.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 iif(isnull(Herb.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
 Herb.[Date 1 Days] AS dateDD, 
 Herb.[Date 1 Months] AS dateMM, 
-Herb.[Date 1 Years] AS dateYY,
+Herb.[Date 1 Years] AS dateYYYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names x2, Teams x2, CoordinateSources
                "FROM ((((((((Determinations AS Dets 
@@ -168,7 +168,7 @@ Fiel.[coordinateAccuracy] AS coordAccuracy,
 Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Fiel.[Date 1 Days] AS dateDD, 
 Fiel.[Date 1 Months] AS dateMM, 
-Fiel.[Date 1 Years] AS dateYY,
+Fiel.[Date 1 Years] AS dateYYYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Field notes, geography, synonyms tree, latin names x2, teams
 "FROM (((([Field notes] AS Fiel 
@@ -232,7 +232,7 @@ Litr.[coordinateAccuracy] AS coordAccuracy,
 Litr.[coordinateAccuracyUnits] AS coordAccuracyUnits,
 Litr.[Date 1 Days] AS dateDD, 
 Litr.[Date 1 Months] AS dateMM, 
-Litr.[Date 1 Years] AS dateYY,
+Litr.[Date 1 Years] AS dateYYYY,
 Geog.fullName AS fullLocation ",
 # Joining tables: Literature records, Teams, References, Literature Record Locations, geography, latin names x2
 "FROM (((Teams AS Auth 
@@ -299,7 +299,7 @@ nrow(recGrab)
 
 # sort specimens
 #   sorted so Edinburgh specimens, then found specimens float to the top 
-recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
+recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
 
 
 
@@ -307,7 +307,7 @@ recGrab <- recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab
 
 # show first 6 records returned 
 #   sorted so Edinburgh specimens, then found specimens float to the top 
-head(recGrab[order(recGrab$dateYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
+head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
 
   ### Remove records without a lat/lon (even after AnyLat/AnyLon)...
@@ -367,7 +367,7 @@ recGrab <<- recGrab[,c(1:7,29,8:28)]
 # write to .csv file  
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!
 #message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
-#write.csv(recGrab[order(recGrab$collector, recGrab$dateYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+#write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 #print(" ... browse to location to save output as new .csv file")
 #write.csv(recGrab, file.choose(), na="", row.names = FALSE)

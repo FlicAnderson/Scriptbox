@@ -95,7 +95,7 @@ getFamilies <- function(){
                 "coordSourcePlus", 
                 "dateDD", 
                 "dateMM", 
-                "dateYY",
+                "dateYYYY",
                 "fullLocation"
         )]
         

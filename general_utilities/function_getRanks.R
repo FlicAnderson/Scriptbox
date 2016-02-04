@@ -102,7 +102,7 @@ getRanks <- function(){
                         "coordSourcePlus", 
                         "dateDD", 
                         "dateMM", 
-                        "dateYY",
+                        "dateYYYY",
                         "fullLocation"
                 )]
                 
@@ -145,7 +145,7 @@ getRanks <- function(){
                         "coordSourcePlus", 
                         "dateDD", 
                         "dateMM", 
-                        "dateYY",
+                        "dateYYYY",
                         "fullLocation"
                 )]
                 

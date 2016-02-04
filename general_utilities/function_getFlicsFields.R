@@ -95,7 +95,7 @@ getFlicsFields <- function(){
                 "coordSourcePlus", 
                 "dateDD", 
                 "dateMM", 
-                "dateYY",
+                "dateYYYY",
                 "fullLocation", 
                 "FlicFound", 
                 "FlicStatus", 
