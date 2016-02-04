@@ -138,65 +138,65 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 "ORDER BY Team.[name for display];")
 
 
-# build FIEL query
-# Adapted from script_dataGrabSpecieswithFullLatLon.R & various fieldObs scripts
-qry2 <- paste0("
-SELECT 'F-' & Fiel.id AS recID,
-Team.[name for display] AS collector,
-Fiel.[Collector Number] AS collNumFull,
-LnSy.[id] AS lnamID, ",
-# HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
-# THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
-# NOTE::: THIS MAY NOT BE LEGIT FOR LITERATURE RECORDS OR FIELD RECORDS 
-# SINCE THEY CANNOT BE UPDATED!!  THINK ABOUT THIS!!!
-"LnSy.[Full Name] AS acceptDetAs,
-LnSy.[sortName] AS acceptDetNoAuth,
-Lnam.[Full Name] AS detAs,
-Fiel.[Latitude 1 Direction] AS lat1Dir,
-Fiel.[Latitude 1 Degrees] AS lat1Deg,
-Fiel.[Latitude 1 Minutes] AS lat1Min,
-Fiel.[Latitude 1 Seconds] AS lat1Sec,
-Fiel.[Latitude 1 Decimal] AS lat1Dec,",
-#IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as anyLat
-"IIf(IsNull(Fiel.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Fiel.[Latitude 1 Decimal]) AS anyLat,
-Fiel.[Longitude 1 Direction] AS lon1Dir,
-Fiel.[Longitude 1 Degrees] AS lon1Deg,
-Fiel.[Longitude 1 Minutes] AS lon1Min,
-Fiel.[Longitude 1 Seconds] AS lon1Sec,
-Fiel.[Longitude 1 Decimal] AS lon1Dec,", 
-#IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as anyLon
-"IIf(IsNull(Fiel.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Fiel.[Longitude 1 Decimal]) AS anyLon,
-Fiel.[coordinateSource] AS coordSource,
-iif(isnull(Fiel.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
-Fiel.[coordinateAccuracy] AS coordAccuracy,
-Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
-Fiel.[Date 1 Days] AS dateDD, 
-Fiel.[Date 1 Months] AS dateMM, 
-Fiel.[Date 1 Years] AS dateYYYY,
-Geog.fullName AS fullLocation ",
-# Joining tables: Field notes, geography, synonyms tree, latin names x2, teams
-"FROM (((([Field notes] AS Fiel 
-LEFT JOIN Geography AS Geog ON Fiel.Locality = Geog.ID) 
-LEFT JOIN Teams AS Team ON Fiel.[Collector Key] = Team.id) 
-LEFT JOIN [Latin Names] AS Lnam ON Fiel.determination = Lnam.id) 
-LEFT JOIN [Synonyms tree] AS Snym ON Lnam.id = Snym.member) 
-LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
-# WHERE: 
-"WHERE ",
-#       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
-#              (to avoid lots of dots at the lat/lon of "Socotra" etc since that's very
-#              unhelpful & doesn't give us a true location, even though it's a precise 
-#              lat/lon value.
-#              NB: The smaller islands Darsa & Semhah are allowed as they're small 
-#              enough to be useful location values. Abd Al Kuri is still a bit too big
-"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ", 
-#       OR      location string does just say Socotra or the Archipelago BUT has 
-#               a valid lat/lon (tested on longitude). 
-#               This ensures recently imported datasets with GPS/decimal degrees
-#               high-accuracy lat/lon are included!
-"OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Fiel.[Longitude 1 Decimal] IS NOT NULL))) AND ((LnSy.[Synonym of]) Is Null))",
-# ORDER BY ...
-"ORDER BY Team.[name for display];")
+# # build FIEL query
+# # Adapted from script_dataGrabSpecieswithFullLatLon.R & various fieldObs scripts
+# qry2 <- paste0("
+# SELECT 'F-' & Fiel.id AS recID,
+# Team.[name for display] AS collector,
+# Fiel.[Collector Number] AS collNumFull,
+# LnSy.[id] AS lnamID, ",
+# # HERE the Lnam.FullName is replaced by the ACCEPTED NAME (LnSy.[Full Name])
+# # THIS IS NOT WHAT IT WAS ORIG DET AS BUT THE ACCEPTED UPDATED NAME
+# # NOTE::: THIS MAY NOT BE LEGIT FOR LITERATURE RECORDS OR FIELD RECORDS 
+# # SINCE THEY CANNOT BE UPDATED!!  THINK ABOUT THIS!!!
+# "LnSy.[Full Name] AS acceptDetAs,
+# LnSy.[sortName] AS acceptDetNoAuth,
+# Lnam.[Full Name] AS detAs,
+# Fiel.[Latitude 1 Direction] AS lat1Dir,
+# Fiel.[Latitude 1 Degrees] AS lat1Deg,
+# Fiel.[Latitude 1 Minutes] AS lat1Min,
+# Fiel.[Latitude 1 Seconds] AS lat1Sec,
+# Fiel.[Latitude 1 Decimal] AS lat1Dec,",
+# #IIF no decimal latitude, then use geography/gazetteer latitude, but if it's there, use that as anyLat
+# "IIf(IsNull(Fiel.[Latitude 1 Decimal]),Geog.[Latitude 1 Decimal],Fiel.[Latitude 1 Decimal]) AS anyLat,
+# Fiel.[Longitude 1 Direction] AS lon1Dir,
+# Fiel.[Longitude 1 Degrees] AS lon1Deg,
+# Fiel.[Longitude 1 Minutes] AS lon1Min,
+# Fiel.[Longitude 1 Seconds] AS lon1Sec,
+# Fiel.[Longitude 1 Decimal] AS lon1Dec,", 
+# #IIF no decimal longitude, then use geography/gazetteer longitude, but if it's there, use that as anyLon
+# "IIf(IsNull(Fiel.[Longitude 1 Decimal]),Geog.[Longitude 1 Decimal],Fiel.[Longitude 1 Decimal]) AS anyLon,
+# Fiel.[coordinateSource] AS coordSource,
+# iif(isnull(Fiel.[Latitude 1 Decimal]),'Gazetteer','Record') as coordSourcePlus,
+# Fiel.[coordinateAccuracy] AS coordAccuracy,
+# Fiel.[coordinateAccuracyUnits] AS coordAccuracyUnits,
+# Fiel.[Date 1 Days] AS dateDD, 
+# Fiel.[Date 1 Months] AS dateMM, 
+# Fiel.[Date 1 Years] AS dateYYYY,
+# Geog.fullName AS fullLocation ",
+# # Joining tables: Field notes, geography, synonyms tree, latin names x2, teams
+# "FROM (((([Field notes] AS Fiel 
+# LEFT JOIN Geography AS Geog ON Fiel.Locality = Geog.ID) 
+# LEFT JOIN Teams AS Team ON Fiel.[Collector Key] = Team.id) 
+# LEFT JOIN [Latin Names] AS Lnam ON Fiel.determination = Lnam.id) 
+# LEFT JOIN [Synonyms tree] AS Snym ON Lnam.id = Snym.member) 
+# LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
+# # WHERE: 
+# "WHERE ",
+# #       the location string doesn't stop at "Socotra" or "Socotran Archipelago": 
+# #              (to avoid lots of dots at the lat/lon of "Socotra" etc since that's very
+# #              unhelpful & doesn't give us a true location, even though it's a precise 
+# #              lat/lon value.
+# #              NB: The smaller islands Darsa & Semhah are allowed as they're small 
+# #              enough to be useful location values. Abd Al Kuri is still a bit too big
+# "(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ", 
+# #       OR      location string does just say Socotra or the Archipelago BUT has 
+# #               a valid lat/lon (tested on longitude). 
+# #               This ensures recently imported datasets with GPS/decimal degrees
+# #               high-accuracy lat/lon are included!
+# "OR ((Geog.fullName LIKE '%Socotra Archipelago: Socotra' AND Fiel.[Longitude 1 Decimal] IS NOT NULL) OR (Geog.fullName LIKE '%Socotra Archipelago' AND Fiel.[Longitude 1 Decimal] IS NOT NULL))) AND ((LnSy.[Synonym of]) Is Null))",
+# # ORDER BY ...
+# "ORDER BY Team.[name for display];")
 
 
 
@@ -279,53 +279,50 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 05/06/2015 6155 with only accepted names 
 # 08/06/2015 6149 (fixed some latin names taxonomy in padme)
 # 18/01/2016 6172 (after adding some specimens)
+# 04/02/2016 6001 must've fixed some duplicates(?)
 
-# ISSUE: system resources exceeded! in RODBC drivers & Access
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
-#"HY001 -1011 [Microsoft][ODBC Microsoft Access Driver] System resource exceeded."
-# query is now too large!
-
-# FIX: 
-# TL;DR - when system resources exceeded, create temp table, run query in 
-# Padme/Accesss to put records into newly created temporary table, then pull into R & proceed as normal.
+# 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
+# 04/06/2015 12037 rm Socotra w/o latlon
+# 08/06/2015 10962 rm duplicate IDs via accepted names only
+        # ISSUE: system resources exceeded! in RODBC drivers & Access
+                #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
+                #"HY001 -1011 [Microsoft][ODBC Microsoft Access Driver] System resource exceeded."
+                # query is now too large!
         # FIX: 
-        # Created table [FieldRexTemp] in test copy of Padme Arabia.    
-        # 
-        # Output of sqlColumns() here:
-        # https://gist.github.com/FlicAnderson/ad44350a62eb017387b6
-        # shows column and data types
-        # 
-        # Ran this query:
-        # https://gist.github.com/FlicAnderson/0a3ab3622c6902733f5b
-        # to fill the FieldRexTemp table with the query result. 
-        # Had to do separate steps for create and "INSERT INTO FieldRexTemp 
-        # SELECT ......;" because otherwise Access gave "system resource exceeded" error.
-        # 
-        # Running this worked after that:
-        # source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R") 
-        # TESTPadmeArabiaCon() 
-        # qry0 <- "SELECT * FROM FieldRexTemp" 
-        # fielRex <- sqlQuery(con_TESTPadmeArabia, qry0)
-        # 
-        # All worked ok, can proceed as normal now.
-
+        # TL;DR - when system resources exceeded, create temp table, run query in 
+        # Padme/Accesss to put records into newly created temporary table, then pull into R & proceed as normal.
+                # FIX: 
+                # Created table [FieldRexTemp] in test copy of Padme Arabia.    
+                # 
+                # Output of sqlColumns() here:
+                # https://gist.github.com/FlicAnderson/ad44350a62eb017387b6
+                # shows column and data types
+                # 
+                # Ran this query:
+                # https://gist.github.com/FlicAnderson/0a3ab3622c6902733f5b
+                # to fill the FieldRexTemp table with the query result. 
+                # Had to do separate steps for create and "INSERT INTO FieldRexTemp 
+                # SELECT ......;" because otherwise Access gave "system resource exceeded" error.
+                # 
+                # Running this worked after that:
+# source & open test connection
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R")
 TESTPadmeArabiaCon()
+# query to select all records from the temporary table FieldRexTemp, replaces qry2
 qry0 <- "SELECT * FROM FieldRexTemp"
+# run query
 fielRex <- sqlQuery(con_TESTPadmeArabia, qry0) 
 # 04/02/2016 24233 obs 28 var - need to remove the id column!
 # remove ID field
 fielRex$id <- NULL
 # 04/02/2016 24233 obs 27 var - OK to continue!
 
-
-# 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
-# 04/06/2015 12037 rm Socotra w/o latlon
-# 08/06/2015 10962 rm duplicate IDs via accepted names only
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
 # 04/06/2015 651 rm Socotra w/o latlon
 # 08/06/2015 649 with accepted names only
+# 04/02/2016 646
 
 # show number of records returned
 nrow(herbRex)
@@ -346,6 +343,7 @@ nrow(recGrab)
 # 08/06/2015 17762 rm duplicate recIDs; field notes with only accepted names
 # 08/06/2015 17760 literature records with only accepted names
 # 19/01/2016 17783 x 27 var (a few more herbarium specimens were added)
+# 04/02/2016 30880 x 27 var (added ~9k Italian field records & ~9k Banfield field notes)
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
@@ -415,20 +413,20 @@ recGrab <<- recGrab[,c(
 # pull out taxonomic rank from Latin Names table & apply to all recGrab records
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R')
 getRanks()
-# recGrab 17783 obs x 30 var
+# 04/02/2016 recGrab 30880 obs x 30 var
 
 # split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
 getDetReqSpx()
-# recGrab still 17783 x 30 & names() order the same as directly above
-# herbSpxReqDet 666 x 30 & names() order still the same
+# recGrab still 30880 x 30 & names() order the same as directly above
+# herbSpxReqDet 535 x 30 & names() order still the same
 
 
 # add herbarium info to herbarium specimens (in herbSpxReqDet object)
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
 getHerbariumCode()
-# recGrab unaltered 17778 x 30
-# herbSpxReqDet 657 x 31 var & order changed
+# recGrab unaltered 30880 x 30
+# herbSpxReqDet 535 x 31 var & order changed
 
 
 # still need to filter out the herbarium specimens for sorting though.
@@ -441,7 +439,7 @@ getHerbariumCode()
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
 getFlicsFields()
 # recGrab unaltered
-# herbSpxReqDet 666 x 35 var & order changed
+# herbSpxReqDet 535 x 35 var & order changed
 
 str(herbSpxReqDet)
 herbSpxReqDet <- tbl_df(herbSpxReqDet)
@@ -449,7 +447,7 @@ herbSpxReqDet
 
 table(herbSpxReqDet$herbariumCode, useNA="ifany")
 # BM    E       HNT     K       UPS     <NA> 
-#  5    353     8       1       36      254
+#  5    238     8       1       36      247
 # we only can determine specimens at E, really
 
 
