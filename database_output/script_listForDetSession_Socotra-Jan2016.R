@@ -70,11 +70,11 @@ table(herbSpxReqDetE$collector, useNA="ifany")
 glimpse(herbSpxReqDetE)
 
 # records with a lat or long
-sum(is.na(herbSpxReqDetE$AnyLat))
-sum(is.na(herbSpxReqDetE$AnyLon))
+sum(is.na(herbSpxReqDetE$anyLon))
+sum(is.na(herbSpxReqDetE$anyLon))
 
-which(is.na(herbSpxReqDetE$AnyLat))
-which(is.na(herbSpxReqDetE$AnyLon))
+which(is.na(herbSpxReqDetE$anyLat))
+which(is.na(herbSpxReqDetE$anyLon))
 
 #herbSpxReqDetE[c(580),]
 #glimpse(herbSpxReqDetE[c(580),])
@@ -85,7 +85,7 @@ which(is.na(herbSpxReqDetE$AnyLon))
 # basically remove any without a LatLon
 herbSpxReqDetE <- 
         herbSpxReqDetE %>%
-        filter(!is.na(AnyLat)|!is.na(AnyLon))
+        filter(!is.na(anyLat)|!is.na(anyLon))
 # 606 obs x 36 var
 
 herbSpxReqDetE
