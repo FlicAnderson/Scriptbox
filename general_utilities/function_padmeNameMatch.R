@@ -6,6 +6,7 @@
 # to call: padmeNameMatch(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE)
 # objects created: [object1]; [object2] (locally global)
 # saved at: O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R
+# source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R")
 #
 # AIM:  Takes a user string taxon name & checks it against Latin Names table in 
 # ....  Padme Arabia.  Confirms if exact match and suggests closest fuzzy match.
@@ -47,7 +48,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         #args: 
         
-        #checkMe: input to check
+        #checkMe: string input to check
         
         testThis <- checkMe
         
@@ -125,7 +126,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                 cat("\n", "... database connection to Padme Arabia already open")
         } else {
                 source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
-                silent(livePadmeArabiaCon())
+                invisible(livePadmeArabiaCon())
                 cat("\n", "... opened database connection to Padme Arabia")
         }
         
@@ -154,5 +155,11 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         
  # 8) tidy phase
-        rm(nameVar, possMatch)
+        rm(nameVar, possMatch, envir=.GlobalEnv)
+        # NOTE: envir=.GlobalEnv argument added to remove following warning messages:
+        #  Warning messages:
+        #       1: In rm(nameVar, possMatch) : object 'nameVar' not found
+        #       2: In rm(nameVar, possMatch) : object 'possMatch' not found
+        # They weren't previously removed as they were in the global environment
+        # since they'd been assigned by the '<<-' operator
 }
