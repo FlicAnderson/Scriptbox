@@ -59,9 +59,9 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         # check user input taxonType is acceptable from possTaxonTypes
         if(taxonType %in% possTaxonTypes){
-                cat("\n", "... accepted taxon type")
+                cat(" ... accepted taxon type")
         } else {
-                cat("\n", "... taxonType not accepted; try one of: family, genus, species, subspecies, variety")
+                cat(" ... taxonType not accepted; try one of: family, genus, species, subspecies, variety")
                 stop("taxonType unacceptable")
                 }
  
