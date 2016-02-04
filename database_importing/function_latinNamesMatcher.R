@@ -7,7 +7,7 @@
 # to source: 
 # source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatcher.R")
 # to run:
-#latinNamesMatcher(rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
+#latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
 
 # ---------------------------------------------------------------------------- #
 
@@ -30,8 +30,14 @@
 
 
 ### FUNCTION: non-interactive complete check names thing
-latinNamesMatcher <- function(rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription, ...){  
+latinNamesMatcher <- function(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription, ...){  
 # ARGUMENTS INFO:
+        
+        # fileLocat is the input & output file location; 
+        # NOTE: should be a string
+        
+        # fileName is the name of the file to run function on (the file for importing); 
+        # NOTE: should be a string
         
         # rowIndex contains vertical range of rows to pull in & check (where species names are held)
         
@@ -71,7 +77,13 @@ latinNamesMatcher <- function(rowIndex, colIndexSp, colIndexSsp, colIndexAuth, o
         livePadmeArabiaCon()
         
         # import source:
-        importSource <<- paste0(fileLocat, "/", "IMPORTCOPY_Socotra_dataplot_17112015.csv")
+        importSource <<- paste0(fileLocat, "/", fileName)
+        
+        # check for herbSpxReqDet object
+        # informative error if it doesn't exist
+        #if(!exists("herbSpxReqDet")) stop("... ERROR: herbSpxReqDet object doesn't exist")
+        
+        
 
         # if there aren't any authorities, use Lnam.[sortName] field for names
         if(colIndexAuth==0){
