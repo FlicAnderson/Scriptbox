@@ -280,9 +280,34 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 08/06/2015 6149 (fixed some latin names taxonomy in padme)
 # 18/01/2016 6172 (after adding some specimens)
 
+# ISSUE: system resources exceeded! in RODBC drivers & Access
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 #"HY001 -1011 [Microsoft][ODBC Microsoft Access Driver] System resource exceeded."
 # query is now too large!
+
+# FIX: 
+# TL;DR - when system resources exceeded, create temp table, run query in 
+# Padme/Accesss to put records into newly created temporary table, then pull into R & proceed as normal.
+        # FIX: 
+        # Created table [FieldRexTemp] in test copy of Padme Arabia.    
+        # 
+        # Output of sqlColumns() here:
+        # https://gist.github.com/FlicAnderson/ad44350a62eb017387b6
+        # shows column and data types
+        # 
+        # Ran this query:
+        # https://gist.github.com/FlicAnderson/0a3ab3622c6902733f5b
+        # to fill the FieldRexTemp table with the query result. 
+        # Had to do separate steps for create and "INSERT INTO FieldRexTemp 
+        # SELECT ......;" because otherwise Access gave "system resource exceeded" error.
+        # 
+        # Running this worked after that:
+        # source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R") 
+        # TESTPadmeArabiaCon() 
+        # qry0 <- "SELECT * FROM FieldRexTemp" 
+        # fielRex <- sqlQuery(con_TESTPadmeArabia, qry0)
+        # 
+        # All worked ok, can proceed as normal now.
 
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R")
 TESTPadmeArabiaCon()
