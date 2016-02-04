@@ -313,9 +313,10 @@ source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArab
 TESTPadmeArabiaCon()
 qry0 <- "SELECT * FROM FieldRexTemp"
 fielRex <- sqlQuery(con_TESTPadmeArabia, qry0) 
-# 04/02/2016 24233 obs 28 var
+# 04/02/2016 24233 obs 28 var - need to remove the id column!
 # remove ID field
-# TO DO
+fielRex$id <- NULL
+# 04/02/2016 24233 obs 27 var - OK to continue!
 
 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
