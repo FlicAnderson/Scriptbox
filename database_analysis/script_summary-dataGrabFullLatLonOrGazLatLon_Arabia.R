@@ -55,8 +55,8 @@ rm(qry1, qry2, qry3, locat_livePadmeArabia, herbRex, fielRex, litrRex, dups)
 #message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/taxaListArabia_", Sys.Date(), ".csv"))
 #write.csv(sort(taxaListArabia), file=paste0("O://CMEP\ Projects/taxaListArabia_", Sys.Date(), ".csv"), row.names=FALSE)
 
-# Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
-#length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
+# Number of unique locations? (unique(paste0(anyLat + anyLon)))
+#length(unique(paste(recGrab$anyLat, recGrab$anyLon)))
 # 6323 @ 06/Oct/2015
 
 # use DPLYR to manipulate data
@@ -88,8 +88,8 @@ names(arabiaData)
 
 # mutate() {dplyr} function:
   # create new columns as functions of other columns
-  # mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
-#  arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+  # mutate(datasource, newcolumn=anyLat + " " + anyLon)
+#  arabiaData <- mutate(arabiaData, LatLon=paste(anyLat, anyLon, sep=" "))
 
 # summarize(datasource, summarizingcolumn = summarizing function(column3))
   # no easy example here
@@ -99,8 +99,8 @@ names(arabiaData)
 
   # 3)
 
-# make LatLon column from concat'd AnyLat & AnyLon
-arabiaData <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))  
+# make LatLon column from concat'd anyLat & anyLon
+arabiaData <- mutate(arabiaData, LatLon=paste(anyLat, anyLon, sep=" "))  
 
  
 # exclude NON-socotra data & show 
@@ -126,7 +126,7 @@ summarize(by_sps, avgCollctn=round(mean(dateYYYY, na.rm=TRUE), digits=0))  # ave
 summarize(by_sps, mednCollctn=round(median(dateYYYY, na.rm=TRUE), digits=0))  # median year of collection by species :)
 
 # group by species and summarize by multiple variables
-datA <- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+datA <- mutate(arabiaData, LatLon=paste(anyLat, anyLon, sep=" "))
 by_sps <- group_by(datA, acceptDetAs)
 by_sps_sum <- summarize(by_sps, 
                         count=n(),
@@ -203,7 +203,7 @@ arabiaData %>%
 # don't need recGrab object any more
 rm(recGrab)
 
-#<- mutate(arabiaData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+#<- mutate(arabiaData, LatLon=paste(anyLat, anyLon, sep=" "))
 
 
 # records by family, species & listing ~unique records (where there are >5 unique location points/'dots on map')
