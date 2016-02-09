@@ -462,7 +462,7 @@ herbSpxReqDet
 
 table(herbSpxReqDet$herbariumCode, useNA="ifany")
 # BM    E       HNT     K       UPS     <NA> 
-#  5    238     8       1       36      247
+#  5    233     8       1       36      216
 # we only can determine specimens at E, really
 
 
