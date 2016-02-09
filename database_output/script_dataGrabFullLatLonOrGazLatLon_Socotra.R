@@ -280,6 +280,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 08/06/2015 6149 (fixed some latin names taxonomy in padme)
 # 18/01/2016 6172 (after adding some specimens)
 # 04/02/2016 6001 must've fixed some duplicates(?)
+# 2016/02/09 5816 (after duplicate checking/fixing)
 
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
@@ -306,23 +307,36 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
                 # SELECT ......;" because otherwise Access gave "system resource exceeded" error.
                 # 
                 # Running this worked after that:
-# source & open test connection
-source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R")
-TESTPadmeArabiaCon()
+# # source & open test connection
+# source("O://CMEP\ Projects/Scriptbox/database_connections/function_TESTPadmeArabiaCon.R")
+# TESTPadmeArabiaCon()
+# # query to select all records from the temporary table FieldRexTemp, replaces qry2
+# qry0 <- "SELECT * FROM FieldRexTemp"
+# # run query
+# fielRex <- sqlQuery(con_TESTPadmeArabia, qry0) 
+# # 04/02/2016 24233 obs 28 var - need to remove the id column!
+# # remove ID field
+# fielRex$id <- NULL
+# # 04/02/2016 24233 obs 27 var - OK to continue!
+
+
 # query to select all records from the temporary table FieldRexTemp, replaces qry2
 qry0 <- "SELECT * FROM FieldRexTemp"
-# run query
-fielRex <- sqlQuery(con_TESTPadmeArabia, qry0) 
-# 04/02/2016 24233 obs 28 var - need to remove the id column!
+# run query 
+fielRex <- sqlQuery(con_livePadmeArabia, qry0) 
+# 04/02/2016 24233 
+# 2016/02/09 24424 obs 28 var - need to remove the id column!
 # remove ID field
 fielRex$id <- NULL
-# 04/02/2016 24233 obs 27 var - OK to continue!
+# 04/02/2016 24233
+# 2016/02/09 24424 obs 27 var - OK to continue!
 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
 # 04/06/2015 651 rm Socotra w/o latlon
 # 08/06/2015 649 with accepted names only
 # 04/02/2016 646
+# 2016/02/09 646 - no changes to these recently
 
 # show number of records returned
 nrow(herbRex)
@@ -344,6 +358,7 @@ nrow(recGrab)
 # 08/06/2015 17760 literature records with only accepted names
 # 19/01/2016 17783 x 27 var (a few more herbarium specimens were added)
 # 04/02/2016 30880 x 27 var (added ~9k Italian field records & ~9k Banfield field notes)
+# 2016/02/09 30886 x 27 
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
