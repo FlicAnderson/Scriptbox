@@ -79,12 +79,12 @@ latinNamesMatcher <- function(fileLocat, fileName, rowIndex, colIndexSp, colInde
         # import source:
         importSource <<- paste0(fileLocat, "/", fileName)
         
-        # check for herbSpxReqDet object
-        # informative error if it doesn't exist
-        #if(!exists("herbSpxReqDet")) stop("... ERROR: herbSpxReqDet object doesn't exist")
+        # is file a .csv or something else?
+        # get extension
+        extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
+        # check if it's not .csv & give informative error if it doesn't exist
+                if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
         
-        
-
         # if there aren't any authorities, use Lnam.[sortName] field for names
         if(colIndexAuth==0){
                 nameVar <<- "[sortName]"
