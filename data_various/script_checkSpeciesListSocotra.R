@@ -42,15 +42,29 @@ if (!require(dplyr)){
         install.packages("dplyr")
         library(dplyr)
 }
+# load sqldf library
+if (!require(sqldf)) {
+        install.packages("sqldf")
+        library(sqldf)
+}
 
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
 
+# load function 
+source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatcher.R")
+
 
 # 1) 
 
+fileLocat <- "O://CMEP\ Projects/Socotra"
 
+fileName <- "SocotraSPECIES-LIST_NOTES.csv"
+
+
+#latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
+latinNamesMatcher(fileLocat, fileName, rowIndex=1:800, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNames")
 
 # 2) 
 
@@ -97,4 +111,4 @@ odbcCloseAll()
 # CLOSE THE CONNECTION!
 #odbcCloseAll()
 
-print(" ... script_checkSpeciesListSocotra.R complete!")
+print("... script_checkSpeciesListSocotra.R complete!")
