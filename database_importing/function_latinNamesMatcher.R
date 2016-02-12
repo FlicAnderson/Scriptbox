@@ -71,6 +71,9 @@ latinNamesMatcher <- function(fileLocat, fileName, rowIndex, colIndexSp, colInde
                 "O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
         )
 
+        # test values
+        #latinNamesMatcher(fileLocat, fileName, rowIndex=1:800, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNames")
+        
 # 1) IMPORT/ACQUISITION PART 
         
         # call functions to open connections with live padme
@@ -83,7 +86,7 @@ latinNamesMatcher <- function(fileLocat, fileName, rowIndex, colIndexSp, colInde
         # get extension
         extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
         # check if it's not .csv & give informative error if it doesn't exist
-                if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
+        if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
         
         # if there aren't any authorities, use Lnam.[sortName] field for names
         if(colIndexAuth==0){
@@ -191,15 +194,24 @@ latinNamesMatcher <- function(fileLocat, fileName, rowIndex, colIndexSp, colInde
                         nrows=length(rowIndex)
                 )
                 # preserve dataframe structure & call variable "Taxon"
-                crrntDet <<- data.frame(Taxon=crrntDet[as.numeric(rowIndex), as.numeric(colIndex)])
+                #crrntDet <<- data.frame(Taxon=crrntDet[as.numeric(rowIndex), as.numeric(colIndex)])
+                crrntDet <<- data.frame(Taxon=crrntDet[as.numeric(rowIndex), as.numeric(colIndex)[1]], Authority=crrntDet[as.numeric(rowIndex), as.numeric(colIndex[2])])
                 
-                # change variable name
-                # change the column names using <<- operator to allow the changes to be
-                # accessible from outside the function
-                if(names(crrntDet)[1]!="Taxon"){
-                        names(crrntDet)[1] <<- "Taxon"   # use global env
-                        names(crrntDet)[1] <- "Taxon"    # use local env
-                }
+#                 # change variable name of taxon column
+#                 # change the column names using <<- operator to allow the changes to be
+#                 # accessible from outside the function
+#                 if(names(crrntDet)[1]!="Taxon"){
+#                         names(crrntDet)[1] <<- "Taxon"   # use global env
+#                         names(crrntDet)[1] <- "Taxon"    # use local env
+#                 }
+#                 
+#                 # change variable name of Auth column
+#                 # change the column names using <<- operator to allow the changes to be
+#                 # accessible from outside the function
+#                 if(names(crrntDet)[2]!="Authority"){
+#                         names(crrntDet)[2] <<- "Authority"   # use global env
+#                         names(crrntDet)[2] <- "Authority"    # use local env
+#                 }
                 
                 # missing values
                 # are there any NA values in Species_Name column?
@@ -211,13 +223,23 @@ latinNamesMatcher <- function(fileLocat, fileName, rowIndex, colIndexSp, colInde
                         # STILL TO FIGURE OUT WHAT TO DO WITH THESE OR HOW TO REMOVE
                         # remove the rows entirely
                         #        crrntDet <- crrntDet[-which(is.na(crrntDet)),]
+                        
+                        # maybe something about complete cases?
                 }
                 
-                # recreating the 'full' subspecific names:
+                # ?for output's sake:?
                 fullnames <- crrntDet
                 
+                # recreating the 'full' subspecific names:
                 # if Auth is NOT 0, join columns AB (sp & ssp) to C (auth)
-                # To Be Coded...
+                crrntDet$Taxon <<- paste(crrntDet$Taxon, crrntDet$Authority, sep=" ")
+                crrntDet$Authority <<- NULL
+                
+                # remove additional whitespace somehow
+                #test <- crrntDet$Taxon 
+                #sapply(crrntDet, gsub("\\s+", " ", crrntDet$Taxon))
+                #testA <- vapply(crrntDet, gsub("\\s+", " ", test))
+                
         }
         
         # if ssp is different: 
