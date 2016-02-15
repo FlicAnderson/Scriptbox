@@ -110,6 +110,32 @@ padmeNameMatch(checkMe=test1, taxonType="species", authorityPresent=TRUE, taxonS
 
 #padmeNameMatch(checkMe=crrntDetREQFIX_tbldf$Taxon, authorityPresent=TRUE)
 
+# postcodeDistrict <- function(postcode) strsplit(toupper(postcode), " ")[[1]][1]
+# newTable <- postcodeTable %>%
+#         rowwise() %>%
+#         mutate(District = postcodeDistrict(Postcode))
+
+#http://www.expressivecode.org/2014/12/17/mutating-using-functions-in-dplyr/
+
+# dplyr method
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R")
+crrntDetREQFIX_tbldf %>%
+        rowwise() %>%
+        mutate(bestGuess=padmeNameMatch(checkMe=crrntDetREQFIX_tbldf$Taxon, taxonType="species", authorityPresent=TRUE, taxonSingle=TRUE))
+# this just gives Peperomia blanda X 10
+
+
+# vectorised function  - unfinished
+#batchNameMatch <- function(p) sapply(p, padmeNameMatch(checkMe=crrntDetREQFIX_tbldf$Taxon)
+#crrntDetREQFIX_tbldf$bestGuess <- batchNameMatch(crrntDetREQFIX_tbldf$Taxon)
+
+# cbind function 
+newtable <- cbind(crrntDetREQFIX_tbldf, padmeNameMatch(checkMe=crrntDetREQFIX_tbldf$Taxon, taxonType="species", authorityPresent=TRUE, taxonSingle=TRUE))
+# this just gives Peperomia blanda X 10
+
+
+
+
 
 # run mutate (with chaining)
 
