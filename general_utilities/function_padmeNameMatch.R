@@ -87,23 +87,42 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                 cat("\n", "... single taxon check in progress")
         }
         
-                
- # 2)   TO DO  
+
+# 2) 
+        # methods for taxon type options  (OPTIONAL & INCOMPLETE)                
+        # TO DO  
  
+
+# 3) 
+        # methods for authority options  
         
- # 3)   TO DO
-        
-        # set nameVar to pull out sortName by default (no auth)
-        nameVar <<- "[sortName]"
+        # authorityPresent
+        # default: FALSE (doesn't check authority)
+        # options: TRUE (will check authority)
                 
-        #        if(colIndexAuth==0){
-        #                nameVar <<- "[sortName]"
-        #        } else {
-        #                nameVar <<- "[Full name]"
-        #        }
+        # NOTE: this will only check authority in same string as taxon name
+        # support for authority in another column not in place currently!
+        # in order to do this, perhaps develop from this: 
+                #        if(colIndexAuth==0){
+                #                nameVar <<- "[sortName]"
+                #        } else {
+                #                nameVar <<- "[Full name]"
+                #        }
         
- # 4)   TO FINISH:     
+        if(authorityPresent==FALSE){
+                # set nameVar to pull out sortName by default (no auth)
+                cat("\n", "... authority information not present") 
+                nameVar <<- "[sortName]"
+        } else {
+                # set nameVar to pull out [Full name] (+auth)
+                cat("\n", "... authority information not present")
+                nameVar <<- "[Full name]"
+        }
         
+        
+ # 4)        
+        # methods for single vs multiple taxa to check (INCOMPLETE)
+        # TO FINISH
         # Single name vs Multiple names
         
         #taxonSingle
@@ -116,6 +135,13 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         # (B) multiple taxa
                 # (1) taxon options:  family, genus, species, subspecies, variety
                 # (2) authority options: authority attached, authority separate, authority absent
+
+        
+        # B) 
+        # 1) - most are likely to be species
+        # 2) - usually will NOT have auth, but need to create method nonetheless
+                # link this to section 3 (auth check, sets nameVar)
+        
 
         
  # 5)   
@@ -134,7 +160,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         # pull out all distinct names {RODBC}
         nameGetQry <- paste0("SELECT DISTINCT ", nameVar, ", id FROM [Latin Names]")
-        Lnams <- sqlQuery(con_livePadmeArabia, nameGetQry)
+        Lnams <<- sqlQuery(con_livePadmeArabia, nameGetQry)
  
         # matching function {stringdist}:
         latMatch = function(string, stringVector){
