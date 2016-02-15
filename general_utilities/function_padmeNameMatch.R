@@ -49,8 +49,25 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         #args: 
         
         #checkMe: string input to check
+        is.character(checkMe)
         
-        testThis <- checkMe
+        # check taxonomic name input checkMe is acceptable
+        if(is.character(checkMe)==TRUE | is.factor(checkMe)==TRUE){
+                cat(" ... checkMe is of OK type: character or factor")
+        } else {
+                cat(" ... checkMe is not of accepted type; try one of: character or factor")
+                stop("checkMe type unacceptable")
+        }
+        
+        testThis <<- checkMe
+        
+        # take first element only (if char string, first element is only element)
+        #testThis <<- checkMe[1]
+        # this doesn't work with data.frames :c
+        # big problems with the factor levels/level numbers issue
+        # it's ok if the thing is assigned crrntDetREQFIX$Taxon, not if just crrntDetREQFIX
+        # can then do as.character(checkMe[1]) if it's the former
+        # then get: [1] "Peperomia blanda  (Jacq.) Kunth"
         
         # taxonType
         taxonType <- as.character(taxonType)
@@ -82,6 +99,15 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         # taxonSingle
         if(taxonSingle==FALSE){
+                # ok if checkMe is a factor but not a data frame
+                # this should get checked at checkMe input check above
+                        # something like:
+                        # testThis length x
+                        # run script
+                        # testThis <- testThis[-remove tested first index]
+                        # length testThis = x-1
+                        # go to start of loop again
+                        # repeat until x is gone?
                 stop("... support for multiple taxa has not been written yet. Ask Flic about this")
         } else {
                 cat("\n", "... single taxon check in progress")
@@ -149,7 +175,9 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         # open database connections to Padme Arabia if not already open
         
         if(exists("con_livePadmeArabia")){
-                cat("\n", "... database connection to Padme Arabia already open")
+                odbcClose(con_livePadmeArabia)
+                invisible(livePadmeArabiaCon())
+                cat("\n", "... database connection to Padme Arabia refreshed")
         } else {
                 source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
                 invisible(livePadmeArabiaCon())
