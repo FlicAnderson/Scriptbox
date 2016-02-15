@@ -131,10 +131,10 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         # (A) single taxon
                 # (1) taxon options:  family, genus, species, subspecies, variety
-                # (2) authority options: authority attached, authority separate, authority absent
+                # (2) authority options: authority attached, authority separate (NOT COVERED) , authority absent
         # (B) multiple taxa
                 # (1) taxon options:  family, genus, species, subspecies, variety
-                # (2) authority options: authority attached, authority separate, authority absent
+                # (2) authority options: authority attached, authority separate (NOT COVERED), authority absent
 
         
         # B) 
