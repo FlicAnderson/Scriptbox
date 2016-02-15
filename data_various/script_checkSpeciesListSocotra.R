@@ -66,8 +66,26 @@ fileName <- "SocotraSPECIES-LIST_NOTES.csv"
 #latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
 latinNamesMatcher(fileLocat, fileName, rowIndex=1:800, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNames")
 
-# 2) 
+# need to fix NA auth situation & NA NA situations
 
+
+# 2)
+
+# need to integrate the fuzzy names matcher script to suggest matches to make edits
+# and corrections easier - maybe do this using dplyr and then mutate(function) new column
+
+# source that function
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R")
+# to call: padmeNameMatch(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE)
+
+# need to edit it to deal with multiple taxa (create method for taxonSingle=FALSE)
+
+
+# dplyr everything necessary
+
+# run mutate (with chaining)
+
+# output
 
 
 
