@@ -7,13 +7,13 @@
 # saved at: O://CMEP\ Projects/Scriptbox/data_various/script_checkSpeciesListSocotra.R
 # source("O://CMEP\ Projects/Scriptbox/data_various/script_checkSpeciesListSocotra.R")
 #
-# AIM: 
-# .... 
-# .... 
-# .... 
-# .... 
-# .... 
-# .... 
+# AIM: Check names in Alan's sample spreadsheet for the Socotra project against 
+# .... Padme Arabia names and output list of those which need checking - likely
+# .... these will need some Authority info or spellings corrected, but also there
+# .... will definitely need to be updates and corrections made to Padme, including
+# .... recent taxonomic changes entered.
+# .... Also names matching will operate as base/check for linking samples/EDINA 
+# .... IDs & allowing this data to be pulled into future analyses
 
 # ---------------------------------------------------------------------------- #
 
