@@ -100,12 +100,20 @@ source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R
 
 padmeNameMatch(checkMe=test1, taxonType="species", authorityPresent=TRUE, taxonSingle=TRUE)
 
-
-
-
 # dplyr everything necessary
 
+#crrntDet_tbldf <- tbl_df(crrntDet)
+#crrntDetREQFIX_tbldf <- tbl_df(crrntDetREQFIX)
+
+#crrntDetREQFIX_tbldf %>% 
+#        mutate(Taxon, fixName=padmeNameMatch(checkMe=Taxon, authorityPresent=TRUE))
+
+#padmeNameMatch(checkMe=crrntDetREQFIX_tbldf$Taxon, authorityPresent=TRUE)
+
+
 # run mutate (with chaining)
+
+
 
 # output
 
