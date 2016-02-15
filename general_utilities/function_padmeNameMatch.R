@@ -43,6 +43,8 @@ if (!require(stringdist)){
 padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE){
         
  # 1)
+        # clear workspace of existing possMatch - TEMP FIX?
+        rm(possMatch, envir=.GlobalEnv)
         
         # check arguments are present & conform to options
         
@@ -62,7 +64,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         testThis <<- checkMe
         
         # take first element only (if char string, first element is only element)
-        #testThis <<- checkMe[1]
+        testThis <<- as.character(checkMe[1])
         # this doesn't work with data.frames :c
         # big problems with the factor levels/level numbers issue
         # it's ok if the thing is assigned crrntDetREQFIX$Taxon, not if just crrntDetREQFIX
@@ -76,9 +78,9 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         # check user input taxonType is acceptable from possTaxonTypes
         if(taxonType %in% possTaxonTypes){
-                cat(" ... accepted taxon type")
+                cat("\n", " ... accepted taxon type")
         } else {
-                cat(" ... taxonType not accepted; try one of: family, genus, species, subspecies, variety")
+                cat("\n", " ... taxonType not accepted; try one of: family, genus, species, subspecies, variety")
                 stop("taxonType unacceptable")
                 }
  
@@ -141,7 +143,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                 nameVar <<- "[sortName]"
         } else {
                 # set nameVar to pull out [Full name] (+auth)
-                cat("\n", "... authority information not present")
+                cat("\n", "... authority information present")
                 nameVar <<- "[Full name]"
         }
         
@@ -200,16 +202,18 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         possMatch <<- latMatch(testThis, Lnams[,1])
 
  # 7)   # check if user's checkMe input is in Lnams & output match details
-        if(checkMe %in% Lnams[,1]){
+        if(testThis %in% Lnams[,1]){
                 cat("\n", "... checking complete:", testThis[1], "is an EXACT MATCH in Padme Arabia  :D")
         } else {
                 cat("\n", "... entered name(s)", testThis[1], "NOT EXACT MATCH in Padme Arabia  :c")
                 cat("\n", "... >>> did you mean:", possMatch, "?")
         }
         
+        return(possMatch)
         
  # 8) tidy phase
-        rm(nameVar, possMatch, envir=.GlobalEnv)
+        rm(nameVar, envir=.GlobalEnv)
+        #rm(nameVar, possMatch, envir=.GlobalEnv)
         # NOTE: envir=.GlobalEnv argument added to remove following warning messages:
         #  Warning messages:
         #       1: In rm(nameVar, possMatch) : object 'nameVar' not found
