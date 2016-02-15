@@ -67,6 +67,11 @@ fileName <- "SocotraSPECIES-LIST_NOTES.csv"
 latinNamesMatcher(fileLocat, fileName, rowIndex=1:800, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNames")
 
 # need to fix NA auth situation & NA NA situations
+# also need to strip out the extra whitespace - but best to do this with care
+        # best to output original input AND column with how it *should* be (fixed)
+        # that allows easier Ctrl+H replace in original document if necessary
+        # it probably originates from the concat operation, often seems to be 2 
+        # spaces at join
 
 
 # 2)
@@ -76,6 +81,12 @@ test1 <- "Peperomia blanda  (Jacq.) Kunth"
 test2 <- "Peperomia tetraphylla  Hook. & Arn."
 test3 <- "Eulophia petersii (Rchb.f.) Rchb.f."
 test4 <- "Cyanixia socotrana (Balf.f.) Goldblatt & J.C.Manning"
+test5 <- "Aloe jawiyon Christie, Hannon & Oakham"
+test6 <- "Asparagus sp. A NA"
+test7 <- "Chlorophytum graptophyllum  (Baker) A. G. Mill."
+test8 <- "Chlorophytum sp. nov. NA"
+test9 <- "Dipcadi guichardii  Radcl.-Sm."
+test10 <- "Dipcadi kuriensis  A.G.Mill."
 
 
 
@@ -87,7 +98,9 @@ source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R
 # to call: padmeNameMatch(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE)
 # need to edit it to deal with multiple taxa (create method for taxonSingle=FALSE)
 
-padmeNameMatch(checkMe=test1, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE)
+padmeNameMatch(checkMe=test1, taxonType="species", authorityPresent=TRUE, taxonSingle=TRUE)
+
+
 
 
 # dplyr everything necessary
