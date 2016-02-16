@@ -178,7 +178,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         # uncertain why
         
         if(exists("con_livePadmeArabia")){
-                odbcClose(con_livePadmeArabia)
+                cat("\n", "... database connection to Padme Arabia already open")
                 invisible(livePadmeArabiaCon())
                 cat("\n", "... database connection to Padme Arabia refreshed")
         } else {
