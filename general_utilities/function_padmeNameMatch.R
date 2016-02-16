@@ -48,13 +48,17 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         #args: 
         
         #checkMe: string input to check
-        is.character(checkMe)
+        #is.character(checkMe)
         
         # check taxonomic name input checkMe is acceptable
         if(is.character(checkMe)==TRUE | is.factor(checkMe)==TRUE){
-                cat("... checkMe is of OK type: character or factor", sep="")
+                if(chattyReturn==TRUE){
+                        cat("... checkMe is of OK type: character or factor", sep="")
+                }
         } else {
-                cat("... checkMe is not of accepted type; try one of: character or factor", sep="")
+                if(chattyReturn==TRUE){
+                        cat("... checkMe is not of accepted type; try one of: character or factor", sep="")
+                }
                 stop("checkMe type unacceptable")
         }
         
@@ -75,11 +79,15 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         # check user input taxonType is acceptable from possTaxonTypes
         if(taxonType %in% possTaxonTypes){
+                if(chattyReturn==TRUE){
                 cat("\n", "... accepted taxon type", sep="")
-        } else {
-                cat("\n", "... taxonType not accepted; try one of: family, genus, species, subspecies, variety", sep="")
-                stop("taxonType unacceptable")
                 }
+        } else {
+                if(chattyReturn==TRUE){
+                        cat("\n", "... taxonType not accepted; try one of: family, genus, species, subspecies, variety", sep="")
+                }
+                stop("taxonType unacceptable")
+        }
  
         
         # authorityPresent
@@ -88,10 +96,13 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         # NA will stop function & throw error
         
         if(!is.na(authorityPresent) && is.logical(authorityPresent)==TRUE){
-                cat("\n", "... acceptable authorityPresent", sep="")       
-        } else {
-                cat("\n", "... authorityPresent must be logical: try TRUE or FALSE",  sep="")
-                if(is.na(authorityPresent)){cat("\n","... authorityPresent cannot be NA/missing value", sep="")}
+                if(chattyReturn==TRUE){
+                        cat("\n", "... acceptable authorityPresent", sep="")   
+                }
+        } else {if(chattyReturn==TRUE){
+                        cat("\n", "... authorityPresent must be logical: try TRUE or FALSE",  sep="")
+                        if(is.na(authorityPresent)){cat("\n","... authorityPresent cannot be NA/missing value", sep="")}
+        }
                 stop("authorityPresent type unacceptable")
         }
                 
@@ -109,7 +120,9 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                         # repeat until x is gone?
                 stop("... support for multiple taxa has not been written yet. Ask Flic about this")
         } else {
-                cat("\n", "... single taxon check in progress",  sep="")
+                if(chattyReturn==TRUE){
+                        cat("\n", "... single taxon check in progress",  sep="")
+                }
         }
         
         # chattyReturn
@@ -148,11 +161,15 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
         if(authorityPresent==FALSE){
                 # set nameVar to pull out sortName by default (no auth)
-                cat("\n", "... authority information not present", sep="") 
+                if(chattyReturn==TRUE){
+                        cat("\n", "... authority information not present", sep="") 
+                }
                 nameVar <<- "[sortName]"
         } else {
                 # set nameVar to pull out [Full name] (+auth)
-                cat("\n", "... authority information present", sep="")
+                if(chattyReturn==TRUE){
+                        cat("\n", "... authority information present", sep="")
+                }
                 nameVar <<- "[Full name]"
         }
         
@@ -192,11 +209,15 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                         #         Error in sqlQuery(con_livePadmeArabia, nameGetQry) : 
                         #                 first argument is not an open RODBC channel 
                 livePadmeArabiaCon(silent=TRUE)
-                cat("\n", "... database connection to Padme Arabia refreshed", sep="")
+                if(chattyReturn==TRUE){
+                        cat("\n", "... database connection to Padme Arabia refreshed", sep="")
+                }
         } else {
                 source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
                 livePadmeArabiaCon(silent=TRUE)
-                cat("\n", "... opened database connection to Padme Arabia", sep="")
+                if(chattyReturn==TRUE){
+                        cat("\n", "... opened database connection to Padme Arabia", sep="")
+                }
         }
         
  # 6)   # matching methods
@@ -221,14 +242,14 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                 # set up more useful return 
                 if(chattyReturn==FALSE){
                         # exact match
-                        return(cat("\n", possMatch))
+                        return(cat(possMatch))
                 } else {
                 cat("\n", "... checking complete: ", testThis[1], " is an EXACT MATCH in Padme Arabia  :D", sep="") 
                         }
         } else {
                 if(chattyReturn==FALSE){
                         # no match, return possMatch
-                        return(cat("\n", possMatch))
+                        return(cat(possMatch))
                 } else {
                 cat("\n", "... entered name(s) ", testThis[1], " NOT EXACT MATCH in Padme Arabia  :c", sep="")
                 cat("\n", "... >>> did you mean: ", possMatch, "?", sep="")
