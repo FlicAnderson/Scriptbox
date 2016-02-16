@@ -8,7 +8,7 @@
 # saved at: O://CMEP\-Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R
 #
 # FUNCTION AIM: Set up and open connection to live Padme Arabia 
-# ............. database, return confirmation.
+# ............. database, return confirmation if silent=FALSE (default)
 #
 # --------------------------------------------------------
 
@@ -20,7 +20,7 @@ if (!require(RODBC)){
   library(RODBC)
 } 
 
-livePadmeArabiaCon <- function(){
+livePadmeArabiaCon <- function(silent=FALSE){
   
   # set up connection, needs to point to padmeCODE.mdb, otherwise the imported tables don't show up!
   # locat = location of padme data file
@@ -37,9 +37,11 @@ livePadmeArabiaCon <- function(){
   
   # informative error if connection not created
   if(!exists("con_livePadmeArabia")) stop("... ERROR: connection not created")
-  # return confirmation if connection works
-  if(exists("con_livePadmeArabia")) print(paste("... source database connection online: ", locat_livePadmeArabia))
-  
+  # return confirmation if connection works (if silent=FALSE)
+  # set silent=TRUE to NOT return confirmation
+  if(silent=FALSE){
+          if(exists("con_livePadmeArabia")) print(paste("... source database connection online: ", locat_livePadmeArabia))
+  }
   # NOTE: If this error returned when sourced: 
     # "Error in odbcConnectAccess(locat_livePadmeArabia): 
     # odbcConnectAccess is only usable with 32-bit Windows"
