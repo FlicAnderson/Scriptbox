@@ -43,9 +43,6 @@ if (!require(stringdist)){
 padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE){
         
  # 1)
-        # clear workspace of existing possMatch - TEMP FIX?
-        rm(possMatch, envir=.GlobalEnv)
-        
         # check arguments are present & conform to options
         
         #args: 
@@ -212,8 +209,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         return(possMatch)
         
  # 8) tidy phase
-        rm(nameVar, envir=.GlobalEnv)
-        #rm(nameVar, possMatch, envir=.GlobalEnv)
+        rm(nameVar, possMatch, envir=.GlobalEnv)
         # NOTE: envir=.GlobalEnv argument added to remove following warning messages:
         #  Warning messages:
         #       1: In rm(nameVar, possMatch) : object 'nameVar' not found
