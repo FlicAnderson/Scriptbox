@@ -39,7 +39,7 @@ livePadmeArabiaCon <- function(silent=FALSE){
   if(!exists("con_livePadmeArabia")) stop("... ERROR: connection not created")
   # return confirmation if connection works (if silent=FALSE)
   # set silent=TRUE to NOT return confirmation
-  if(silent=FALSE){
+  if(silent==FALSE){
           if(exists("con_livePadmeArabia")) print(paste("... source database connection online: ", locat_livePadmeArabia))
   }
   # NOTE: If this error returned when sourced: 
