@@ -171,19 +171,19 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         
  # 5)   
         
-        # open database connections to Padme Arabia if not already open
-        # current;y getting error:
-#         Error in sqlQuery(con_livePadmeArabia, nameGetQry) : 
-#                 first argument is not an open RODBC channel 
+        # open  database connections to Padme Arabia or refresh if already open
+
         # uncertain why
         
         if(exists("con_livePadmeArabia")){
-                cat("\n", "... database connection to Padme Arabia already open")
-                #invisible(livePadmeArabiaCon())
-                #cat("\n", "... database connection to Padme Arabia refreshed")
+                # need to refresh connection or get error: 
+                        #         Error in sqlQuery(con_livePadmeArabia, nameGetQry) : 
+                        #                 first argument is not an open RODBC channel 
+                livePadmeArabiaCon(silent=TRUE)
+                cat("\n", "... database connection to Padme Arabia refreshed")
         } else {
                 source("O:/CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
-                invisible(livePadmeArabiaCon())
+                livePadmeArabiaCon(silent=TRUE)
                 cat("\n", "... opened database connection to Padme Arabia")
         }
         
