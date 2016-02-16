@@ -172,6 +172,10 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
  # 5)   
         
         # open database connections to Padme Arabia if not already open
+        # current;y getting error:
+#         Error in odbcClose(con_livePadmeArabia) : 
+#                 argument is not an open RODBC channel 
+        # uncertain why
         
         if(exists("con_livePadmeArabia")){
                 odbcClose(con_livePadmeArabia)
