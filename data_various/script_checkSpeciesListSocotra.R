@@ -133,8 +133,13 @@ crrntDetREQFIX_tbldf %>%
 newtable <- cbind(crrntDetREQFIX_tbldf, padmeNameMatch(checkMe=crrntDetREQFIX_tbldf$Taxon, taxonType="species", authorityPresent=TRUE, taxonSingle=TRUE))
 # this just gives Peperomia blanda X 10
 
-
-
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R")
+#a <- tbl_df(data.frame(checkMeNames=crrntDetREQFIX[1:10,]))
+ad %>%
+        rowwise() %>%
+        #mutate(bestGuess=padmeNameMatch(checkMe=ad$checkMeNames, taxonType="species", authorityPresent=TRUE, taxonSingle=TRUE, chattyReturn=FALSE))
+        mutate(namsChar=as.character(checkMeNames)) %>%
+        glimpse
 
 
 # run mutate (with chaining)
