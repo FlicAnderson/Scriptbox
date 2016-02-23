@@ -281,6 +281,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 18/01/2016 6172 (after adding some specimens)
 # 04/02/2016 6001 must've fixed some duplicates(?)
 # 2016/02/09 5816 (after duplicate checking/fixing)
+# 2016/02/23 6133 imported last spreadsheets & September 2014 FT dets
 
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
@@ -320,6 +321,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # # 04/02/2016 24233 obs 27 var - OK to continue!
 
 
+
 # query to select all records from the temporary table FieldRexTemp, replaces qry2
 qry0 <- "SELECT * FROM FieldRexTemp"
 # run query 
@@ -330,6 +332,7 @@ fielRex <- sqlQuery(con_livePadmeArabia, qry0)
 fielRex$id <- NULL
 # 04/02/2016 24233
 # 2016/02/09 24424 obs 27 var - OK to continue!
+# 2016/02/23 24423 obs 27 var: good
 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
@@ -337,6 +340,7 @@ litrRex <- sqlQuery(con_livePadmeArabia, qry3)
 # 08/06/2015 649 with accepted names only
 # 04/02/2016 646
 # 2016/02/09 646 - no changes to these recently
+# 2016/02/09 629 - no changes to these recently but it's gone down?
 
 # show number of records returned
 nrow(herbRex)
@@ -359,6 +363,7 @@ nrow(recGrab)
 # 19/01/2016 17783 x 27 var (a few more herbarium specimens were added)
 # 04/02/2016 30880 x 27 var (added ~9k Italian field records & ~9k Banfield field notes)
 # 2016/02/09 30886 x 27 
+# 2016/02/23 31185 x 27 
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
@@ -454,20 +459,20 @@ getHerbariumCode()
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
 getFlicsFields()
 # recGrab unaltered
-# herbSpxReqDet 535 x 35 var & order changed
+# herbSpxReqDet 502 x 35 var & order changed
 
 str(herbSpxReqDet)
 herbSpxReqDet <- tbl_df(herbSpxReqDet)
 herbSpxReqDet
 
 table(herbSpxReqDet$herbariumCode, useNA="ifany")
-# BM    E       HNT     K       UPS     <NA> 
-#  5    233     8       1       36      216
+# BM    E    FT   HNT     K       UPS     <NA> 
+#  2   233   6    8       1       36      216
 # we only can determine specimens at E, really
 
 
 # make list for dets
-source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_Socotra-Jan2016.R")
+#source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_Socotra-Jan2016.R")
 
 
 #########################################
