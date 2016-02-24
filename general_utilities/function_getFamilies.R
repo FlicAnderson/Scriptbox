@@ -70,6 +70,7 @@ getFamilies <- function(){
         # also drop temp column 'member'
         recGrab <<- recGrab[,c(
                 "recID", 
+                "expdID",
                 "collector", 
                 "collNumFull", 
                 "lnamID", 
