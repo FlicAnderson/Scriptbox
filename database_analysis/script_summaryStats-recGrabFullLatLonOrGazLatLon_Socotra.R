@@ -46,9 +46,9 @@ if(!exists("recGrab")){
 
 
 # source line for getExpedition() to add this info to recGrab
-source("O://CMEP\ Projects/Scriptbox/general_utilities/function_getExpedition.R")
+#source("O://CMEP\ Projects/Scriptbox/general_utilities/function_getExpedition.R")
 # add expedition info to recGrab
-getExpedition()
+#getExpedition()
 
 # 2)
 
@@ -60,7 +60,7 @@ getExpedition()
 
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
-# 1249 taxa at 15 July 2015
+# 1256 taxa at 2016-02-25
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -72,9 +72,10 @@ write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/taxaLis
 
 
 # Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
-length(unique(paste(recGrab$AnyLat, recGrab$AnyLon)))
+length(unique(paste(recGrab$anyLat, recGrab$anyLon)))
 # 889 @ 08/06/2015
 # 907 @ 18/01/2015
+# 716 @ 2016-02-25
 
 # Number of taxa with >10 unique locations?
 # 175 unique named locations OR 255 unique lat+lon combos @ 06/07/2015, see below
@@ -93,12 +94,22 @@ socotraData <- tbl_df(recGrab)
 
 # get names of variables
 names(socotraData)
-# [1] "recID"      "collector"          "collNumFull"        "lnamID"             "taxRank"           
-# [6] "familyName" "acceptDetAs"        "acceptDetNoAuth"    "genusName"          "detAs"             
-# [11] "lat1Dir"   "lat1Deg"            "lat1Min"            "lat1Sec"            "lat1Dec"           
-# [16] "AnyLat"    "lon1Dir"            "lon1Deg"            "lon1Min"            "lon1Sec"           
-# [21] "lon1Dec"   "AnyLon"             "coordSource"        "coordAccuracy"      "coordAccuracyUnits"
-# [26] "coordSourcePlus" "dateDD"       "dateMM"             "dateYYYY"             "fullLocation"  
+# [1] "recID"              "expdID"            
+# [3] "collector"          "collNumFull"       
+# [5] "lnamID"             "taxRank"           
+# [7] "familyName"         "acceptDetAs"       
+# [9] "acceptDetNoAuth"    "genusName"         
+# [11] "detAs"              "lat1Dir"           
+# [13] "lat1Deg"            "lat1Min"           
+# [15] "lat1Sec"            "lat1Dec"           
+# [17] "anyLat"             "lon1Dir"           
+# [19] "lon1Deg"            "lon1Min"           
+# [21] "lon1Sec"            "lon1Dec"           
+# [23] "anyLon"             "coordSource"       
+# [25] "coordAccuracy"      "coordAccuracyUnits"
+# [27] "coordSourcePlus"    "dateDD"            
+# [29] "dateMM"             "dateYYYY"          
+# [31] "fullLocation"    
 
 #?manip  # gives info on manipulation functions
 
@@ -115,7 +126,7 @@ filter(socotraData, acceptDetAs=="Aerva revoluta Balf.f.")
 arrange(socotraData, acceptDetAs, dateYYYY, collector)
 
 # mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
-socotraData <- mutate(socotraData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+socotraData <- mutate(socotraData, LatLon=paste(anyLat, anyLon, sep=" "))
 
 # summarize(datasource, summarizingcolumn = summarizing function(column3))
 # no easy example here
@@ -126,31 +137,37 @@ group_by(socotraData, acceptDetAs)
 
 # group by species & summarize by 1 variable
 by_sps <- group_by(socotraData, acceptDetAs)
-summarize(by_sps, mean(dateYYYY, na.rm=TRUE))  # average year of collection by species :)
+summarize(by_sps, round(mean(dateYYYY, na.rm=TRUE), digits=0))  # average year of collection by species :)
 
 # group by species and summarize by multiple variables
-socDat <- mutate(socotraData, LatLon=paste(AnyLat, AnyLon, sep=" "))
+socDat <- mutate(socotraData, latLon=paste(anyLat, anyLon, sep=" "))
 by_sps <- group_by(socDat, acceptDetAs)
 by_sps_sum <- summarize(by_sps, 
                         count=n(),
                         collectedBy=n_distinct(collector), 
-                        mostRecentCollection=max(dateYYYY, na.rm=TRUE), 
-                        uniqueLatLon=n_distinct(LatLon),
-                        uniqueLocation=n_distinct(fullLocation)
+                        uniqueLatLon=n_distinct(latLon),
+                        uniqueLocation=n_distinct(fullLocation), 
+                        mostRecent=max(dateYYYY, na.rm=TRUE)
 )
 by_sps_sum
 
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
-#258
+#213
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
-#175
+#264
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 352 taxa with >10 unique latlon locations
-# NB: shows Adenium with 193 occurrences, and Adenium obesum with 103 & Adenium 
-# obesum subsp sokotranum with 44 occurrences.  These should all come under one 
+# 514 taxa with >10 unique latlon locations
+# NB: shows Adenium with 193 occurrences, and Adenium obesum with 155 & Adenium 
+# obesum subsp sokotranum with 160 occurrences.  These should all come under one 
 # taxa - Adenium obesum subsp sokotranum w/ 340 occurences!
+
+# VERY IMPORTANT!
+# CLOSE THE CONNECTION!
+odbcCloseAll()
+# empty the environment of objects
+#rm(list=ls())
