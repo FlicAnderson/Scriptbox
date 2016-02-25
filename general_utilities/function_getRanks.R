@@ -75,6 +75,7 @@ getRanks <- function(){
                 
                 recGrab <<- recGrab[,c(
                         "recID", 
+                        "expdID",
                         "collector", 
                         "collNumFull", 
                         "lnamID", 
@@ -120,6 +121,7 @@ getRanks <- function(){
                 #recGrab <<- recGrab[,c(1:4,29,5:27)]
                 recGrab <<- recGrab[,c(
                         "recID", 
+                        "expdID", 
                         "collector", 
                         "collNumFull", 
                         "lnamID", 
