@@ -66,9 +66,13 @@ length(unique(recGrab$acceptDetAs))
 taxaListSocotra <- unique(recGrab$acceptDetAs)
 #sort(taxaListSocotra)
 
-message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"))
+message(paste0(" ... saving list of accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_", Sys.Date(), ".csv"))
 # write list of unique taxa
-write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"), row.names=FALSE)
+write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_", Sys.Date(), ".csv"), row.names=FALSE)
+
+# message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"))
+# # write list of unique taxa
+# write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"), row.names=FALSE)
 
 
 # Number of unique locations? (unique(paste0(AnyLat + AnyLon)))
