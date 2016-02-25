@@ -67,6 +67,7 @@ getFlicsFields <- function(){
         # remove additional herbspecID & origID columns & final column order:
         herbSpxReqDet <<- herbSpxReqDet[,c(
                 "recID", 
+                "expdID",
                 "collector", 
                 "collNumFull", 
                 "herbariumCode", 
