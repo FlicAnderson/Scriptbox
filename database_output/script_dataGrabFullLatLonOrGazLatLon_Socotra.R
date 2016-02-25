@@ -75,6 +75,7 @@ livePadmeArabiaCon()
 # Adapted from script_dataGrabSpecieswithFullLatLon.R
 qry1 <- paste0("
 SELECT 'H-' & Herb.id AS recID, 
+Herb.[Expedition] AS expdID,
 Team.[name for display] AS collector,
 Herb.[Collector Number] AS collNumFull,
 LnSy.[id] AS lnamID, ",
@@ -142,6 +143,7 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 # # Adapted from script_dataGrabSpecieswithFullLatLon.R & various fieldObs scripts
 # qry2 <- paste0("
 # SELECT 'F-' & Fiel.id AS recID,
+# Fiel.[Expedition] AS expdID,
 # Team.[name for display] AS collector,
 # Fiel.[Collector Number] AS collNumFull,
 # LnSy.[id] AS lnamID, ",
@@ -282,6 +284,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 04/02/2016 6001 must've fixed some duplicates(?)
 # 2016/02/09 5816 (after duplicate checking/fixing)
 # 2016/02/23 6133 imported last spreadsheets & September 2014 FT dets
+# 2016/02/23 6132 x 28
 
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
@@ -327,14 +330,19 @@ qry0 <- "SELECT * FROM FieldRexTemp"
 # run query 
 fielRex <- sqlQuery(con_livePadmeArabia, qry0) 
 # 04/02/2016 24233 
-# 2016/02/09 24424 obs 28 var - need to remove the id column!
+# 2016/02/09 28 var - need to remove the id column!
 # remove ID field
 fielRex$id <- NULL
 # 04/02/2016 24233
-# 2016/02/09 24424 obs 27 var - OK to continue!
-# 2016/02/23 24423 obs 27 var: good
+# 2016/02/09 24424 - OK to continue!
+# 2016/02/23 24423 
+# 2016/02/23 24423 obs 28 var: good
 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
+# add expdID column & set to null
+litrRex$expdID <- ""
+# re-order so expdID in same location as in herb and fiel recsets
+litrRex <- litrRex[,c(1,28,2:27)]
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
 # 04/06/2015 651 rm Socotra w/o latlon
 # 08/06/2015 649 with accepted names only
@@ -364,6 +372,7 @@ nrow(recGrab)
 # 04/02/2016 30880 x 27 var (added ~9k Italian field records & ~9k Banfield field notes)
 # 2016/02/09 30886 x 27 
 # 2016/02/23 31185 x 27 
+# 2016/02/24 31184 x 28 (added expdID column)
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
@@ -379,18 +388,22 @@ head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$col
 # head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
 
 ##names(recGrab)
-#  [1] "recID"              "collector"          "collNumFull"        "lnamID"             "acceptDetAs"
-#  [6] "acceptDetNoAuth"    "detAs"              "lat1Dir"            "lat1Deg"            "lat1Min"    
-# [11] "lat1Sec"            "lat1Dec"            "anyLat"             "lon1Dir"            "lon1Deg"  
-# [16] "lon1Min"            "lon1Sec"            "lon1Dec"            "anyLon"             "coordSource  
-# [21] "coordAccuracy"      "coordAccuracyUnits" "coordSourcePlus"    "dateDD"             "dateMM"      
-# [26] "dateYYYY"             "fullLocation"  
+# [1] "recID"              "expdID"             "collector"         
+# [4] "collNumFull"        "lnamID"             "acceptDetAs"       
+# [7] "acceptDetNoAuth"    "detAs"              "lat1Dir"           
+# [10] "lat1Deg"            "lat1Min"            "lat1Sec"           
+# [13] "lat1Dec"            "anyLat"             "lon1Dir"           
+# [16] "lon1Deg"            "lon1Min"            "lon1Sec"           
+# [19] "lon1Dec"            "anyLon"             "coordSource"       
+# [22] "coordAccuracy"      "coordAccuracyUnits" "coordSourcePlus"   
+# [25] "dateDD"             "dateMM"             "dateYYYY"          
+# [28] "fullLocation"    
 
 
 # pull out families from Latin Names table
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
 getFamilies()
-# recGrab 17783 x 28 var
+# recGrab 31184 x 29 var
 
 # pull out genus (use non-auth det & then regex the epithet off)
 recGrab$genusName <- recGrab$acceptDetNoAuth
@@ -400,6 +413,7 @@ recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 # NOTE: reorder done longform with names as opp to indices to avoid hassle later!
 recGrab <<- recGrab[,c(
         "recID", 
+        "expdID",
         "collector", 
         "collNumFull", 
         "lnamID", 
@@ -433,20 +447,22 @@ recGrab <<- recGrab[,c(
 # pull out taxonomic rank from Latin Names table & apply to all recGrab records
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R')
 getRanks()
-# 04/02/2016 recGrab 30880 obs x 30 var
+# 24/02/2016 recGrab 31184 obs x 31 var
 
-# split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
-source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
-getDetReqSpx()
-# recGrab still 30880 x 30 & names() order the same as directly above
-# herbSpxReqDet 535 x 30 & names() order still the same
+# Maybe need to redo this after det-sessions have been run & det-reqs still remain. 
+# Need to ensure recGrab is ONLY sps-level for analyses
+        # # split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
+        # source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
+        # getDetReqSpx()
+        # # recGrab still 31184 x 31 & names() order the same as directly above
+        # # herbSpxReqDet 501 x 31 & names() order still the same
 
 
 # add herbarium info to herbarium specimens (in herbSpxReqDet object)
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
 getHerbariumCode()
-# recGrab unaltered 30880 x 30
-# herbSpxReqDet 535 x 31 var & order changed
+# recGrab unaltered 31184 x 31
+# herbSpxReqDet 501 x 31 var & order changed
 
 
 # still need to filter out the herbarium specimens for sorting though.
