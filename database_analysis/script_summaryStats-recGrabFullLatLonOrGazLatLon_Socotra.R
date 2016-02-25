@@ -45,6 +45,11 @@ if(!exists("recGrab")){
 }
 
 
+# source line for getExpedition() to add this info to recGrab
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_getExpedition.R")
+# add expedition info to recGrab
+getExpedition()
+
 # 2)
 
 ### SUMMARY STATS ###
