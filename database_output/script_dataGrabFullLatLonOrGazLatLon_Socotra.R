@@ -445,50 +445,61 @@ recGrab <<- recGrab[,c(
 )]
 
 # pull out taxonomic rank from Latin Names table & apply to all recGrab records
-source('O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R')
+source("O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R")
 getRanks()
 # 24/02/2016 recGrab 31184 obs x 31 var
 
-# Maybe need to redo this after det-sessions have been run & det-reqs still remain. 
+# BIN BY TAXONOMY
+# keep all records with species-level, subspecies or variety-level 
+# (also Sp. Nov. level) records ONLY
+source("O:/CMEP Projects/Scriptbox/general_utilities/keepTaxRankOnly.R")
+keepTaxRankOnly()
+
+
+
+# # THIS BIT UNNECESSARY since we've run the det sessions & herbSpxReqDet isn't useful anymore ##
+# Maybe need to redo this since det-sessions have been run & det-reqs still remain. 
 # Need to ensure recGrab is ONLY sps-level for analyses
-        # # split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
-        # source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
-        # getDetReqSpx()
-        # # recGrab still 31184 x 31 & names() order the same as directly above
-        # # herbSpxReqDet 501 x 31 & names() order still the same
-
-
+#         # split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
+#         source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
+#         getDetReqSpx()
+#         # recGrab still 31184 x 31 & names() order the same as directly above
+#         # herbSpxReqDet 501 x 31 & names() order still the same
+# 
+# # THIS BIT UNNECESSARY since we've run the det sessions & herbSpxReqDet isn't useful anymore ##
 # add herbarium info to herbarium specimens (in herbSpxReqDet object)
-source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
-getHerbariumCode()
+# source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
+# getHerbariumCode()
 # recGrab unaltered 31184 x 31
 # herbSpxReqDet 501 x 31 var & order changed
-
-
+# ###
+# 
+# 
 # still need to filter out the herbarium specimens for sorting though.
 # KEEP: 
 # ones which have geolocation
 # ones at E (or no-herbarium-code, since that's probably a lot)
 # 
-
+# 
+# # THIS BIT UNNECESSARY since we've run the det sessions & herbSpxReqDet isn't useful anymore ##
 # add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object)
-source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
-getFlicsFields()
+# source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
+# getFlicsFields()
 # recGrab unaltered
 # herbSpxReqDet 502 x 35 var & order changed
-
-str(herbSpxReqDet)
-herbSpxReqDet <- tbl_df(herbSpxReqDet)
-herbSpxReqDet
-
-table(herbSpxReqDet$herbariumCode, useNA="ifany")
-# BM    E    FT   HNT     K       UPS     <NA> 
-#  2   233   6    8       1       36      216
-# we only can determine specimens at E, really
-
-
+# 
+# str(herbSpxReqDet)
+# herbSpxReqDet <- tbl_df(herbSpxReqDet)
+# herbSpxReqDet
+# 
+# table(herbSpxReqDet$herbariumCode, useNA="ifany")
+# # BM    E    FT   HNT     K       UPS     <NA> 
+# #  2   233   6    8       1       36      216
+# # we only can determine specimens at E, really
+# 
+# 
 # make list for dets
-#source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_Socotra-Jan2016.R")
+# source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_Socotra-Jan2016.R")
 
 
 #########################################
@@ -496,10 +507,15 @@ table(herbSpxReqDet$herbariumCode, useNA="ifany")
 
 # 5)
 
-# write ALL >>>recGrab<<< to .csv file  
+# write analysis-ready >>>recGrab<<< to .csv file  
 # UNCOMMENT THESE TWO LINES TO WRITE OUT!
-message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
-write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
+write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+
+# # write ALL >>>recGrab<<< to .csv file  
+# # UNCOMMENT THESE TWO LINES TO WRITE OUT!
+# message(paste0(" ... saving records to: O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"))
+# write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/allRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 
 # write >>>herbSpxReqDet<<<to .csv file  
