@@ -42,9 +42,24 @@ getExpedition <- function(){
         if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
 
         # recreate original herb specimen/field note/lit rec table ID 
-        recGrab <- 
-                recGrab %>%
-                mutate(recID, origID=gsub("*-", "", recID))
+        recGrabHerb <- 
+                head(recGrab) %>%
+                filter(grepl("H-", recID)) %>%
+                mutate(recID, origID=gsub("[A-Z]-", "", recID))
+        
+        # recreate original herb specimen/field note/lit rec table ID 
+        recGrabHerb <- 
+                testGrab %>%
+                filter(grepl("H-", recID)) %>%
+                mutate(recID, origID=gsub("[A-Z]-", "", recID))
+        
+        # recreate original herb specimen/field note/lit rec table ID 
+        recGrabFiel <- 
+                head(recGrab) %>%
+                filter(grepl("F-", recID)) %>%
+                mutate(recID, origID=gsub("[A-Z]-", "", recID))
+        
+        #### TBC ####
         
         # create query to join expedition info
         qry <- "SELECT 
@@ -65,6 +80,7 @@ getExpedition <- function(){
 #         # remove additional herbspecID column & final column order:
 #         herbSpxReqDet <<- herbSpxReqDet[,c(
 #                 "recID", 
+#                 "expdID",
 #                 "collector", 
 #                 "collNumFull", 
 #                 "herbariumCode", 
