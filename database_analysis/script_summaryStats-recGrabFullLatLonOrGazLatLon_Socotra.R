@@ -45,10 +45,6 @@ if(!exists("recGrab")){
 }
 
 
-# source line for getExpedition() to add this info to recGrab
-#source("O://CMEP\ Projects/Scriptbox/general_utilities/function_getExpedition.R")
-# add expedition info to recGrab
-#getExpedition()
 
 # 2)
 
@@ -61,6 +57,7 @@ if(!exists("recGrab")){
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
 # 1256 taxa at 2016-02-25
+# 1028 taxa at 2016-02-26 (after filtering out using keepTaxRankOnly() function)
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -80,6 +77,7 @@ length(unique(paste(recGrab$anyLat, recGrab$anyLon)))
 # 889 @ 08/06/2015
 # 907 @ 18/01/2015
 # 716 @ 2016-02-25
+# 1845 @ 2016-02-25 - fixed rounding error caused by using qry0 method (fielRexTemp table at Access) without correct data type settings - number type Long Integer
 
 # Number of taxa with >10 unique locations?
 # 175 unique named locations OR 255 unique lat+lon combos @ 06/07/2015, see below
@@ -91,6 +89,10 @@ length(unique(paste(recGrab$anyLat, recGrab$anyLon)))
 # ?
 
 
+# number of expeditions
+
+
+
 # use DPLYR to manipulate data
 
 # load the data into a dataframe tbl data object aka tbl-df
@@ -98,7 +100,7 @@ socotraData <- tbl_df(recGrab)
 
 # get names of variables
 names(socotraData)
-# [1] "recID"              "expdID"            
+# [1] "recID"              "expdName"            
 # [3] "collector"          "collNumFull"       
 # [5] "lnamID"             "taxRank"           
 # [7] "familyName"         "acceptDetAs"       
@@ -157,18 +159,22 @@ by_sps_sum
 
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
-#213
+#398
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
-#264
+#240
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 514 taxa with >10 unique latlon locations
-# NB: shows Adenium with 193 occurrences, and Adenium obesum with 155 & Adenium 
-# obesum subsp sokotranum with 160 occurrences.  These should all come under one 
-# taxa - Adenium obesum subsp sokotranum w/ 340 occurences!
+# 439 taxa with >10 unique latlon locations
+
+
+by_expd <- group_by(socotraData, expdName)
+summarize(by_expd, count=n(), 
+          collectors=n_distinct(collector), 
+          year=round(mean(dateYYYY, na.rm=TRUE), digits=0)
+          ) 
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
