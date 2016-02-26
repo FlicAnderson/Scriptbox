@@ -339,8 +339,8 @@ fielRex$id <- NULL
 # 2016/02/23 24423 obs 28 var: good
 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
-# add expdID column & set to null
-litrRex$expdID <- ""
+# add expdName column & set to null as expedition irrelevant for litrRex
+litrRex$expdName <- ""
 # re-order so expdID in same location as in herb and fiel recsets
 litrRex <- litrRex[,c(1,28,2:27)]
 # 03/06/2015 0 req DMS, 31 req DM, 1866 w/ IFF
@@ -349,6 +349,10 @@ litrRex <- litrRex[,c(1,28,2:27)]
 # 04/02/2016 646
 # 2016/02/09 646 - no changes to these recently
 # 2016/02/09 629 - no changes to these recently but it's gone down?
+
+# add expedition names to field notes and herbarium specimens: 
+source("O:/CMEP Projects/Scriptbox/general_utilities/function_getExpedition.R")
+getExpedition()
 
 # show number of records returned
 nrow(herbRex)
@@ -372,7 +376,7 @@ nrow(recGrab)
 # 04/02/2016 30880 x 27 var (added ~9k Italian field records & ~9k Banfield field notes)
 # 2016/02/09 30886 x 27 
 # 2016/02/23 31185 x 27 
-# 2016/02/24 31184 x 28 (added expdID column)
+# 2016/02/24 31184 x 28 (added expdName column)
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
@@ -388,7 +392,7 @@ head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$col
 # head(recGrab[order(order(recGrab$institute, recGrab$FlicFound, decreasing=TRUE, na.last=TRUE)),])
 
 ##names(recGrab)
-# [1] "recID"              "expdID"             "collector"         
+# [1] "recID"              "expdName"             "collector"         
 # [4] "collNumFull"        "lnamID"             "acceptDetAs"       
 # [7] "acceptDetNoAuth"    "detAs"              "lat1Dir"           
 # [10] "lat1Deg"            "lat1Min"            "lat1Sec"           
@@ -413,7 +417,7 @@ recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 # NOTE: reorder done longform with names as opp to indices to avoid hassle later!
 recGrab <<- recGrab[,c(
         "recID", 
-        "expdID",
+        "expdName",
         "collector", 
         "collNumFull", 
         "lnamID", 
@@ -452,8 +456,9 @@ getRanks()
 # BIN BY TAXONOMY
 # keep all records with species-level, subspecies or variety-level 
 # (also Sp. Nov. level) records ONLY
-source("O:/CMEP Projects/Scriptbox/general_utilities/keepTaxRankOnly.R")
+source("O:/CMEP Projects/Scriptbox/general_utilities/function_keepTaxRankOnly.R")
 keepTaxRankOnly()
+# 2016-02-26 leaves 31184 x 31 analysis set records (binned 4723 above sps-level)
 
 
 
