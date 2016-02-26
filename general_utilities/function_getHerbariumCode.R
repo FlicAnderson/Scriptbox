@@ -73,7 +73,7 @@ getHerbariumCode <- function(){
         # remove additional herbspecID column & final column order:
         herbSpxReqDet <<- herbSpxReqDet[,c(
                 "recID", 
-                "expdID", 
+                "expdName", 
                 "collector", 
                 "collNumFull", 
                 "herbariumCode", 
