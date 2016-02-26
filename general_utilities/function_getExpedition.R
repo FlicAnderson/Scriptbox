@@ -36,30 +36,11 @@ getExpedition <- function(){
         # check the connection is still open
         # informative error if connection not created
         if(!exists("con_livePadmeArabia")) stop("... ERROR: connection to the database not open")
-        
-        # check for recGrab object
-        # informative error if it doesn't exist
-        if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
 
-        # recreate original herb specimen/field note/lit rec table ID 
-        recGrabHerb <- 
-                head(recGrab) %>%
-                filter(grepl("H-", recID)) %>%
-                mutate(recID, origID=gsub("[A-Z]-", "", recID))
-        
-        # recreate original herb specimen/field note/lit rec table ID 
-        recGrabHerb <- 
-                testGrab %>%
-                filter(grepl("H-", recID)) %>%
-                mutate(recID, origID=gsub("[A-Z]-", "", recID))
-        
-        # recreate original herb specimen/field note/lit rec table ID 
-        recGrabFiel <- 
-                head(recGrab) %>%
-                filter(grepl("F-", recID)) %>%
-                mutate(recID, origID=gsub("[A-Z]-", "", recID))
-        
-        #### TBC ####
+        # check query scripts have run (qry1:herbRex & qry0:fielRex) 
+        # informative error if connection not created
+        if(!exists("herbRex")) stop("... ERROR: nothing to join expeditions to; herbRex doesn't exist yet")
+        if(!exists("fielRex")) stop("... ERROR: nothing to join expeditions to; fielRex doesn't exist yet")
         
         # create query to join expedition info
         qry <- "SELECT 
@@ -70,53 +51,112 @@ getExpedition <- function(){
         # run query, store as 'herbariaInfo' object
         expeditionInfo <- sqlQuery(con_livePadmeArabia, qry)
         
-        # join ranks to recGrab records
-        recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN expeditionInfo ON recGrab.origID=expeditionInfo.expdID")
         
-        # it shows herbariumCode: <NA> where there's no herbarium code, 
-        # also shows herbspecID: NA - this doesn't matter, since the logic is OK :)
-        # inner join doesn't include records with no herbarium code & is therefore inappropriate!
         
-#         # remove additional herbspecID column & final column order:
-#         herbSpxReqDet <<- herbSpxReqDet[,c(
-#                 "recID", 
-#                 "expdID",
-#                 "collector", 
-#                 "collNumFull", 
-#                 "herbariumCode", 
-#                 "lnamID", 
-#                 "taxRank", 
-#                 "familyName", 
-#                 "acceptDetAs", 
-#                 "acceptDetNoAuth", 
-#                 "genusName", 
-#                 "detAs", 
-#                 "lat1Dir", 
-#                 "lat1Deg", 
-#                 "lat1Min", 
-#                 "lat1Sec", 
-#                 "lat1Dec", 
-#                 "anyLat", 
-#                 "lon1Dir", 
-#                 "lon1Deg", 
-#                 "lon1Min", 
-#                 "lon1Sec", 
-#                 "lon1Dec", 
-#                 "anyLon", 
-#                 "coordSource", 
-#                 "coordAccuracy",
-#                 "coordAccuracyUnits", 
-#                 "coordSourcePlus", 
-#                 "dateDD", 
-#                 "dateMM", 
-#                 "dateYYYY",
-#                 "fullLocation"
-#         )]
+        # check for herbRex object
+        # informative error if it doesn't exist
+        if(exists("herbRex")){
+        
+                message("... adding expeditions to herbarium records")
+                
+                # join expedition names to recGrabHerb records
+                recGrabHerb <- herbRex
+                recGrabHerb <- sqldf(
+                        "SELECT * 
+                        FROM recGrabHerb 
+                        LEFT JOIN expeditionInfo ON recGrabHerb.expdID=expeditionInfo.expdID"
+                )
+                
+                # remove additional expdID column, & leave expdName & final column order:
+                herbRex <<- recGrabHerb[,c(
+                        "recID", 
+                        "expdName",
+                        "collector", 
+                        "collNumFull", 
+                        "lnamID", 
+                        "acceptDetAs", 
+                        "acceptDetNoAuth", 
+                        "detAs", 
+                        "lat1Dir", 
+                        "lat1Deg", 
+                        "lat1Min", 
+                        "lat1Sec", 
+                        "lat1Dec", 
+                        "anyLat", 
+                        "lon1Dir", 
+                        "lon1Deg", 
+                        "lon1Min", 
+                        "lon1Sec", 
+                        "lon1Dec", 
+                        "anyLon", 
+                        "coordSource", 
+                        "coordAccuracy",
+                        "coordAccuracyUnits", 
+                        "coordSourcePlus", 
+                        "dateDD", 
+                        "dateMM", 
+                        "dateYYYY",
+                        "fullLocation"
+                )]
+                
+                # end of herbarium expeditions-adding method
+        }
+        
+        
+        # check for fielRex object
+        # informative error if it doesn't exist
+        if(exists("fielRex")){
+                
+                message("... adding expeditions to field observation records")
+                
+                # join expedition names to recGrabHerb records
+                recGrabFiel <- fielRex
+                recGrabFiel <- sqldf(
+                        "SELECT * 
+                        FROM recGrabFiel 
+                        LEFT JOIN expeditionInfo ON recGrabFiel.expdID=expeditionInfo.expdID"
+                )
+                
+                # remove additional expdID column, & leave expdName & final column order:
+                fielRex <<- recGrabFiel[,c(
+                        "recID", 
+                        "expdName",
+                        "collector", 
+                        "collNumFull", 
+                        "lnamID", 
+                        "acceptDetAs", 
+                        "acceptDetNoAuth", 
+                        "detAs", 
+                        "lat1Dir", 
+                        "lat1Deg", 
+                        "lat1Min", 
+                        "lat1Sec", 
+                        "lat1Dec", 
+                        "anyLat", 
+                        "lon1Dir", 
+                        "lon1Deg", 
+                        "lon1Min", 
+                        "lon1Sec", 
+                        "lon1Dec", 
+                        "anyLon", 
+                        "coordSource", 
+                        "coordAccuracy",
+                        "coordAccuracyUnits", 
+                        "coordSourcePlus", 
+                        "dateDD", 
+                        "dateMM", 
+                        "dateYYYY",
+                        "fullLocation"
+                )]
+                
+                # end of field observations expeditions-adding method
+        } 
         
         # output message
         message(paste0(
-                "... expedition info added to the ", 
-                nrow(recGrab), 
+                "... expedition info added to ", 
+                #nrow(recGrab), 
+                nrow(herbRex)+nrow(fielRex),
                 " records"
         ))
         
