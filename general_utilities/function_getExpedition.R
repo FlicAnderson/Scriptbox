@@ -4,7 +4,7 @@
 # Author: Flic Anderson
 #
 # to call: getExpedition()
-# objects created: recGrab(altered)
+# objects created: herbRex(altered), fielRex(altered)
 # saved at: O://CMEP\-Projects/Scriptbox/general_utilities/function_getExpedition.R
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
@@ -161,3 +161,5 @@ getExpedition <- function(){
         ))
         
 }
+
+# to call: getExpedition()
