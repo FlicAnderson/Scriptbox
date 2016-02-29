@@ -3,7 +3,7 @@
 # 25 August 2015
 # Author: Flic Anderson
 #
-# to call: padmeNameMatch(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE)
+# to call: padmeNameMatch(checkMe=NULL, taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE, chattyReturn=TRUE)
 # objects created: [object1]; [object2] (locally global)
 # saved at: O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R
 # source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R")
