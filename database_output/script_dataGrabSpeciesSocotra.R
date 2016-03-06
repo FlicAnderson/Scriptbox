@@ -29,7 +29,8 @@
 
 #taxonName <- "Senna%"  # finds all records with 'Senna' as genus & authority  
 #taxonName <- "Compositae Giseke"
-taxonName <- "Dirachma socotrana"
+#taxonName <- "Dirachma socotrana"
+taxonName <- "Helichrysum%"
 
 # please input the location you're searching for, as shown in the examples below:
 # examples: 
@@ -121,7 +122,7 @@ recGrab[order(recGrab$FlicStatus, decreasing=TRUE, na.last=TRUE),]
 
 # write to .csv file
 # select where to save it & what to call it (need to add ".R" on end/create file)
-write.csv(recGrab[order(recGrab$FlicStatus, decreasing=TRUE, na.last=TRUE),], file=file.choose())
+write.csv(recGrab[order(recGrab$acceptDetAs, na.last=TRUE),], file=file.choose())
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
