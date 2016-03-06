@@ -285,6 +285,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 2016/02/09 5816 (after duplicate checking/fixing)
 # 2016/02/23 6133 imported last spreadsheets & September 2014 FT dets
 # 2016/02/23 6132 x 28
+# 2016/03/06 6142
 
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
@@ -337,6 +338,7 @@ fielRex$id <- NULL
 # 2016/02/09 24424 - OK to continue!
 # 2016/02/23 24423 
 # 2016/02/23 24423 obs 28 var: good
+# 2016/03/06 24424
 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # add expdName column & set to null as expedition irrelevant for litrRex
@@ -349,6 +351,7 @@ litrRex <- litrRex[,c(1,28,2:27)]
 # 04/02/2016 646
 # 2016/02/09 646 - no changes to these recently
 # 2016/02/09 629 - no changes to these recently but it's gone down?
+# 2016/03/06 629
 
 # add expedition names to field notes and herbarium specimens: 
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_getExpedition.R")
@@ -377,6 +380,7 @@ nrow(recGrab)
 # 2016/02/09 30886 x 27 
 # 2016/02/23 31185 x 27 
 # 2016/02/24 31184 x 28 (added expdName column)
+# 2016/03/06 31195
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
@@ -385,7 +389,7 @@ recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGr
 
 # show first 6 records returned 
         # sort so recent specimens & collector groups float to the top 
-head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
+#head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),])
 
 # alternate sort & show first 6 records 
 # sorted so Edinburgh specimens, then found specimens float to the top 
@@ -407,7 +411,8 @@ head(recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$col
 # pull out families from Latin Names table
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
 getFamilies()
-# recGrab 31184 x 29 var
+# recGrab 31195 x 29 var
+
 
 # pull out genus (use non-auth det & then regex the epithet off)
 recGrab$genusName <- recGrab$acceptDetNoAuth
@@ -452,13 +457,14 @@ recGrab <<- recGrab[,c(
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R")
 getRanks()
 # 24/02/2016 recGrab 31184 obs x 31 var
+# 24/03/2016 recGrab 31195 obs x 31 var
 
 # BIN BY TAXONOMY
 # keep all records with species-level, subspecies or variety-level 
 # (also Sp. Nov. level) records ONLY
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_keepTaxRankOnly.R")
 keepTaxRankOnly()
-# 2016-02-26 leaves 31184 x 31 analysis set records (binned 4723 above sps-level)
+# 2016-03-06 leaves 26475 x 31 analysis set records (binned 4720 above sps-level)
 
 
 
@@ -543,7 +549,6 @@ odbcCloseAll()
 # rm(list=setdiff(ls(), 
 #                 c(
 #                 "recGrab", 
-#                 "herbSpxReqDet", 
 #                 "taxaListSocotra",
 #                 "con_livePadmeArabia", 
 #                 "livePadmeArabiaCon"
