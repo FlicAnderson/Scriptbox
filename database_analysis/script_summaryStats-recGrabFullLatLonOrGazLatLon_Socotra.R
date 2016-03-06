@@ -143,7 +143,11 @@ group_by(socotraData, acceptDetAs)
 
 # group by species & summarize by 1 variable
 by_sps <- group_by(socotraData, acceptDetAs)
-summarize(by_sps, round(mean(dateYYYY, na.rm=TRUE), digits=0))  # average year of collection by species :)
+avgSpsCollection <- 
+        by_sps %>%
+        summarize(AvgYearCol=round(mean(dateYYYY, na.rm=TRUE), digits=0), NoCols=n()) %>%
+        arrange(-AvgYearCol) %>% # average year of collection by species :)
+        print
 
 # group by species and summarize by multiple variables
 socDat <- mutate(socotraData, latLon=paste(anyLat, anyLon, sep=" "))
@@ -157,6 +161,23 @@ by_sps_sum <- summarize(by_sps,
 )
 by_sps_sum
 
+# top 10 families by usable records
+by_fam <- group_by(recGrab, familyName)
+by_fam_gps <- 
+        by_fam %>%
+        summarize(count=n()) %>%
+        arrange(-count)
+by_fam_gps
+
+# top 10 species by usable records
+by_sps <- group_by(socDat, acceptDetAs)
+by_sps_counts <- 
+        by_sps %>%
+        summarize(count=n()) %>%
+        arrange(-count)
+by_sps_counts
+
+
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
 #398
@@ -167,14 +188,15 @@ filter(by_sps_sum, uniqueLocation>10)
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 439 taxa with >10 unique latlon locations
+# 441 taxa with >10 unique latlon locations
 
 
 by_expd <- group_by(socotraData, expdName)
-summarize(by_expd, count=n(), 
-          collectors=n_distinct(collector), 
+expds <- summarize(by_expd, count=n(), 
+          collGroups=n_distinct(collector), 
           year=round(mean(dateYYYY, na.rm=TRUE), digits=0)
-          ) 
+          ) %>%
+        arrange(-count, expdName)
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
