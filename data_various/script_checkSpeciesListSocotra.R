@@ -64,7 +64,16 @@ fileName <- "SocotraSPECIES-LIST_NOTES.csv"
 
 
 #latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
-latinNamesMatcher(fileLocat, fileName, rowIndex=1:800, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNames")
+latinNamesMatcher(fileLocat, fileName, rowIndex=1:798, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016")
+
+#latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
+latinNamesMatcher(fileLocat, fileName, rowIndex=800:834, colIndexSp=5, colIndexSsp=5, colIndexAuth=5, "socotraProjectNamesMar2016_ferns")
+
+#latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
+latinNamesMatcher(fileLocat, fileName, rowIndex=838:858, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016_doubtful")
+
+#latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
+latinNamesMatcher(fileLocat, fileName, rowIndex=862:967, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016_introduced")
 
 # need to fix NA auth situation & NA NA situations
 # also need to strip out the extra whitespace - but best to do this with care
