@@ -64,8 +64,12 @@ keepTaxRankOnly <- function(){
                                 taxRank=="sub complex"|
                                 is.na(taxRank)
                 ) %>%
-                arrange(collector, collNumFull) 
+                arrange(collector, collNumFull)
+        
+        # output messages
+        message(paste0("... ", nrow(excludedRex), " records removed (above sp-level determinations)  :c"))
         # 7423 records excluded 2016-02-25
+        # 4720 records excluded 2016-03-06
         
         # amend recGrab object to contain only records with dets at species-level or below
         recGrab <<- 
@@ -77,10 +81,22 @@ keepTaxRankOnly <- function(){
                         taxRank=="Sp. Nov."
                 ) %>%
                 arrange(acceptDetAs, collector, collNumFull)
-        # 26441 records remain for analyses
-
-        # output messages
-        message(paste0("... ", nrow(recGrab), " records OK for analyses (sp-level or below)  :D"))
-        message(paste0("... ", nrow(excludedRex), " records removed (above sp-level determinations)  :c"))
         
+        # quick and dirty fix for output message not 'seeing' altered recGrab within function 
+        # there should be a more elegant way but it's not vastly crucial & it's merely output
+        recGrabEd <- 
+                recGrab %>%
+                filter(
+                        taxRank=="species"|
+                                taxRank=="subspecies"|
+                                taxRank=="variety"|
+                                taxRank=="Sp. Nov."
+                ) %>%
+                arrange(acceptDetAs, collector, collNumFull)
+        
+        # output messages
+        message(paste0("... ", nrow(recGrabEd), " records OK for analyses (sp-level or below)  :D"))
+        # 26441 records remain for analyses
+        # 26475 records remain for analyses 2016-03-06
+
 }
