@@ -58,6 +58,7 @@ if(!exists("recGrab")){
 length(unique(recGrab$acceptDetAs))
 # 1256 taxa at 2016-02-25
 # 1028 taxa at 2016-02-26 (after filtering out using keepTaxRankOnly() function)
+# 818 after pruning out 0-Lat/0-Lon records
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
