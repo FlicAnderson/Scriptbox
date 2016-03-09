@@ -60,7 +60,7 @@ source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatche
 
 fileLocat <- "O://CMEP\ Projects/Socotra"
 
-fileName <- "SocotraSPECIES-LIST_NOTES.csv"
+fileName <- "Socotra\ SPECIES\ LIST.csv"
 
 
 #latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
