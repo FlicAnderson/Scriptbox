@@ -466,37 +466,11 @@ source("O:/CMEP Projects/Scriptbox/general_utilities/function_keepTaxRankOnly.R"
 keepTaxRankOnly()
 # 2016-03-06 leaves 26475 x 31 analysis set records (binned 4720 above sps-level)
 
-# filter out junk for looking at
-recGrabJunk <<- 
-        recGrab %>%
-        filter(is.na(anyLat)) %>%
-        filter(is.na(anyLon)) %>%
-        filter(lat1Dec == 0) %>%
-        filter(lon1Dec == 0) %>%
-        filter(anyLat == 0) %>%
-        filter(anyLon == 0) %>%
-        filter(anyLat > 12.8) %>%
-        filter(anyLat < 12.1) %>%
-        filter(anyLon < 52.0) %>%
-        filter(anyLon > 54.5)
+# weed out NA or 0-lat/lons.
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R")
+binJunkRecs(returnJunk=TRUE, chattyReturn=TRUE)
 
 
-#recGrab <- tbl_df(recGrab)
-## filter out bad lats/longs
-recGrabFiltered <<- 
-        recGrab %>%
-        filter(!is.na(anyLat)) %>%
-        filter(!is.na(anyLon)) %>%
-        filter(lat1Dec != 0) %>%
-        filter(lon1Dec != 0) %>%
-        filter(anyLat != 0) %>%
-        filter(anyLon != 0) #%>%
-        #filter(anyLat > 12.1) %>%
-        #filter(anyLat < 12.8) %>%
-        #filter(anyLon > 52.0) %>%
-        #filter(anyLon < 54.5)
-
-recGrab <<- recGrabFiltered
 
 #########################################
 # to re-do det sessions output, add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object):
