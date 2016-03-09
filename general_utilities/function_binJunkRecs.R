@@ -8,7 +8,7 @@
 # saved at: O://CMEP\-Projects/Scriptbox/general_utilities/function_binJunkRecs.R
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
-# source("O://CMEP\-Projects/Scriptbox/general_utilities/function_binJunkRecs.R
+# source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R
 #
 # AIM:  go through recGrab object records, exclude all records with NA, 0 or negative anyLats/anyLons
 # ....  report back on numbers (if chattyReturn function argument =TRUE) & preserve recGrabJunk object
