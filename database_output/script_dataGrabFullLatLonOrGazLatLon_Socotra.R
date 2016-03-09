@@ -498,51 +498,20 @@ recGrabFiltered <<-
 
 recGrab <<- recGrabFiltered
 
-# # THIS BIT UNNECESSARY since we've run the det sessions & herbSpxReqDet isn't useful anymore ##
-# Maybe need to redo this since det-sessions have been run & det-reqs still remain. 
-# Need to ensure recGrab is ONLY sps-level for analyses
-#         # split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
-#         source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
-#         getDetReqSpx()
-#         # recGrab still 31184 x 31 & names() order the same as directly above
-#         # herbSpxReqDet 501 x 31 & names() order still the same
-# 
-# # THIS BIT UNNECESSARY since we've run the det sessions & herbSpxReqDet isn't useful anymore ##
-# add herbarium info to herbarium specimens (in herbSpxReqDet object)
+#########################################
+# to re-do det sessions output, add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object):
+# to get herbarium specimens needing further determination: 
+# split off herbarium specimens NOT YET det to species level as herbSpxReqDet object
+# source('O:/CMEP Projects/Scriptbox/general_utilities/function_getDetReqSpx.R')
+# getDetReqSpx()
+# to add herbarium info to herbarium specimens (in herbSpxReqDet object)
 # source('O:/CMEP Projects/Scriptbox/general_utilities/function_getHerbariumCode.R')
 # getHerbariumCode()
-# recGrab unaltered 31184 x 31
-# herbSpxReqDet 501 x 31 var & order changed
-# ###
-# 
-# 
-# still need to filter out the herbarium specimens for sorting though.
-# KEEP: 
-# ones which have geolocation
-# ones at E (or no-herbarium-code, since that's probably a lot)
-# 
-# 
-# # THIS BIT UNNECESSARY since we've run the det sessions & herbSpxReqDet isn't useful anymore ##
-# add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object)
+# to add Flic's Fields to herbarium specimen records
 # source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFlicsFields.R')
 # getFlicsFields()
-# recGrab unaltered
-# herbSpxReqDet 502 x 35 var & order changed
-# 
-# str(herbSpxReqDet)
-# herbSpxReqDet <- tbl_df(herbSpxReqDet)
-# herbSpxReqDet
-# 
-# table(herbSpxReqDet$herbariumCode, useNA="ifany")
-# # BM    E    FT   HNT     K       UPS     <NA> 
-# #  2   233   6    8       1       36      216
-# # we only can determine specimens at E, really
-# 
-# 
 # make list for dets
 # source("O://CMEP\ Projects/Scriptbox/database_output/script_listForDetSession_Socotra-Jan2016.R")
-
-
 #########################################
 
 
