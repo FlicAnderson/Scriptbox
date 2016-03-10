@@ -92,6 +92,9 @@ binJunkRecs <- function(returnJunk=TRUE, chattyReturn=TRUE){
                 rm(recGrabJunk)
                 rm(recGrabFiltered)
         } else {
+                # assign recGrabJunk to main level
+                recGrabJunk <<- recGrabJunk
+                # remote filtered temp object
                 rm(recGrabFiltered)
         }
         
