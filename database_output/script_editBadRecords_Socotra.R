@@ -76,6 +76,8 @@ recGrabTemp <-
 recGrab$anyLat <- recGrabTemp$tempLat
 recGrab$anyLon <- recGrabTemp$tempLon
 
+recGrab <<- recGrab
+
 # tidy up
 rm(recGrabTemp, reqEdits)
 
@@ -134,10 +136,10 @@ reqEdits <- tbl_df(reqEdits)
                 mutate(recID, origID=gsub("F-", "", recID)) %>%
                 select(recID, origID, anyLat, anyLon, fullLocati)
         
-        litrSpx <- 
-                litrSpx %>%
-                mutate(recID, origID=gsub("L-", "", recID)) %>%
-                select(recID, origID, anyLat, anyLon, fullLocati)
+        #litrSpx <- 
+        #        litrSpx %>%
+        #        mutate(recID, origID=gsub("L-", "", recID)) %>%
+        #        select(recID, origID, anyLat, anyLon, fullLocati)
         
 # query to rejoin geography info
 # herbarium specimen method
@@ -208,6 +210,9 @@ reqEdits <- tbl_df(reqEdits)
         # replace recGrab anyLat/anyLon with tempLat/tempLon to include the fixes
         recGrab$anyLat <- recGrabTemp4$tempLat
         recGrab$anyLon <- recGrabTemp4$tempLon
+        
+        # ensure it's written out to the global env level
+        recGrab <<- recGrab
 
-        rm(recGrabTemp3, recGrabTemp4, fielSpx, herbSpx, litrSpx, reqEdits, importSource, extns, fileName, herbQry, fielQry)
+        #rm(recGrabTemp3, recGrabTemp4, fielSpx, herbSpx, reqEdits, importSource, extns, fileName, herbQry, fielQry)
         
