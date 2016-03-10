@@ -468,7 +468,11 @@ keepTaxRankOnly()
 
 # weed out NA or 0-lat/lons.
 source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R")
-binJunkRecs(returnJunk=TRUE, chattyReturn=TRUE)
+binJunkRecs(returnJunk=FALSE, chattyReturn=TRUE)
+# 2016-03-10 26011 x 31 after several fixes (removing filter on latDec=0/lonDec=0!)
+
+# alter bad records via script
+source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socotra.R")
 
 
 
