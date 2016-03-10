@@ -25,8 +25,12 @@
 
 # ---------------------------------------------------------------------------- #
 
-fileLocat <- "O://CMEP\ Projects/Socotra"
+# check for recGrab object
+# informative error if it doesn't exist
+if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
 
+# file location details:
+fileLocat <- "O://CMEP\ Projects/Socotra"
 fileName <- "BadRecords_socotra-2016-03-07_newLatLonReqUpdate.csv"
 
 # import source:
@@ -38,10 +42,8 @@ extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
 # check if it's not .csv & give informative error if it doesn't exist
 if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
 
-# check for recGrab object
-# informative error if it doesn't exist
-if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
 
+# import csv with edit info
 reqEdits <<- read.csv(
         file=importSource, 
         header=TRUE, 
@@ -53,4 +55,26 @@ reqEdits <<- read.csv(
 names(reqEdits)[names(reqEdits)=="New.AnyLat"] <- "newLat"
 names(reqEdits)[names(reqEdits)=="New.AnyLon"] <- "newLon"
 
+# join recGrab and reqEdits
+recGrabTemp <-
+        sqldf(
+                "SELECT 
+                recGrab.*, 
+                reqEdits.newLat, 
+                reqEdits.newLon  
+                FROM recGrab 
+                LEFT JOIN reqEdits ON recGrab.recID=reqEdits.recID"
+        )
 
+# create new column tempLat/tempLon which uses anyLat/Lon if there is no newLat/Lon (from edit file)
+recGrabTemp <- 
+        recGrabTemp %>%
+        mutate(tempLat=ifelse(!(is.na(newLat)), newLat, anyLat)) %>%
+        mutate(tempLon=ifelse(!(is.na(newLon)), newLon, anyLon))
+
+# replace recGrab anyLat/anyLon with tempLat/tempLon to include the fixes
+recGrab$anyLat <- recGrabTemp$tempLat
+recGrab$anyLon <- recGrabTemp$tempLon
+
+# tidy up
+rm(recGrabTemp, reqEdits)
