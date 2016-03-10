@@ -56,7 +56,7 @@ binJunkRecs <- function(returnJunk=TRUE, chattyReturn=TRUE){
 # 1) FILTER OUT GOOD RECORDS
         
         # filter out good records
-        recGrabFiltered <<- 
+        recGrabFiltered <- 
                 recGrab %>%
                 filter(!is.na(anyLat) & anyLat !=0 & anyLat > 0) %>%
                 filter(!is.na(anyLon) & anyLon !=0 & anyLon > 0)
@@ -74,7 +74,7 @@ binJunkRecs <- function(returnJunk=TRUE, chattyReturn=TRUE){
         #which(!(recGrab$recID %in% recGrabFiltered$recID))
         
         # filter out junk/excluded records (will keep for looking at if returnJunk=TRUE)
-        recGrabJunk <<- recGrab[which(!(recGrab$recID %in% recGrabFiltered$recID)),]
+        recGrabJunk <- recGrab[which(!(recGrab$recID %in% recGrabFiltered$recID)),]
         
         # output messages
         if(chattyReturn==TRUE){
@@ -90,6 +90,9 @@ binJunkRecs <- function(returnJunk=TRUE, chattyReturn=TRUE){
         
         if(returnJunk==FALSE){
                 rm(recGrabJunk)
+                rm(recGrabFiltered)
+        } else {
+                rm(recGrabFiltered)
         }
         
 }
