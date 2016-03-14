@@ -474,6 +474,8 @@ binJunkRecs(returnJunk=FALSE, chattyReturn=TRUE)
 # alter bad records via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socotra.R")
 
+# lump subspecific taxa via script
+source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
 
 
 #########################################
