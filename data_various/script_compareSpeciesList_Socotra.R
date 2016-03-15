@@ -61,16 +61,13 @@ fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2
 
 fileName <- "Socotra\ SPECIES\ LIST.csv"
 
+# import source:
+importSource <<- paste0(fileLocat, "/", fileName)
 
 ##latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
 
-latinNamesMatcher(fileLocat, fileName, rowIndex=1:798, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016")
-#latinNamesMatcher(fileLocat, fileName, rowIndex=800:834, colIndexSp=5, colIndexSsp=5, colIndexAuth=5, "socotraProjectNamesMar2016_ferns")
-#latinNamesMatcher(fileLocat, fileName, rowIndex=838:858, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016_doubtful")
-#latinNamesMatcher(fileLocat, fileName, rowIndex=862:967, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016_introduced")
-
 # read in data from file
-crrntDet <<- read.csv(
+sampledSet <<- read.csv(
         file=importSource, 
         header=TRUE, 
         as.is=TRUE, 
@@ -78,22 +75,22 @@ crrntDet <<- read.csv(
         nrows=970
 )
 
-# subset to only Taxon and Authority columns
-alansList <- crrntDet[,5:6]
+# subset to only Order, Family, Taxon and Authority columns
+sampledSet <- sampledSet[,c(2,4,5:6)]
 
 # tbl_df this
-alansList <- tbl_df(alansList)
+sampledSet <- tbl_df(sampledSet)
 
 # make a column from Taxon and Authority to concat them, then sub out NA values
-alansList <- 
-        alansList %>%
-        mutate(taxonWAuthTemp=paste(Taxon, Authority, sep=" ")) %>%
-        mutate(taxonWAuth=sub(" NA", "", taxonWAuthTemp))
+sampledSet <- 
+        sampledSet %>%
+        mutate(taxonTemp=paste(Taxon, Authority, sep=" ")) %>%
+        mutate(taxonWAuth=sub(" NA", "", taxonTemp))
 
 # pare down to only distinct taxon name with authority, arranged by that.
-alansListSet <- 
-        alansList %>%
-        select(taxonWAuth) %>%
+sampledSet <- 
+        sampledSet %>%
+        select(taxonWAuth, Family, Order) %>%
         distinct(taxonWAuth) %>%
         arrange(taxonWAuth)
 # 954 taxa
@@ -109,7 +106,7 @@ recGrab <- tbl_df(recGrab)
 # pull out names only
 analysisSet <- 
         recGrab %>%
-        select(acceptDetAs) %>%
+        select(acceptDetAs, familyName) %>%
         distinct(acceptDetAs) %>%
         arrange(acceptDetAs)
 # 870 names
@@ -124,3 +121,26 @@ analysisSet <-
 # b  X
 # X  c
 
+names(sampledSet)
+#[1] "taxonWAuth" "Family"     "Order"   
+names(analysisSet)
+#[1] "acceptDetAs" "familyName" 
+
+# {dplyr} anti_join(): 
+        #return all rows from x where there are not matching values in y, keeping just columns from x
+
+notInAnalysisSet <-
+        anti_join(sampledSet, analysisSet, by=c("taxonWAuth" = "acceptDetAs")) %>%
+        arrange(taxonWAuth)
+# 195
+
+notInSampledSet <-
+        anti_join(analysisSet, sampledSet, by=c("acceptDetAs" = "taxonWAuth")) %>%
+        arrange(acceptDetAs)
+# 109
+
+message(paste0(" ... saving ", nrow(notInAnalysisSet), " name comparison lists to: O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"))
+write.csv(notInAnalysisSet, file=paste0("O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+
+message(paste0(" ... saving ", nrow(notInSampledSet), " name comparison lists to: O://CMEP\ Projects/Socotra/nameComparisonList_analysisSetNamesNotInSampledSet-Socotra_", Sys.Date(), ".csv"))
+write.csv(notInSampledSet, file=paste0("O://CMEP\ Projects/Socotra/nameComparisonList_analysisSetNamesNotInSampledSet-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
