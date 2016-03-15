@@ -57,16 +57,6 @@ taxaListForChecks <-
 #message(paste0(" ... saving list of accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_FlicChecklist_", Sys.Date(), ".csv"))
 #write.csv(taxaListForChecks, file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_FlicChecklist_", Sys.Date(), ".csv"), row.names=FALSE)
 
-# Ignore the lichens!
-# genusName==
-#lichens <- c("Amphiloma", "Arthonia", "Batarrea", "Bathelium", "Blastenia", "Buellia", "Callopisma", "Campylopus", "Chiodecton", "Collema", "Corticium", "Dacrymyces", "Eutypa", "Fabronia", "Graphina", "Graphis", "Lecanora", "Lecidea", "Lentinus", "Microglaena", "Normandina", "Opegrapha", "Ostropa", "Parmelia", "Pertusaria", "Philonotis", "Physcia", "Placodium", "Podaxon", "Polyporus", "Pyxine", "Ramalina", "Rinodina", "Roccella", "Schlotheimia", "Sphinctrina", "Stereum", "Sticta", "Stictina", "Symblepharis", "Synechoblastus", "Theloschistes", "Tortula", "Trametes", "Urceolaria", "Usnea", "Valsa", "Weisia")
-
-# Ignore Chara
-# genusName==
-#chara <- c("Chara")
-
-
-
 # remove lichens and chara
 recGrab <- 
         recGrab %>%
