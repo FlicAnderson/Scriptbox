@@ -51,3 +51,76 @@ if (!require(sqldf)) {
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
 livePadmeArabiaCon()
+
+# load function 
+source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatcher.R")
+
+# Alan's Species List
+
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Leverhulme\ RPG-2012-778\ Socotra/SOCOTRA FLORA/"
+
+fileName <- "Socotra\ SPECIES\ LIST.csv"
+
+
+##latinNamesMatcher(fileLocat, fileName, rowIndex, colIndexSp, colIndexSsp, colIndexAuth, oneWordDescription)
+
+latinNamesMatcher(fileLocat, fileName, rowIndex=1:798, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016")
+#latinNamesMatcher(fileLocat, fileName, rowIndex=800:834, colIndexSp=5, colIndexSsp=5, colIndexAuth=5, "socotraProjectNamesMar2016_ferns")
+#latinNamesMatcher(fileLocat, fileName, rowIndex=838:858, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016_doubtful")
+#latinNamesMatcher(fileLocat, fileName, rowIndex=862:967, colIndexSp=5, colIndexSsp=5, colIndexAuth=6, "socotraProjectNamesMar2016_introduced")
+
+# read in data from file
+crrntDet <<- read.csv(
+        file=importSource, 
+        header=TRUE, 
+        as.is=TRUE, 
+        na.strings="", 
+        nrows=970
+)
+
+# subset to only Taxon and Authority columns
+alansList <- crrntDet[,5:6]
+
+# tbl_df this
+alansList <- tbl_df(alansList)
+
+# make a column from Taxon and Authority to concat them, then sub out NA values
+alansList <- 
+        alansList %>%
+        mutate(taxonWAuthTemp=paste(Taxon, Authority, sep=" ")) %>%
+        mutate(taxonWAuth=sub(" NA", "", taxonWAuthTemp))
+
+# pare down to only distinct taxon name with authority, arranged by that.
+alansListSet <- 
+        alansList %>%
+        select(taxonWAuth) %>%
+        distinct(taxonWAuth) %>%
+        arrange(taxonWAuth)
+# 954 taxa
+
+
+
+
+
+# Analysis Dataset
+
+recGrab <- tbl_df(recGrab)
+
+# pull out names only
+analysisSet <- 
+        recGrab %>%
+        select(acceptDetAs) %>%
+        distinct(acceptDetAs) %>%
+        arrange(acceptDetAs)
+# 870 names
+
+
+# Compare datasets
+
+# join alansListSet and analysisSet
+
+# 1  2
+# a  a
+# b  X
+# X  c
+
