@@ -129,7 +129,7 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
 #              lat/lon value.
 #              NB: The smaller islands Darsa & Semhah are allowed as they're small 
 #              enough to be useful location values. Abd Al Kuri is still a bit too big
-"AND ((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa') ",
+"AND ((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Samha' OR Geog.fullName LIKE '%Darsa') ",
 #       OR location string does just say Socotra or the Archipelago BUT has 
 #       a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
@@ -261,7 +261,7 @@ LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 #              lat/lon value.
 #              NB: The smaller islands Darsa & Semhah are allowed as they're small 
 #              enough to be useful location values. Abd Al Kuri is still a bit too big
-"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Semhah' OR Geog.fullName LIKE '%Darsa')", 
+"(((Geog.fullName LIKE '%Socotra:%' OR Geog.fullName LIKE '%Abd al Kuri:%' OR Geog.fullName LIKE '%Samha' OR Geog.fullName LIKE '%Darsa')", 
 #       OR location string does just say Socotra or the Archipelago BUT has 
 #       a valid lat/lon (tested on longitude). 
 #               This ensures recently imported datasets with GPS/decimal degrees
@@ -286,6 +286,7 @@ herbRex <- sqlQuery(con_livePadmeArabia, qry1)
 # 2016/02/23 6133 imported last spreadsheets & September 2014 FT dets
 # 2016/02/23 6132 x 28
 # 2016/03/06 6142
+# 2016/03/16 6296 (after Semhah -> Samha tweak)
 
 #fielRex <- sqlQuery(con_livePadmeArabia, qry2) 
 # 03/06/2015 4602 req DMS, 6754 req DM, 12253 w/ IFF
@@ -339,6 +340,7 @@ fielRex$id <- NULL
 # 2016/02/23 24423 
 # 2016/02/23 24423 obs 28 var: good
 # 2016/03/06 24424
+# 2016/03/16 24683 (after Semhah -> Samha tweak)
 
 litrRex <- sqlQuery(con_livePadmeArabia, qry3) 
 # add expdName column & set to null as expedition irrelevant for litrRex
@@ -352,6 +354,7 @@ litrRex <- litrRex[,c(1,28,2:27)]
 # 2016/02/09 646 - no changes to these recently
 # 2016/02/09 629 - no changes to these recently but it's gone down?
 # 2016/03/06 629
+# 2016/03/16 631 (after Semhah -> Samha tweak)
 
 # add expedition names to field notes and herbarium specimens: 
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_getExpedition.R")
@@ -381,6 +384,7 @@ nrow(recGrab)
 # 2016/02/23 31185 x 27 
 # 2016/02/24 31184 x 28 (added expdName column)
 # 2016/03/06 31195
+# 2016/03/16 31610 (after Semhah -> Samha tweak)
 
 # sort so recent specimens & collector groups float to the top 
 recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGrab$collector, na.last=TRUE),]
@@ -411,7 +415,7 @@ recGrab <- recGrab[order(recGrab$dateYYYY, recGrab$dateMM, recGrab$dateDD, recGr
 # pull out families from Latin Names table
 source('O:/CMEP Projects/Scriptbox/general_utilities/function_getFamilies.R')
 getFamilies()
-# recGrab 31195 x 29 var
+# recGrab 31610 x 29 var
 
 
 # pull out genus (use non-auth det & then regex the epithet off)
@@ -456,8 +460,9 @@ recGrab <<- recGrab[,c(
 # pull out taxonomic rank from Latin Names table & apply to all recGrab records
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R")
 getRanks()
-# 24/02/2016 recGrab 31184 obs x 31 var
-# 24/03/2016 recGrab 31195 obs x 31 var
+# 16/03/2016 recGrab 31610 obs x 31 var
+
+
 
 # BIN BY TAXONOMY
 # keep all records with species-level, subspecies or variety-level 
@@ -465,18 +470,20 @@ getRanks()
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_keepTaxRankOnly.R")
 keepTaxRankOnly()
 # 2016-03-06 leaves 26475 x 31 analysis set records (binned 4720 above sps-level)
+# 2016/03/16 leaves 26853 x 31 analysis set records (after Semhah -> Samha tweak); binned 4757 above-sps
 
 # weed out NA or 0-lat/lons.
 source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R")
 binJunkRecs(returnJunk=FALSE, chattyReturn=TRUE)
 # 2016-03-10 26011 x 31 after several fixes (removing filter on latDec=0/lonDec=0!)
+# 2016/03/16 26388 x 31 (after Semhah -> Samha tweak)
 
 # alter bad records via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socotra.R")
 
 # lump subspecific taxa via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
-
+# 873 accepted taxa names
 
 #########################################
 # to re-do det sessions output, add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object):
