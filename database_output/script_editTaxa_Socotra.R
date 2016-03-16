@@ -131,7 +131,7 @@ recGrab <<- recGrab
 
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
-# 870 at 2016-03-14
+# 875 at 2016-03-16
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -144,7 +144,7 @@ taxaListForChecks <-
         recGrab %>%
         distinct(acceptDetAs) %>%
         select(acceptDetAs, genusName, familyName) %>%
-        arrange(familyName, genusName, acceptDetAs)
+        arrange(acceptDetAs, genusName, familyName)
 
 # write list of unique taxa
 message(paste0("... saving revised list of ", length(taxaListSocotra), " accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_RevisedChecklist_", Sys.Date(), ".csv"))
