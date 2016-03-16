@@ -48,12 +48,15 @@ if (!require(sqldf)) {
         library(sqldf)
 }
 
+# does recGrab exist?
+if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
+
 # open connection to live padme
-source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
-livePadmeArabiaCon()
+#source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
+#livePadmeArabiaCon()
 
 # load function 
-source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatcher.R")
+#source("O:/CMEP\ Projects/Scriptbox/database_importing/function_latinNamesMatcher.R")
 
 # Alan's Species List
 
@@ -77,6 +80,7 @@ sampledSet <<- read.csv(
 
 # subset to only Order, Family, Taxon and Authority columns
 sampledSet <- sampledSet[,c(2,4,5:6)]
+
 
 # tbl_df this
 sampledSet <- tbl_df(sampledSet)
@@ -109,7 +113,7 @@ analysisSet <-
         select(acceptDetAs, familyName) %>%
         distinct(acceptDetAs) %>%
         arrange(acceptDetAs)
-# 870 names
+# 873 names
 
 
 # Compare datasets
@@ -132,12 +136,12 @@ names(analysisSet)
 notInAnalysisSet <-
         anti_join(sampledSet, analysisSet, by=c("taxonWAuth" = "acceptDetAs")) %>%
         arrange(taxonWAuth)
-# 195
+# 168
 
 notInSampledSet <-
         anti_join(analysisSet, sampledSet, by=c("acceptDetAs" = "taxonWAuth")) %>%
         arrange(acceptDetAs)
-# 109
+# 87
 
 message(paste0(" ... saving ", nrow(notInAnalysisSet), " name comparison lists to: O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"))
 write.csv(notInAnalysisSet, file=paste0("O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
