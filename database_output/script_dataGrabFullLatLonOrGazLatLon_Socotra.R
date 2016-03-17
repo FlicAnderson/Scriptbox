@@ -477,13 +477,14 @@ source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R")
 binJunkRecs(returnJunk=FALSE, chattyReturn=TRUE)
 # 2016-03-10 26011 x 31 after several fixes (removing filter on latDec=0/lonDec=0!)
 # 2016/03/16 26388 x 31 (after Semhah -> Samha tweak)
+# 2016/03/17 26276
 
 # alter bad records via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socotra.R")
 
 # lump subspecific taxa via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
-# 873 accepted taxa names
+# 880 accepted taxa names
 
 #########################################
 # to re-do det sessions output, add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object):

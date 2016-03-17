@@ -75,7 +75,7 @@ sampledSet <<- read.csv(
         header=TRUE, 
         as.is=TRUE, 
         na.strings="", 
-        nrows=970
+        nrows=800
 )
 
 # subset to only Order, Family, Taxon and Authority columns
@@ -97,7 +97,7 @@ sampledSet <-
         select(taxonWAuth, Family, Order) %>%
         distinct(taxonWAuth) %>%
         arrange(taxonWAuth)
-# 954 taxa
+# 953 taxa (798 after removing ferns, doubtful and non-native)
 
 
 
@@ -113,7 +113,7 @@ analysisSet <-
         select(acceptDetAs, familyName) %>%
         distinct(acceptDetAs) %>%
         arrange(acceptDetAs)
-# 873 names
+# 880 names
 
 
 # Compare datasets
@@ -136,12 +136,12 @@ names(analysisSet)
 notInAnalysisSet <-
         anti_join(sampledSet, analysisSet, by=c("taxonWAuth" = "acceptDetAs")) %>%
         arrange(taxonWAuth)
-# 168
+# 141 (48 not in main sampled set)
 
 notInSampledSet <-
         anti_join(analysisSet, sampledSet, by=c("acceptDetAs" = "taxonWAuth")) %>%
         arrange(acceptDetAs)
-# 87
+# 68 (130 not in main sampledset)
 
 message(paste0(" ... saving ", nrow(notInAnalysisSet), " name comparison lists to: O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"))
 write.csv(notInAnalysisSet, file=paste0("O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
