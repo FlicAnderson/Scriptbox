@@ -131,7 +131,50 @@ recGrab <<- recGrab
 
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
-# 875 at 2016-03-16
+# 864 at 2016-03-17
+
+# remove dubious taxa: 
+#dubiousList info in script_editTaxa_Socotra_replacementInfo.R
+recGrab <- 
+        recGrab %>%
+        filter(acceptDetAs != "Boswellia nana x socotrana") %>%
+        filter(acceptDetAs != "Boswellia aff. ameero Balf.f.") %>%
+        filter(acceptDetAs != "Corchorus trilocularis L.") %>%
+        filter(acceptDetAs != "Cryptolepis orbicularis Chiov.") %>%
+        filter(acceptDetAs != "Cuscuta pretoriana Yunck.") %>%
+        filter(acceptDetAs != "Cymbopogon schoenanthus (L.) Spreng") %>%
+        filter(acceptDetAs != "Cymodocea rotundata Asch. & Schweinf.") %>%
+        filter(acceptDetAs != "Cymodocea serrulata (R.Br.) Asch. & Magnus") %>%
+        filter(acceptDetAs != "Cyperus tegetum Roxb.") %>%
+        filter(acceptDetAs != "Delphinium sheilae Kit Tan") %>%
+        filter(acceptDetAs != "Dipterygium glaucum Decne.") %>%
+        filter(acceptDetAs != "Echidnopsis socotrana X insularis") %>%
+        filter(acceptDetAs != "Echiochilon persicum (Burm.f.) I.M.Johnst.") %>%
+        filter(acceptDetAs != "Eleocharis chaetaria (L.) Roem. & Schult.") %>%
+        filter(acceptDetAs != "Eleusine africana Kenn.-O'Byrne") %>%
+        filter(acceptDetAs != "Eragrostis patula (Kunth) Steud.") %>%
+        filter(acceptDetAs != "Eragrostis pilosa (L.) P.Beauv.") %>%
+        filter(acceptDetAs != "Foeniculum vulgare Mill.") %>%
+        filter(acceptDetAs != "Glossonema varians (Stocks) Benth. ex Hook.f.") %>%
+        filter(acceptDetAs != "Grewia damine Gaertn.") %>%
+        filter(acceptDetAs != "Halodule uninervis (Forrsk.) Aschers") %>%
+        filter(acceptDetAs != "Helichrysum profusum Balf.f.") %>%
+        filter(acceptDetAs != "Juncus maritimus Lam.") %>%
+        filter(acceptDetAs != "Limonium guigliae Raimondo & Domina") %>%
+        filter(acceptDetAs != "Najas major L.") %>%
+        filter(acceptDetAs != "Otostegia fruticosa (Forssk.) Schweinf. ex Penz.") %>%
+        filter(acceptDetAs != "Peperomia abyssinica Miq.") %>%
+        filter(acceptDetAs != "Striga linearifolia (Schumach. & Thonn.) Hepper") %>%
+        filter(acceptDetAs != "Vachellia gerrardii (Benth.) P.J.H.Hurter & Mabb.") %>%
+        filter(acceptDetAs != "Vachellia negrii (Pic.Serm.) Kyal. & Boatwr.") %>%
+        filter(acceptDetAs != "Vachellia nilotica (L.) P.J.H.Hurter & Mabb.")
+
+# Number of taxa:
+length(unique(recGrab$acceptDetAs))
+# 834 at 2016-03-17
+
+# reassign recGrab
+recGrab <<- recGrab
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -147,7 +190,7 @@ taxaListForChecks <-
         arrange(acceptDetAs, genusName, familyName)
 
 # write list of unique taxa
-message(paste0("... saving revised list of ", length(taxaListSocotra), " accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_RevisedChecklist_", Sys.Date(), ".csv"))
+message(paste0("... saving revised list of ", length(taxaListSocotra), " accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_Checklist_", Sys.Date(), ".csv"))
 write.csv(taxaListForChecks, file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_RevisedChecklist_", Sys.Date(), ".csv"), row.names=FALSE)
 
 # tidy up
