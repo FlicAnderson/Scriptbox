@@ -113,7 +113,7 @@ analysisSet <-
         select(acceptDetAs, familyName) %>%
         distinct(acceptDetAs) %>%
         arrange(acceptDetAs)
-# 880 names
+# 864 names
 
 
 # Compare datasets
@@ -136,12 +136,12 @@ names(analysisSet)
 notInAnalysisSet <-
         anti_join(sampledSet, analysisSet, by=c("taxonWAuth" = "acceptDetAs")) %>%
         arrange(taxonWAuth)
-# 141 (48 not in main sampled set)
+# 141 (45 not in main sampled set)
 
 notInSampledSet <-
         anti_join(analysisSet, sampledSet, by=c("acceptDetAs" = "taxonWAuth")) %>%
         arrange(acceptDetAs)
-# 68 (130 not in main sampledset)
+# 68 (111 not in main sampledset)
 
 message(paste0(" ... saving ", nrow(notInAnalysisSet), " name comparison lists to: O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"))
 write.csv(notInAnalysisSet, file=paste0("O://CMEP\ Projects/Socotra/nameComparisonList_sampledSetNamesNotInAnalysisSet-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
