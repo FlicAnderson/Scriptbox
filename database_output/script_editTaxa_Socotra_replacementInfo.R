@@ -94,6 +94,10 @@ toReplace <- c("Achyranthes aspera L. var. aspera",
 "Sterculia africana (Lour.) Fiori subsp. africana",
 "Sterculia africana subsp. socotrana Abedin",
 "Viola cinerea Boiss. var. stocksii", 
+"Capparis spinosa L.",
+"Ficus cordata subsp. salicifolia (Vahl) C.C.Berg",
+"Heliotropium aff. socotranum Vierh.",
+"Aloe sp. nov. ined.",
 "Amaranthus graecizans subsp. thellunganianus (Nevski) Gusev")
 
 replaceWith <- c("Achyranthes aspera L.",
@@ -169,6 +173,44 @@ replaceWith <- c("Achyranthes aspera L.",
 "Sterculia africana (Lour.) Fiori",
 "Sterculia africana (Lour.) Fiori",
 "Viola cinerea Boiss.",
+"Capparis cartilaginea Decne.",
+"Ficus cordata Thunb.",
+"Heliotropium socotranum Vierh.",
+"Aloe jawiyon S.J.Christie, D.P.Hannon & N.Oakman ex A.G.Mill.",
 "Amaranthus graecizans L.")
 
 taxaFixes <<- data.frame(toReplace, replaceWith)
+
+# dubiousList <- c(
+#         "Boswellia nana x socotrana", # hybrid
+#         "Boswellia aff. ameero Balf.f.", # 1x 17k Miller, 1x Hein
+#         "Corchorus trilocularis L.", # 3x 10k Miller recs
+#         "Cryptolepis orbicularis Chiov.", # few recs
+#         "Cuscuta pretoriana Yunck.", # 1 rec only
+#         "Cymbopogon schoenanthus (L.) Spreng",  # old lit
+#         "Cymodocea rotundata Asch. & Schweinf.", # old lit
+#         "Cymodocea serrulata (R.Br.) Asch. & Magnus", # old lit
+#         "Cyperus tegetum Roxb.", # old lit
+#         "Delphinium sheilae Kit Tan", # 1x 10k Miller, det notes say "Lichen"?!?!, 
+#         "Dipterygium glaucum Decne.",  # 1x 10K Miller
+#         "Echidnopsis socotrana X insularis",  # hybrid
+#         "Echiochilon persicum (Burm.f.) I.M.Johnst.", # hist + syn(?) E. albidum by Czech team
+#         "Eleocharis chaetaria (L.) Roem. & Schult.", # old lit
+#         "Eleusine africana Kenn.-O'Byrne",  # 1x Schweinf, prob refers to Eleusine coracana
+#         "Eragrostis patula (Kunth) Steud.",  # 1x Thulin
+#         "Eragrostis pilosa (L.) P.Beauv.", # old lit
+#         "Foeniculum vulgare Mill.", # old lit
+#         "Glossonema varians (Stocks) Benth. ex Hook.f.", # 1x 31k Miller fieldrec
+#         "Grewia damine Gaertn.", # 1x 10k Miller
+#         "Halodule uninervis (Forrsk.) Aschers",  # old lit
+#         "Helichrysum profusum Balf.f.", # 2x old recs(1x lit, 1x Schweinf)
+#         "Juncus maritimus Lam.", # old lit
+#         "Limonium guigliae Raimondo & Domina",  # only type record
+#         "Najas major L.", # old lit
+#         "Otostegia fruticosa (Forssk.) Schweinf. ex Penz.", # one Hein
+#         "Peperomia abyssinica Miq.", # 1x 31k Miller field 
+#         "Striga linearifolia (Schumach. & Thonn.) Hepper", # 1x 8k Miller
+#         "Vachellia gerrardii (Benth.) P.J.H.Hurter & Mabb.", # 2x 12k Miller
+#         "Vachellia negrii (Pic.Serm.) Kyal. & Boatwr.", # 1x 10k
+#         "Vachellia nilotica (L.) P.J.H.Hurter & Mabb." # 1x Field Miller
+# )
