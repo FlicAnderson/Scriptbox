@@ -59,6 +59,7 @@ length(unique(recGrab$acceptDetAs))
 # 1256 taxa at 2016-02-25
 # 1028 taxa at 2016-02-26 (after filtering out using keepTaxRankOnly() function)
 # 818 after pruning out 0-Lat/0-Lon records
+# 834 2016/03/23
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -79,6 +80,7 @@ length(unique(paste(recGrab$anyLat, recGrab$anyLon)))
 # 907 @ 18/01/2015
 # 716 @ 2016-02-25
 # 1845 @ 2016-02-25 - fixed rounding error caused by using qry0 method (fielRexTemp table at Access) without correct data type settings - number type Long Integer
+# 1853 @ 2016/03/23
 
 # Number of taxa with >10 unique locations?
 # 175 unique named locations OR 255 unique lat+lon combos @ 06/07/2015, see below
@@ -181,15 +183,15 @@ by_sps_counts
 
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
-#398
+#390
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
-#240
+#242
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 441 taxa with >10 unique latlon locations
+# 428 taxa with >10 unique latlon locations
 
 
 by_expd <- group_by(socotraData, expdName)
@@ -198,6 +200,7 @@ expds <- summarize(by_expd, count=n(),
           year=round(mean(dateYYYY, na.rm=TRUE), digits=0)
           ) %>%
         arrange(-count, expdName)
+expds
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
