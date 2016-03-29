@@ -42,6 +42,9 @@ extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
 # check if it's not .csv & give informative error if it doesn't exist
 if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
 
+# check for bad records file
+# informative error if it doesn't exist
+if(!file.exists(importSource)) stop(paste0("... ERROR: ", importSource, " file does not exist"))
 
 # import csv with edit info
 reqEdits <<- read.csv(
@@ -81,6 +84,25 @@ recGrab <<- recGrab
 # tidy up
 rm(recGrabTemp, reqEdits)
 
+# check it works: 
+filter(recGrab, recID=="H-15153") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
+# Lavranos & Radcliffe-Smith herbarium specimen number 690
+# Source: local data frame [1 x 4]
+# 
+# lat1Dec  anyLat lon1Dec  anyLon
+# 1 12.23333 12.1896   52.25 52.2458
+# if anyLat = 12.1896 and anyLon = 52.2458, everything is FINE :)
+
+filter(recGrab, recID=="F-3460") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
+# Miller field observation of a Pulicaria
+# Source: local data frame [1 x 4]
+# 
+# lat1Dec  anyLat  lon1Dec  anyLon
+# 1 12.56667 12.5494 53.38334 53.3857
+# if anyLat = 12.5494 and anyLon = 53.3857, everything is FINE :)
+
+
+
 ##----------------------------------------------------------------------------##
 
 
@@ -94,6 +116,10 @@ fileName <- "BadRecords_socotra-2016-03-07_needGazetteerLatLonReplacement.csv"
 
 # import source:
 importSource <<- paste0(fileLocat, "/", fileName)
+
+# check for bad records file
+# informative error if it doesn't exist
+if(!file.exists(importSource)) stop(paste0("... ERROR: ", importSource, " file does not exist"))
 
 # is file a .csv or something else?
 # get extension
@@ -216,3 +242,115 @@ recGrab <<- recGrab
 
 # tidy up a bunch of stuff
 rm(recGrabTemp3, recGrabTemp4, fielSpx, herbSpx, reqEdits, importSource, extns, fileName, fileLocat, herbQry, fielQry)
+
+#### TEST REQ ###
+
+
+#### remove additional bad records: 
+recGrab <- 
+        recGrab %>%
+        filter(recID != "H-6388") %>%
+        filter(recID != "H-2796") %>%
+        filter(recID != "H-3259") %>%
+        filter(recID != "F-6343") %>%
+        filter(recID != "F-6344") %>%
+        filter(recID != "F-6342") %>%
+        filter(recID != "F-9858") %>%
+        filter(recID != "F-6346") %>%
+        filter(recID != "F-6804") %>%
+        filter(recID != "F-9857") %>% 
+        filter(recID != "F-9859") %>% 
+        filter(recID != "F-6341") %>%
+        filter(recID != "F-6345") %>%
+        filter(recID != "F-6803") %>%
+        filter(recID != "F-6347") %>%
+        filter(recID != "F-6805") %>%
+        filter(recID != "H-57154") %>% 
+        filter(recID != "H-55624") %>%
+        filter(recID != "H-4418") %>%
+        filter(recID != "L-1130") %>% # removing these 4 literature records because they're not particularly valuable here 
+        filter(recID != "L-1263") %>%
+        filter(recID != "L-773") %>%
+        filter(recID != "L-1172")
+
+# ensure these save out to global object
+recGrab <<- recGrab
+
+# file location details:
+fileLocat <- "O://CMEP\ Projects/Socotra"
+fileName <- "BadXY-analysisRecords-Socotra_2016-03-29.csv"
+
+# import source:
+importSource <<- paste0(fileLocat, "/", fileName)
+
+# is file a .csv or something else?
+# get extension
+extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
+# check if it's not .csv & give informative error if it doesn't exist
+if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
+
+# check for bad records file
+# informative error if it doesn't exist
+if(!file.exists(importSource)) stop(paste0("... ERROR: ", importSource, " file does not exist"))
+
+# import csv with edit info
+reqEdits <<- read.csv(
+        file=importSource, 
+        header=TRUE, 
+        as.is=TRUE, 
+        na.strings="", 
+        nrows = 353  
+        # nrows=353 avoids the taxa to remove as they are outside land limits & don't have precise information
+        # plus they've been removed by filtering out the recIDs above, so it's captured elsewhere.
+)
+
+# column names are newLat and newLon anyway, so that's ok
+
+# join recGrab and reqEdits
+recGrabTemp <-
+        sqldf(
+                "SELECT 
+                recGrab.*, 
+                reqEdits.newLat, 
+                reqEdits.newLon  
+                FROM recGrab 
+                LEFT JOIN reqEdits ON recGrab.recID=reqEdits.recID"
+        )
+
+# create new column tempLat/tempLon which uses anyLat/Lon if there is no newLat/Lon (from edit file)
+recGrabTemp <- 
+        recGrabTemp %>%
+        mutate(tempLat=ifelse(!(is.na(newLat)), newLat, anyLat)) %>%
+        mutate(tempLon=ifelse(!(is.na(newLon)), newLon, anyLon))
+
+# replace recGrab anyLat/anyLon with tempLat/tempLon to include the fixes
+recGrab$anyLat <- recGrabTemp$tempLat
+recGrab$anyLon <- recGrabTemp$tempLon
+
+recGrab <<- recGrab
+
+# tidy up
+rm(recGrabTemp, reqEdits)
+
+# check it works: 
+filter(recGrab, recID=="H-6037") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
+# Miller collection, collNo=12514, Atriplex griffithii
+# Source: local data frame [1 x 4]
+# 
+#lat1Dec anyLat lon1Dec   anyLon
+#1      NA   12.1      NA 53.26667 # BAD
+#lat1Dec  anyLat lon1Dec   anyLon
+#1      NA 12.1219      NA 53.27032 # GOOD
+# if anyLat = 12.12189 and anyLon = 53.27032, everything is FINE :)
+# if anyLat = 12.1 and anyLon = 53.26667, everything is BROKEN :C
+
+filter(recGrab, recID=="F-32631") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
+# Miller field observation of a Euphorbia schimerpi
+# Source: local data frame [1 x 4]
+# 
+#lat1Dec anyLat lon1Dec anyLon
+#1   12.75  12.45    54.5  54.35
+#lat1Dec   anyLat lon1Dec   anyLon
+#1   12.75 12.44747    54.5 54.30803
+# if anyLat = 12.44747 and anyLon = 54.30803, everything is FINE :)
+# if anyLat = 12.45 and anyLon = 54.35, everything is BROKEN :C
