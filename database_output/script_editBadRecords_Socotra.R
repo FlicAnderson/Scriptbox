@@ -102,7 +102,6 @@ filter(recGrab, recID=="F-3460") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
 # if anyLat = 12.5494 and anyLon = 53.3857, everything is FINE :)
 
 
-
 ##----------------------------------------------------------------------------##
 
 
@@ -245,6 +244,8 @@ rm(recGrabTemp3, recGrabTemp4, fielSpx, herbSpx, reqEdits, importSource, extns, 
 
 #### TEST REQ ###
 
+################################################################################
+
 
 #### remove additional bad records: 
 recGrab <- 
@@ -354,3 +355,81 @@ filter(recGrab, recID=="F-32631") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
 #1   12.75 12.44747    54.5 54.30803
 # if anyLat = 12.44747 and anyLon = 54.30803, everything is FINE :)
 # if anyLat = 12.45 and anyLon = 54.35, everything is BROKEN :C
+
+################################################################################
+
+# file location details:
+fileLocat <- "O://CMEP\ Projects/Socotra"
+fileName <- "BadXY-analysisRecords-Socotra_2016-03-30.csv"
+
+# import source:
+importSource <<- paste0(fileLocat, "/", fileName)
+
+# is file a .csv or something else?
+# get extension
+extns <- paste0(".", unlist(strsplit(importSource, "[.]"))[2])
+# check if it's not .csv & give informative error if it doesn't exist
+if(!grepl(".csv", extns)) stop("... ERROR: file not in .csv format, please save as .csv and try again")
+
+# check for bad records file
+# informative error if it doesn't exist
+if(!file.exists(importSource)) stop(paste0("... ERROR: ", importSource, " file does not exist"))
+
+# import csv with edit info
+reqEdits <<- read.csv(
+        file=importSource, 
+        header=TRUE, 
+        as.is=TRUE, 
+        na.strings="", 
+        nrows = 160  
+        # nrows=160 avoids the taxa to remove as they are outside land limits & don't have precise information
+        # plus they've been removed by filtering out the recIDs above, so it's captured elsewhere.
+)
+
+# change column names "New.AnyLon" and "New.AnyLat" to something without dots
+names(reqEdits)[names(reqEdits)=="newLat"] <- "newLat"
+names(reqEdits)[names(reqEdits)=="NewLon"] <- "newLon"
+
+# join recGrab and reqEdits
+recGrabTemp <-
+        sqldf(
+                "SELECT 
+                recGrab.*, 
+                reqEdits.newLat, 
+                reqEdits.newLon  
+                FROM recGrab 
+                LEFT JOIN reqEdits ON recGrab.recID=reqEdits.recID"
+        )
+
+# create new column tempLat/tempLon which uses anyLat/Lon if there is no newLat/Lon (from edit file)
+recGrabTemp <- 
+        recGrabTemp %>%
+        mutate(tempLat=ifelse(!(is.na(newLat)), newLat, anyLat)) %>%
+        mutate(tempLon=ifelse(!(is.na(newLon)), newLon, anyLon))
+
+# replace recGrab anyLat/anyLon with tempLat/tempLon to include the fixes
+recGrab$anyLat <- recGrabTemp$tempLat
+recGrab$anyLon <- recGrabTemp$tempLon
+
+recGrab <<- recGrab
+
+# tidy up
+rm(recGrabTemp, reqEdits)
+
+
+# check it works: 
+filter(recGrab, recID=="H-74850") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
+# Bilaidi collection, collNo=123, Leucas urticifolia
+# Source: local data frame [1 x 4]
+#
+#
+# if anyLat = 12.64882 and anyLon = 53.9828, everything is FINE :)
+# if anyLat = 12.65 and anyLon = 53.98333359, everything is BROKEN :C
+
+filter(recGrab, recID=="F-607") %>% select(lat1Dec, anyLat, lon1Dec, anyLon)
+# Miller field observation of a Euphorbia schimerpi
+# Source: local data frame [1 x 4]
+# 
+#
+# if anyLat = 12.66596 and anyLon = 54.05155, everything is FINE :)
+# if anyLat = 12.66667 and anyLon = 54.05, everything is BROKEN :C
