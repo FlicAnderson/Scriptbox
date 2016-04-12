@@ -240,7 +240,16 @@ source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socot
 # lump subspecific taxa via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
 # 834 accepted taxa names
-# 26220 x 31 records (removed lichens etc)
+# 26197 x 31 records (removed lichens etc)
+
+
+# 7)  add record source column
+
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_addRecTypeColumn.R")
+# run the function!!!!
+addRecTypeColumn()
+# 26197 x 32 obs
+
 
 #########################################
 # to re-do det sessions output, add Flic's fields notes & info to herbarium specimens (in herbSpxReqDet object):
