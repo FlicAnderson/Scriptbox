@@ -176,6 +176,67 @@ length(unique(recGrab$acceptDetAs))
 # reassign recGrab
 recGrab <<- recGrab
 
+### update acceptDetNoAuth & genusName fields with updated names!
+
+# UPDATE ACCEPTDETNOAUTH
+# update acceptDetNoAuth
+
+# join Lnam.fullname on recGrab.acceptDetAs 
+# join new LnamID of fixed taxon
+# then replace acceptDetNoAuth & update recGrab.lnamID
+# then join families, then get rank again
+
+qry <- "SELECT [Latin Names].id, [Latin Names].sortName, [Latin Names].[Full Name] 
+        FROM [Latin Names]"
+lnamInfo <- sqlQuery(con_livePadmeArabia, qry)
+names(lnamInfo)[2] <- "LnamSortName"
+names(lnamInfo)[3] <- "fullName"
+datA <- sqldf("SELECT * FROM recGrab LEFT JOIN lnamInfo ON recGrab.acceptDetAs=lnamInfo.fullName")
+
+table(is.na(datA$fullName))
+datA <- datA[which(is.na(datA$fullName)),]
+head(datA)
+
+unique(datA$acceptDetAs)
+# "Asparagus sp. A ined."          "Boswellia sp. A ined."          "Helichrysum dioscorides ined."  "Heliotropium socotranum Vierh."
+# [5] "Indigofera socotrana Vierh."    "Rhus sp. nov. ined."            "Searsia cf. tenuinervis ined."  "Vachellia pennivenia ined."   
+# fullname of "Asparagus sp. A ined." is "Asparagus sp. A"
+# fullname of "Boswellia sp. A ined." is "Boswellia sp. A"
+# fullname of "Helichrysum dioscorides ined." is "Helichrysum dioscorides R.Atkinson & A.G.Mill."
+# fullname of "Heliotropium socotranum Vierh." is "Heliotropium socotranum Vierh. orth. var."
+# fullname of "Indigofera socotrana Vierh." is "Indigofera sokotrana Vierh."
+# fullname of "Rhus sp. nov. ined." is "Rhus sp. nov."
+# fullname of "Searsia cf. tenuinervis ined." is "Searsia cf. tenuinervis Moffett"
+# fullname of "Vachellia pennivenia ined." is "Vachellia pennivenia"
+
+
+
+
+# # create query
+# qry <- "SELECT 
+#                 [Latin Names].sortName AS familyName, 
+#                 [names tree].member
+#                 FROM (
+#                 Ranks INNER JOIN [Latin Names] ON Ranks.id = [Latin Names].Rank) 
+#                 INNER JOIN [names tree] ON [Latin Names].id = [names tree].[member of]
+#                 WHERE (((Ranks.name)='family'))
+#                 ;"
+# # run query, store as 'families' object
+# families <- sqlQuery(con_livePadmeArabia, qry)
+# recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN families ON recGrab.lnamid=families.member")
+
+
+
+# ADD GENUS
+# pull out genus (use non-auth det & then regex the epithet off)
+#recGrab$genusName <- recGrab$acceptDetNoAuth
+#recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
+
+
+
+
+
+
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
 #sort(taxaListSocotra)
