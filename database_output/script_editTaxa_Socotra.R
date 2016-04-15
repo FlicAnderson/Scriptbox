@@ -186,20 +186,29 @@ recGrab <<- recGrab
 # then replace acceptDetNoAuth & update recGrab.lnamID
 # then join families, then get rank again
 
+# get latin names info
 qry <- "SELECT [Latin Names].id, [Latin Names].sortName, [Latin Names].[Full Name] 
         FROM [Latin Names]"
 lnamInfo <- sqlQuery(con_livePadmeArabia, qry)
+
+# change names so they don't overwrite or confuse matters with existing column names
+names(lnamInfo)[1] <- "nameID"
 names(lnamInfo)[2] <- "LnamSortName"
 names(lnamInfo)[3] <- "fullName"
+
+# join latin name info onto recGrab on acceptDetAs field 
 datA <- sqldf("SELECT * FROM recGrab LEFT JOIN lnamInfo ON recGrab.acceptDetAs=lnamInfo.fullName")
 
+# find names which don't match directly; explore these
 table(is.na(datA$fullName))
-datA <- datA[which(is.na(datA$fullName)),]
-head(datA)
+datA_noNameID <- datA[which(is.na(datA$fullName)),]
+head(datA_noNameID)
 
-unique(datA$acceptDetAs)
+unique(datA_noNameID$acceptDetAs)
 # "Asparagus sp. A ined."          "Boswellia sp. A ined."          "Helichrysum dioscorides ined."  "Heliotropium socotranum Vierh."
-# [5] "Indigofera socotrana Vierh."    "Rhus sp. nov. ined."            "Searsia cf. tenuinervis ined."  "Vachellia pennivenia ined."   
+# [5] "Indigofera socotrana Vierh."    "Rhus sp. nov. ined."            "Searsia cf. tenuinervis ined."  "Vachellia pennivenia ined." 
+
+
 # fullname of "Asparagus sp. A ined." is "Asparagus sp. A"
 # fullname of "Boswellia sp. A ined." is "Boswellia sp. A"
 # fullname of "Helichrysum dioscorides ined." is "Helichrysum dioscorides R.Atkinson & A.G.Mill."
@@ -209,6 +218,38 @@ unique(datA$acceptDetAs)
 # fullname of "Searsia cf. tenuinervis ined." is "Searsia cf. tenuinervis Moffett"
 # fullname of "Vachellia pennivenia ined." is "Vachellia pennivenia"
 
+datB <- 
+datA %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Asparagus sp. A ined.", "Asparagus sp. A", acceptDetAs)) %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Boswellia sp. A ined.", "Boswellia sp. A", acceptDetAs)) %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Helichrysum dioscorides ined.", "Helichrysum dioscorides R.Atkinson & A.G.Mill.", acceptDetAs)) %>%      
+        mutate(tempTaxon=ifelse(acceptDetAs=="Heliotropium socotranum Vierh.", "Heliotropium socotranum Vierh. orth. var.", acceptDetAs)) %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Indigofera socotrana Vierh.", "Indigofera sokotrana Vierh.", acceptDetAs)) %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Rhus sp. nov. ined.", "Rhus sp. nov.", "")) %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Searsia cf. tenuinervis ined.", "Searsia cf. tenuinervis Moffett", acceptDetAs)) %>%
+        mutate(tempTaxon=ifelse(acceptDetAs=="Vachellia pennivenia ined.", "Vachellia pennivenia", acceptDetAs)) 
+
+# check names have been replaced
+table(datB$tempTaxon)  
+# are there any NA spots left?
+table(is.na(datB$tempTaxon))
+
+# re-join lnamIDs from the database onto the tempTaxon thing? Replace acceptDetAs field first
+
+# replace acceptDetAs
+datA$acceptDetAs <- datB$tempTaxon
+
+datA$nameID <- NULL
+datA$LnamSortName <- NULL
+datA$fullName <- NULL
+datC <- sqldf("SELECT * FROM datA LEFT JOIN lnamInfo ON datA.acceptDetAs=lnamInfo.fullName")
+
+# replace sortName
+
+# remove extra columns again
+datA$nameID <- NULL
+datA$LnamSortName <- NULL
+datA$fullName <- NULL
 
 
 
