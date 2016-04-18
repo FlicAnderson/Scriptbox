@@ -230,7 +230,7 @@ datA %>%
         mutate(tempTaxon=ifelse(acceptDetAs=="Vachellia pennivenia ined.", "Vachellia pennivenia", acceptDetAs)) 
 
 # check names have been replaced
-table(datB$tempTaxon)  
+table(datB$tempTaxon)
 # are there any NA spots left?
 table(is.na(datB$tempTaxon))
 
@@ -239,43 +239,76 @@ table(is.na(datB$tempTaxon))
 # replace acceptDetAs
 datA$acceptDetAs <- datB$tempTaxon
 
+# remove additional columns 
 datA$nameID <- NULL
 datA$LnamSortName <- NULL
 datA$fullName <- NULL
+
+# re-join lnamIDs, full Name and sortName back onto the new acceptedDetAs on the data
 datC <- sqldf("SELECT * FROM datA LEFT JOIN lnamInfo ON datA.acceptDetAs=lnamInfo.fullName")
 
-# replace sortName
+# replace lnamID & sortName(acceptDetNoAuth)
+datC$lnamID <- datC$nameID
+datC$acceptDetNoAuth <- datC$LnamSortName
+# datC$acceptedDetAs is already done (Full Name)
 
 # remove extra columns again
-datA$nameID <- NULL
-datA$LnamSortName <- NULL
-datA$fullName <- NULL
+datC$nameID <- NULL
+datC$LnamSortName <- NULL
+datC$fullName <- NULL
+
+# check they're gone
+names(datC)
+
+# change it all back to recGrab again!
+recGrab <- datC
+
+recGrab <<- recGrab
+
+rm(datA, datB, datC, datA_noNameID, lnamInfo, recGrabTemp)
+
+# remove old family name
+recGrab$familyName <- NULL
+
+# renew and re-add FAMILY NAMES
 
 
+# create query
+qry <- "SELECT 
+                [Latin Names].sortName AS familyName, 
+                [names tree].member
+                FROM (
+                Ranks INNER JOIN [Latin Names] ON Ranks.id = [Latin Names].Rank) 
+                INNER JOIN [names tree] ON [Latin Names].id = [names tree].[member of]
+                WHERE (((Ranks.name)='family'))
+                ;"
+# run query, store as 'families' object
+families <- sqlQuery(con_livePadmeArabia, qry)
+recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN families ON recGrab.lnamid=families.member")
 
-# # create query
-# qry <- "SELECT 
-#                 [Latin Names].sortName AS familyName, 
-#                 [names tree].member
-#                 FROM (
-#                 Ranks INNER JOIN [Latin Names] ON Ranks.id = [Latin Names].Rank) 
-#                 INNER JOIN [names tree] ON [Latin Names].id = [names tree].[member of]
-#                 WHERE (((Ranks.name)='family'))
-#                 ;"
-# # run query, store as 'families' object
-# families <- sqlQuery(con_livePadmeArabia, qry)
-# recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN families ON recGrab.lnamid=families.member")
+# check the names
+names(recGrab)
+
+# remove recGrab$member temp column (column 32)
+if(names(recGrab[32])=="member"){
+        recGrab <<- recGrab[,-32]
+} else { 
+        print("wrong number of columns; temp column 'member' not removed")
+}
 
 
+# remove old genus
+recGrab$genusName <- NULL
 
-# ADD GENUS
+# renew and re-add GENUS NAME
 # pull out genus (use non-auth det & then regex the epithet off)
-#recGrab$genusName <- recGrab$acceptDetNoAuth
-#recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
+recGrab$genusName <- recGrab$acceptDetNoAuth
+recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
 
+# re-assign 
+recGrab <<- recGrab
 
-
-
+################################################################################
 
 
 # create object
