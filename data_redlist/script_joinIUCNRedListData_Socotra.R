@@ -21,6 +21,7 @@
 # 4) apply fixes for non-joining taxa
 # 5) perform main join with fixes
 # 6) output joined data if required
+# 7) tidy up
 
 # ---------------------------------------------------------------------------- #
 
@@ -69,6 +70,7 @@ iucnDat <-
 
 
 # 3) pull out non-joining taxa
+# initial join
 a <- sqldf("SELECT * FROM recGrab LEFT JOIN iucnDat ON recGrab.acceptDetNoAuth=iucnDat.joinName;")
 
 # names which DO match
@@ -91,20 +93,21 @@ length(datA[which(datA %in% a == FALSE)])
 # 4) apply fixes for non-joining taxa
 
 # FERNS TO IGNORE: 
-c("Adiantum capillus-veneris","Marsilea coromandelina","Pteris vittata")  # we've ruled these out of analysis
-# to do: create ignore/filter-out mechanism
+iucnDat <- iucnDat[which(iucnDat$joinName %in% c("Adiantum capillus-veneris","Marsilea coromandelina","Pteris vittata") == FALSE),]
 
 
 # Things not in our dataset?!
-c("Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
+iucnDat <- iucnDat[which(iucnDat$joinName %in% c("Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
   "Ammannia auriculata", # different taxa?
   "Najas marina", # doesn't seem to be records? check this
   "Persicaria barbata", # doesn't seem to be records? check this
-  "Persicaria glabrum", # not in padme
   "Polypogon monspeliensis", # no records?
-  "Schoenus nigricans" # no records?
-)
-# to do: create ignore/filter-out mechanism
+  "Schoenus nigricans", # no records?
+  "Commiphora socotrana", # no records?! This should be in the dataset, it's in padme and in the ethnoflora
+  "Ischaemum sp. nov.", # pretty sure this should have a few records at least too
+  "Helichrysum sp. nov. B" # pretty sure this should have a few records at least too
+) == FALSE),]
+
 
 # Names to update in iucnDat:
 toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
@@ -114,17 +117,16 @@ toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
                "Babiana socotrana", # syn
                "Chlorophytum sp. nov.", # ined
                "Commiphora socotrana", # can't see any problem with this
-               "Corchorus erodiodes", # common spelling error in epithet
+               "Corchorus erodiodes", # orthog. var.
                "Dicoma cana", # syn
                "Euclea balfourii", # syn 
                "Euclea laurina", # syn 
-               "Euphorbia hamaderohensis", # spelling of epithet
+               "Euphorbia hamaderohensis", # orthog. var.
                "Gaillonia puberula", # syn
                "Gaillonia putorioides", # syn
                "Gaillonia thymoides", # syn
                "Gaillonia tinctoria", # syn
                "Helichrysum sp. nov. A", # removed nov.
-               "Helichrysum sp. nov. B", # removed nov.
                "Helichrysum sp. nov. C", # removed nov.
                "Helichrysum sp. nov. D", # removed nov.
                "Helichrysum sp. nov. E", # removed nov., added the aff. details
@@ -139,6 +141,7 @@ toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
                "Maytenus sp. nov. A", # removed nov.
                "Micromeria remota", # syn of var, dropped to sps
                "Nanorrhinum kuriense", # spelling
+               "Persicaria glabrum", # orth. var.
                "Placopoda virgata", # syn
                "Polygala kuriensis", # orthog. var.
                "Prenanthes amabilis", # syn
@@ -171,10 +174,9 @@ replaceWith <- c("Vachellia pennivenia",
                 "Plocama putorioides",
                 "Plocama thymoides",
                 "Plocama tinctoria", 
-                "Helichrysum sp. A", 
-                "Helichrysum sp. B", 
-                "Helichrysum sp. C", 
-                "Helichrysum sp. D", 
+                "Helichrysum samhaensis", 
+                "Helichrysum nogedensis", 
+                "Helichrysum dioscorides", 
                 "Helichrysum sp. E [aff. aciculare]", 
                 "Heliotropium wagneri",
                 "Heliotropium shoabense",
@@ -182,15 +184,16 @@ replaceWith <- c("Vachellia pennivenia",
                 "Hemicrambe fruticosa", 
                 "Kleinia scottii", 
                 "Launaea sp. A", 
-                "Lasiocorys flagellifera", 
+                "Leucas flagellifera", 
                 "Leucas spiculifolia", 
                 "Maytenus sp. A", 
                 "Micromeria imbricata", 
                 "Nanorrhinum kuriensis", 
+                "Persicaria glabra",
                 "Dirichletia virgata", 
                 "Polygala kuriense", 
                 "Erythroseris amabilis", 
-                "Rhus sp. A", 
+                "Rhus sp. nov.", 
                 "Searsia thyrsiflora",
                 "Rughidia cordata",
                 "Convolvulus socotrana",
@@ -203,11 +206,58 @@ replaceWith <- c("Vachellia pennivenia",
                 "Zygocarpum coeruleum"
                 )
 
-# to do: create fix mechanism
+# create data frame of fixes info
+taxaFixes <<- data.frame(toReplace, replaceWith)
+
+# join fixes onto iucnDat as a temporary object
+iucnTemp <- sqldf("SELECT * FROM iucnDat LEFT JOIN taxaFixes ON iucnDat.joinName=taxaFixes.toReplace;")
+
+# substitute toReplace taxa with replaceWiths
+iucnTemp <- 
+        iucnTemp %>%
+        mutate(tempTaxon=ifelse(!(is.na(replaceWith)), replaceWith, joinName))
+
+# replace joinName column with tempTaxon values to include the fixes
+iucnDat$joinName <- iucnTemp$tempTaxon
 
 
 # 5) perform main join with fixes
 
+# # initial join
+#a <- sqldf("SELECT * FROM recGrab LEFT JOIN iucnDat ON recGrab.acceptDetNoAuth=iucnDat.joinName;")
+# 
+# # names which DO match
+# a <- unique(a[which(!(is.na(a$joinName))),]$joinName)
+# 
+# # how many DO match?
+# #length(unique(a[which(!(is.na(a$joinName))),]$joinName))
+# #296
+# 
+# # pull out unique names from iucn data
+# datA <- unique(iucnDat$joinName)
+# 
+# # check which names from the iucn data DO NOT MATCH socotra data:
+# datA[which(datA %in% a == FALSE)]
+
+# "Helichrysum socotranum"/"Helichrysum sp. B" still remains :s
 
 # 6) output joined data if required
 
+
+# 7) tidy up
+
+# REMOVE ALL OBJECTS FROM WORKSPACE!
+#rm(list=ls())
+
+# # REMOVE SOME OBJECTS FROM WORKSPACE!
+#         # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
+#         # (eg. connections, recGrab, etc):
+rm(list=setdiff(ls(), 
+                c(
+                        "recGrab", 
+                        "taxaListSocotra",
+                        "con_livePadmeArabia", 
+                        "livePadmeArabiaCon"
+                )
+        )
+)
