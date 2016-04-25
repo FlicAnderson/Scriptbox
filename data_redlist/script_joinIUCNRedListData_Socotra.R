@@ -95,7 +95,12 @@ c("Adiantum capillus-veneris","Marsilea coromandelina","Pteris vittata")  # we'v
 
 # Things not in our dataset?!
 c("Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
-  "Ammannia auriculata") # different taxa?
+  "Ammannia auriculata", # different taxa?
+  "Najas marina", # doesn't seem to be records? check this
+  "Persicaria barbata", # doesn't seem to be records? check this
+  "Persicaria glabrum", # not in padme
+  "Polypogon monspeliensis" # no records?
+)
 
 # Names to update in iucnDat:
 toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
@@ -104,7 +109,38 @@ toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
                "Asparagus sp. nov. A", # nov. removed, ined. species concept
                "Babiana socotrana", # syn
                "Chlorophytum sp. nov.", # ined
-               "Commiphora socotrana"
+               "Commiphora socotrana", # can't see any problem with this
+               "Corchorus erodiodes", # common spelling error in epithet
+               "Dicoma cana", # syn
+               "Euclea balfourii", # syn 
+               "Euclea laurina", # syn 
+               "Euphorbia hamaderohensis", # spelling of epithet
+               "Gaillonia puberula", # syn
+               "Gaillonia putorioides", # syn
+               "Gaillonia thymoides", # syn
+               "Gaillonia tinctoria", # syn
+               "Helichrysum sp. nov. A", # removed nov.
+               "Helichrysum sp. nov. B", # removed nov.
+               "Helichrysum sp. nov. C", # removed nov.
+               "Helichrysum sp. nov. D", # removed nov.
+               "Helichrysum sp. nov. E", # removed nov., added the aff. details
+               "Heliotropium aff. wagneri", # removed aff.
+               "Heliotropium derafontense", # syn
+               "Heliotropium socotranum", # orthog. var.
+               "Hemicrambe townsendii", # syn
+               "Kleinia scotti", # orthog. var. 
+               "Launaea sp. nov. A", # removed nov.
+               "Leucas flagellifolia", # orthog. var.
+               "Leucas spiculifera", # orthog. var.
+               "Maytenus sp. nov. A", # removed nov.
+               "Micromeria remota", # syn of var, dropped to sps
+               "Nanorrhinum kuriense", # spelling
+               "Placopoda virgata", # syn
+               "Polygala kuriensis", # orthog. var.
+               "Prenanthes amabilis", 
+               "Rhus sp. nov. A", 
+               "Rhus thyrsiflora", 
+               "Rughidia cordatum"
                )
 replaceWith <- c("Vachellia pennivenia", 
                 "Vachellia oerfota", 
@@ -112,7 +148,38 @@ replaceWith <- c("Vachellia pennivenia",
                 "Asparagus sp. A", 
                 "Cyanixia socotrana",
                 "Chlorophytum sp. nov. A",
-                "Commiphora socotrana"
+                "Commiphora socotrana",
+                "Corchorus erodioides", 
+                "Macledium canum", 
+                "Euclea divinorum",
+                "Euclea divinorum",
+                "Euphorbia hamaderoensis", 
+                "Plocama puberula", 
+                "Plocama putorioides",
+                "Plocama thymoides",
+                "Plocama tinctoria", 
+                "Helichrysum sp. A", 
+                "Helichrysum sp. B", 
+                "Helichrysum sp. C", 
+                "Helichrysum sp. D", 
+                "Helichrysum sp. E [aff. aciculare]", 
+                "Heliotropium wagneri",
+                "Heliotropium shoabense",
+                "Heliotropium sokotranum", 
+                "Hemicrambe fruticosa", 
+                "Kleinia scottii", 
+                "Launaea sp. A", 
+                "Lasiocorys flagellifera", 
+                "Leucas spiculifolia", 
+                "Maytenus sp. A", 
+                "Micromeria imbricata", 
+                "Nanorrhinum kuriensis", 
+                "Dirichletia virgata", 
+                "Polygala kuriense", 
+                "Erythroseris amabilis", 
+                "Rhus sp. A", 
+                "Searsia thyrsiflora",
+                "Rughidia cordata"
                 )
 
 # 5) perform main join with fixes
