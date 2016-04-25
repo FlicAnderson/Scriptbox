@@ -278,8 +278,8 @@ addRecTypeColumn()
 
 # WRITE OUT
 # write analysis-ready >>>recGrab<<< to .csv file  
-message(paste0(" ... saving ", nrow(recGrab), " records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
-write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+#message(paste0(" ... saving ", nrow(recGrab), " records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
+#write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 # VERY IMPORTANT!
 # CLOSE DATABASE CONNECTIONS
@@ -296,15 +296,15 @@ odbcCloseAll()
 # # REMOVE SOME OBJECTS FROM WORKSPACE!
 #         # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
 #         # (eg. connections, recGrab, etc):
-# rm(list=setdiff(ls(), 
-#                 c(
-#                 "recGrab", 
-#                 "taxaListSocotra",
-#                 "con_livePadmeArabia", 
-#                 "livePadmeArabiaCon"
-#                 )
-#         )
-# )
+rm(list=setdiff(ls(), 
+                c(
+                "recGrab", 
+                "taxaListSocotra",
+                "con_livePadmeArabia", 
+                "livePadmeArabiaCon"
+                )
+        )
+)
 
 # VERY IMPORTANT!
 # CLOSE THE CONNECTION!
