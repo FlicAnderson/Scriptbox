@@ -69,10 +69,51 @@ iucnDat <-
 
 
 # 3) pull out non-joining taxa
+a <- sqldf("SELECT * FROM recGrab LEFT JOIN iucnDat ON recGrab.acceptDetNoAuth=iucnDat.joinName;")
 
+# names which DO match
+a <- unique(a[which(!(is.na(a$joinName))),]$joinName)
+
+# how many DO match?
+#length(unique(a[which(!(is.na(a$joinName))),]$joinName))
+#296
+
+# pull out unique names from iucn data
+datA <- unique(iucnDat$joinName)
+
+# check which names from the iucn data DO NOT MATCH socotra data:
+datA[which(datA %in% a == FALSE)]
+
+# how many don't match?
+length(datA[which(datA %in% a == FALSE)])
+# 57
 
 # 4) apply fixes for non-joining taxa
 
+# FERNS TO IGNORE: 
+c("Adiantum capillus-veneris","Marsilea coromandelina","Pteris vittata")  # we've ruled these out of analysis
+
+# Things not in our dataset?!
+c("Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
+  "Ammannia auriculata") # different taxa?
+
+# Names to update in iucnDat:
+toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
+               "Acacia sarcophylla", # should be in Vachellia, also syn of subsp. but for this capped to species
+               "Allophylus rhoidiphyllus", # syn
+               "Asparagus sp. nov. A", # nov. removed, ined. species concept
+               "Babiana socotrana", # syn
+               "Chlorophytum sp. nov.", # ined
+               "Commiphora socotrana"
+               )
+replaceWith <- c("Vachellia pennivenia", 
+                "Vachellia oerfota", 
+                "Allophylus rubifolius", 
+                "Asparagus sp. A", 
+                "Cyanixia socotrana",
+                "Chlorophytum sp. nov. A",
+                "Commiphora socotrana"
+                )
 
 # 5) perform main join with fixes
 
