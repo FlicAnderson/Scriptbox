@@ -272,6 +272,19 @@ addRecTypeColumn()
 #########################################
 
 
+# IMPORTANT: TO CHECK: duplicate recIDs!
+recGrab[which(duplicated(recGrab$recID)==TRUE),c(1,3,6,7)]
+#"H-38279"
+#"H-74767"
+#"F-22"
+#"H-38273"
+#"H-73869"
+#"H-2849"
+#"H-38264"
+#"H-38280" 
+#"H-71613"
+# all records have acceptDetAs "Convolvulus socotrana (Balf.f.)";  acceptDetNoAuth "Convolvulus socotrana"
+# could be a problem with line 129 of script_editTaxa_Socotra_replacementInfo.R
 
 
 # 7) Save the output to .csv
