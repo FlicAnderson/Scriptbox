@@ -92,6 +92,8 @@ length(datA[which(datA %in% a == FALSE)])
 
 # FERNS TO IGNORE: 
 c("Adiantum capillus-veneris","Marsilea coromandelina","Pteris vittata")  # we've ruled these out of analysis
+# to do: create ignore/filter-out mechanism
+
 
 # Things not in our dataset?!
 c("Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
@@ -99,8 +101,10 @@ c("Alternanthera sessilis",  # doesn't seem to be any records for it in our data
   "Najas marina", # doesn't seem to be records? check this
   "Persicaria barbata", # doesn't seem to be records? check this
   "Persicaria glabrum", # not in padme
-  "Polypogon monspeliensis" # no records?
+  "Polypogon monspeliensis", # no records?
+  "Schoenus nigricans" # no records?
 )
+# to do: create ignore/filter-out mechanism
 
 # Names to update in iucnDat:
 toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
@@ -137,11 +141,20 @@ toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
                "Nanorrhinum kuriense", # spelling
                "Placopoda virgata", # syn
                "Polygala kuriensis", # orthog. var.
-               "Prenanthes amabilis", 
-               "Rhus sp. nov. A", 
-               "Rhus thyrsiflora", 
-               "Rughidia cordatum"
+               "Prenanthes amabilis", # syn
+               "Rhus sp. nov. A",  # removed nov.
+               "Rhus thyrsiflora", # syn
+               "Rughidia cordatum", # orthog. var.
+               "Seddera fastigiata", # syn
+               "Seddera semhahensis", # syn
+               "Seddera spinosa", # syn
+               "Senna socotrana", # syn
+               "Teucrium socotranum", # orthog. var.
+               "Tragia balfouriana", # orthog. var.
+               "Trichodesma scotti", # orthog. var.
+               "Zygocarpum caeruleum" # orthog. var.
                )
+
 replaceWith <- c("Vachellia pennivenia", 
                 "Vachellia oerfota", 
                 "Allophylus rubifolius", 
@@ -179,8 +192,19 @@ replaceWith <- c("Vachellia pennivenia",
                 "Erythroseris amabilis", 
                 "Rhus sp. A", 
                 "Searsia thyrsiflora",
-                "Rughidia cordata"
+                "Rughidia cordata",
+                "Convolvulus socotrana",
+                "Convolvulus semhaensis", 
+                "Convolvulus kossmatii", 
+                "Senna sophera", 
+                "Teucrium sokotranum", 
+                "Tragia balfourii", 
+                "Trichodesma scottii", 
+                "Zygocarpum coeruleum"
                 )
+
+# to do: create fix mechanism
+
 
 # 5) perform main join with fixes
 
