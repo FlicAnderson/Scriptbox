@@ -4,8 +4,8 @@
 # Author: Flic Anderson
 #
 # dependant on: script_dataGrabFullLatLonOrGazLatLon_Socotra.R
-# saved at: O://CMEP\-Projects/Scriptbox/[folder]/[filename]
-# source: source("O://CMEP\-Projects/Scriptbox/[folder]/[filename]")
+# saved at: O://CMEP\-Projects/Scriptbox/data_redlist/script_joinIUCNRedListData_Socotra.R
+# source("O://CMEP\ Projects/Scriptbox/data_redlist/script_joinIUCNRedListData_Socotra.R")
 #
 # AIM:  Join IUCN Plant Red List data for Socotra to the Socotra dataset on names
 # ....  and where names do not match, apply a taxonomic fix as necessary.
@@ -36,7 +36,11 @@ if (!require(dplyr)){
 }
 
 # source Socotra data script
-source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
+# NB: using suppressWarning() to avoid this: 
+#Warning message:
+#In rbind_all(list(x, ...)) : Unequal factor levels: coercing to character
+# it doesn't seem to break anything and it'll take m
+suppressWarnings(source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"))
 
 
 # 1) read in csv file of IUCN category data
@@ -226,6 +230,8 @@ iucnDat$joinName <- iucnTemp$tempTaxon
 
 # 5) perform main join with fixes
 
+message("... adding IUCN category data to analysis records")
+
 # initial join
 recGrabPlusIUCN <- sqldf("SELECT * FROM recGrab LEFT JOIN iucnDat ON recGrab.acceptDetNoAuth=iucnDat.joinName;")
 
@@ -265,7 +271,7 @@ if(sum(duplicated(recGrabPlusIUCN$recID))!=0){
 # 6) output joined data if required
 
 # write analysis-ready >>>recGrabPlusIUCN<<< to .csv file  
-#message(paste0(" ... saving ", nrow(recGrabPlusIUCN), " records to: O://CMEP\ Projects/Socotra/Socotra_recGrabPlusIUCNCats", Sys.Date(), ".csv"))
+message(paste0("... saving ", nrow(recGrabPlusIUCN), " records to: O://CMEP\ Projects/Socotra/Socotra_recGrabPlusIUCNCats", Sys.Date(), ".csv"))
 write.csv(recGrabPlusIUCN[order(recGrabPlusIUCN$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/Socotra_recGrabPlusIUCNCats_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 
