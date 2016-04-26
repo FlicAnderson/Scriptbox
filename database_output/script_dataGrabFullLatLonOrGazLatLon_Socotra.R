@@ -277,7 +277,7 @@ addRecTypeColumn()
 
 # WRITE OUT
 # write analysis-ready >>>recGrab<<< to .csv file  
-message(paste0(" ... saving ", nrow(recGrab), " records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
+message(paste0("... saving ", nrow(recGrab), " records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
 write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 # VERY IMPORTANT!
