@@ -68,6 +68,10 @@ iucnDat <-
 #dim(iucnDat)
 # 353 24
 
+# confirm no duplicates
+table(duplicated(recGrab$recID))
+
+
 
 # 3) pull out non-joining taxa
 # initial join
@@ -97,16 +101,17 @@ iucnDat <- iucnDat[which(iucnDat$joinName %in% c("Adiantum capillus-veneris","Ma
 
 
 # Things not in our dataset?!
-iucnDat <- iucnDat[which(iucnDat$joinName %in% c("Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
-  "Ammannia auriculata", # different taxa?
-  "Najas marina", # doesn't seem to be records? check this
-  "Persicaria barbata", # doesn't seem to be records? check this
-  "Polypogon monspeliensis", # no records?
-  "Schoenus nigricans", # no records?
-  "Commiphora socotrana", # no records?! This should be in the dataset, it's in padme and in the ethnoflora
-  "Ischaemum sp. nov.", # pretty sure this should have a few records at least too
-  "Helichrysum sp. nov. B" # pretty sure this should have a few records at least too
-) == FALSE),]
+iucnDat <- iucnDat[which(iucnDat$joinName %in% c(
+        "Alternanthera sessilis",  # doesn't seem to be any records for it in our dataset
+        "Ammannia auriculata", # different taxa?
+        "Najas marina", # doesn't seem to be records? check this
+        "Persicaria barbata", # doesn't seem to be records? check this
+        "Polypogon monspeliensis", # no records?
+        "Schoenus nigricans", # no records?
+        "Commiphora socotrana", # no records?! This should be in the dataset, it's in padme and in the ethnoflora
+        "Ischaemum sp. nov.", # pretty sure this should have a few records at least too
+        "Helichrysum sp. nov. B" # pretty sure this should have a few records at least too
+        ) == FALSE),]
 
 
 # Names to update in iucnDat:
@@ -116,7 +121,6 @@ toReplace <- c("Acacia pennivenia", # now should be in Vachellia, but ined.
                "Asparagus sp. nov. A", # nov. removed, ined. species concept
                "Babiana socotrana", # syn
                "Chlorophytum sp. nov.", # ined
-               "Commiphora socotrana", # can't see any problem with this
                "Corchorus erodiodes", # orthog. var.
                "Dicoma cana", # syn
                "Euclea balfourii", # syn 
@@ -164,7 +168,6 @@ replaceWith <- c("Vachellia pennivenia",
                 "Asparagus sp. A", 
                 "Cyanixia socotrana",
                 "Chlorophytum sp. nov. A",
-                "Commiphora socotrana",
                 "Corchorus erodioides", 
                 "Macledium canum", 
                 "Euclea divinorum",
@@ -223,25 +226,48 @@ iucnDat$joinName <- iucnTemp$tempTaxon
 
 # 5) perform main join with fixes
 
-# # initial join
-#a <- sqldf("SELECT * FROM recGrab LEFT JOIN iucnDat ON recGrab.acceptDetNoAuth=iucnDat.joinName;")
-# 
-# # names which DO match
-# a <- unique(a[which(!(is.na(a$joinName))),]$joinName)
-# 
-# # how many DO match?
-# #length(unique(a[which(!(is.na(a$joinName))),]$joinName))
-# #296
-# 
-# # pull out unique names from iucn data
-# datA <- unique(iucnDat$joinName)
-# 
-# # check which names from the iucn data DO NOT MATCH socotra data:
-# datA[which(datA %in% a == FALSE)]
+# initial join
+recGrabPlusIUCN <- sqldf("SELECT * FROM recGrab LEFT JOIN iucnDat ON recGrab.acceptDetNoAuth=iucnDat.joinName;")
 
-# "Helichrysum socotranum"/"Helichrysum sp. B" still remains :s
+# names which DO match
+iucnTemp <- unique(recGrabPlusIUCN[which(!(is.na(recGrabPlusIUCN$joinName))),]$joinName)
+
+# how many DO match?
+#length(unique(recGrabPlusIUCN[which(!(is.na(recGrabPlusIUCN$joinName))),]$joinName))
+#296
+
+# pull out unique names from iucn data
+datA <- unique(iucnDat$joinName)
+
+# check which names from the iucn data DO NOT MATCH socotra data:
+datA[which(datA %in% iucnTemp == FALSE)]
+
+
+# fix duplicate issues if exist
+if(sum(duplicated(recGrabPlusIUCN$recID))!=0){
+        message("... duplicate records exist (caused by taxonomy issues?-TBD) - removing duplicates...") 
+        
+        # note indices of the second of each duplicated pair
+        duplIndices <- which(duplicated(recGrabPlusIUCN$recID))
+        
+        # remove all records with implicated indices:
+        recGrabPlusIUCN <- recGrabPlusIUCN[-c(duplIndices),]
+        
+        message("... duplicate records removed :)")
+} else {
+        message("... no duplicate records to deal with :D")
+}
+
+# peace of mind check:
+#sum(duplicated(recGrabPlusIUCN$recID))
+
 
 # 6) output joined data if required
+
+# write analysis-ready >>>recGrabPlusIUCN<<< to .csv file  
+#message(paste0(" ... saving ", nrow(recGrabPlusIUCN), " records to: O://CMEP\ Projects/Socotra/Socotra_recGrabPlusIUCNCats", Sys.Date(), ".csv"))
+write.csv(recGrabPlusIUCN[order(recGrabPlusIUCN$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/Socotra_recGrabPlusIUCNCats_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+
 
 
 # 7) tidy up
@@ -255,6 +281,7 @@ iucnDat$joinName <- iucnTemp$tempTaxon
 rm(list=setdiff(ls(), 
                 c(
                         "recGrab", 
+                        "recGrabPlusIUCN",
                         "taxaListSocotra",
                         "con_livePadmeArabia", 
                         "livePadmeArabiaCon"
