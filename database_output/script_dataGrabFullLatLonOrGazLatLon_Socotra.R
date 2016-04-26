@@ -220,7 +220,7 @@ keepTaxRankOnly()
 # REMOVE JUNK-LOCATION RECORDS
 # weed out NA or 0-lat/lons.
 source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R")
-binJunkRecs(returnJunk=FALSE, chattyReturn=TRUE)
+binJunkRecs(returnJunk=FALSE, chattyReturn=FALSE)
 # 2016-03-10 26011 x 31 after several fixes (removing filter on latDec=0/lonDec=0!)
 # 2016/03/16 26388 x 31 (after Semhah -> Samha tweak)
 # 2016/03/17 26276
@@ -272,27 +272,13 @@ addRecTypeColumn()
 #########################################
 
 
-# IMPORTANT: TO CHECK: duplicate recIDs!
-recGrab[which(duplicated(recGrab$recID)==TRUE),c(1,3,6,7)]
-#"H-38279"
-#"H-74767"
-#"F-22"
-#"H-38273"
-#"H-73869"
-#"H-2849"
-#"H-38264"
-#"H-38280" 
-#"H-71613"
-# all records have acceptDetAs "Convolvulus socotrana (Balf.f.)";  acceptDetNoAuth "Convolvulus socotrana"
-# could be a problem with line 129 of script_editTaxa_Socotra_replacementInfo.R
-
 
 # 7) Save the output to .csv
 
 # WRITE OUT
 # write analysis-ready >>>recGrab<<< to .csv file  
-#message(paste0(" ... saving ", nrow(recGrab), " records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
-#write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
+message(paste0(" ... saving ", nrow(recGrab), " records to: O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"))
+write.csv(recGrab[order(recGrab$collector, recGrab$dateYYYY, recGrab$collNumFull, recGrab$acceptDetAs, na.last=TRUE),], file=paste0("O://CMEP\ Projects/Socotra/analysisRecords-Socotra_", Sys.Date(), ".csv"), na="", row.names=FALSE)
 
 # VERY IMPORTANT!
 # CLOSE DATABASE CONNECTIONS
@@ -323,6 +309,6 @@ rm(list=setdiff(ls(),
 # CLOSE THE CONNECTION!
 odbcCloseAll()
 
-print(" ... datagrab complete!")
+message("... datagrab complete!")
 
 ## for summary stats and analysis, go to "O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R"
