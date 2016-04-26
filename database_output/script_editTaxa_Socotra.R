@@ -46,6 +46,37 @@ taxaListSocotra <- unique(recGrab$acceptDetAs)
 
 recGrab <- tbl_df(recGrab)
 
+# REMOVE DUPLICATED RECORDS CAUSED BY TAXONOMY CHAIN ISSUES
+# remove duplicated recordID records!
+table(duplicated(recGrab$recID))
+#FALSE  TRUE 
+#26363     1 
+which(duplicated(recGrab$recID))
+#[1] 23032
+recGrab[23032,]
+#Source: local data frame [1 x 31]
+#1  F-22 SOC-96-1 Miller, A.G. & Alexander, D. 2849 species Convolvulaceae Seddera fastigiata (Balf.f.) Verdc. Seddera fastigiata 
+which(recGrab$recID=="F-22")
+#[1]  7667 23032
+recGrab[c(7667,23032),]
+#Source: local data frame [2 x 31]
+# F-22  Convolvulus socotrana (Balf.f.) Verdc. Convolvulus socotrana       
+# F-22  Seddera fastigiata (Balf.f.) Verdc.    Seddera fastigiata 
+# therefore need to remove the second record as it holds the synonym
+if(recGrab$acceptDetAs[23032] == "Seddera fastigiata (Balf.f.) Verdc."){
+        recGrab <- recGrab[-23032,]
+        message("... duplicate record caused by taxonomy chain has been removed :)")
+} else if(sum(duplicated(recGrabA$recID))!=0){
+        message("... double-check for duplicate records caused by taxonomy chain - particularly amongst Convolvulus/Seddera  :s")
+} else {
+        message("... no duplicate records caused by taxonomy chain issues :D")
+}
+
+#sum(duplicated(recGrabA$recID))
+
+
+
+
 # pull out names only
 #taxaListForChecks <- 
 #        recGrab %>%
@@ -111,6 +142,10 @@ recGrab <-
                 filter(genusName != "Chara")
 
 
+# renew object
+taxaListSocotra <- unique(recGrab$acceptDetAs)
+# down to 930 from 1018 before removing lichens
+
 # substitutions
 # using acceptDetAs==
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra_replacementInfo.R")
@@ -131,7 +166,7 @@ recGrab <<- recGrab
 
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
-# 864 at 2016-03-17
+# 870 at 2016-04-26
 
 # remove dubious taxa: 
 #dubiousList info in script_editTaxa_Socotra_replacementInfo.R
@@ -185,7 +220,7 @@ recGrab <-
 # Number of taxa:
 length(unique(recGrab$acceptDetAs))
 # 834 at 2016-03-17
-# 818 at 2016-04-18
+# 819 at 2016-04-26
 
 # reassign recGrab
 recGrab <<- recGrab
@@ -217,7 +252,6 @@ recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN lnamInfo ON recGrab.acceptDetA
 #table(is.na(recGrab$fullName))
 #noNameID <- recGrab[which(is.na(recGrab$fullName)),]
 #head(noNameID)
-
 #unique(noNameID$acceptDetAs)
 # "Asparagus sp. A ined."          "Boswellia sp. A ined."          "Helichrysum dioscorides ined."  "Heliotropium socotranum Vierh."
 # [5] "Indigofera socotrana Vierh."    "Rhus sp. nov. ined."            "Searsia cf. tenuinervis ined."  "Vachellia pennivenia ined." 
@@ -226,7 +260,6 @@ recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN lnamInfo ON recGrab.acceptDetA
 # fullname of "Asparagus sp. A ined." is "Asparagus sp. A"
 # fullname of "Boswellia sp. A ined." is "Boswellia sp. A"
 # fullname of "Helichrysum dioscorides ined." is "Helichrysum dioscorides R.Atkinson & A.G.Mill."
-# fullname of "Heliotropium socotranum Vierh." is "Heliotropium socotranum Vierh. orth. var."
 # fullname of "Indigofera socotrana Vierh." is "Indigofera sokotrana Vierh."
 # fullname of "Rhus sp. nov. ined." is "Rhus sp. nov."
 # fullname of "Searsia cf. tenuinervis ined." is "Searsia cf. tenuinervis Moffett"
@@ -250,42 +283,36 @@ rm(recGrabTemp1)
 
 recGrabTemp3 <- 
         recGrabTemp2 %>%
-        mutate(tempTaxon=gsub(pattern="Heliotropium socotranum Vierh.", replacement="Heliotropium sokotranum Vierh.", x=recGrabTemp2$tempTaxon)) 
+        mutate(tempTaxon=gsub(pattern="Indigofera socotrana Vierh.", replacement="Indigofera sokotrana Vierh.", x=recGrabTemp2$tempTaxon)) 
 
 rm(recGrabTemp2)
 
 recGrabTemp4 <- 
         recGrabTemp3 %>%
-        mutate(tempTaxon=gsub(pattern="Indigofera socotrana Vierh.", replacement="Indigofera sokotrana Vierh.", x=recGrabTemp3$tempTaxon)) 
+        mutate(tempTaxon=gsub(pattern="Rhus sp. nov. ined.", replacement="Rhus sp. nov.", x=recGrabTemp3$tempTaxon)) 
 
 rm(recGrabTemp3)
 
 recGrabTemp5 <- 
         recGrabTemp4 %>%
-        mutate(tempTaxon=gsub(pattern="Rhus sp. nov. ined.", replacement="Rhus sp. nov.", x=recGrabTemp4$tempTaxon)) 
+        mutate(tempTaxon=gsub(pattern="Searsia cf. tenuinervis ined.", replacement="Searsia cf. tenuinervis Moffett", x=recGrabTemp4$tempTaxon)) 
 
 rm(recGrabTemp4)
 
 recGrabTemp6 <- 
         recGrabTemp5 %>%
-        mutate(tempTaxon=gsub(pattern="Searsia cf. tenuinervis ined.", replacement="Searsia cf. tenuinervis Moffett", x=recGrabTemp5$tempTaxon)) 
+        mutate(tempTaxon=gsub(pattern="Vachellia pennivenia ined.", replacement="Vachellia pennivenia", x=recGrabTemp5$tempTaxon))
 
 rm(recGrabTemp5)
 
-recGrabTemp7 <- 
-        recGrabTemp6 %>%
-        mutate(tempTaxon=gsub(pattern="Vachellia pennivenia ined.", replacement="Vachellia pennivenia", x=recGrabTemp6$tempTaxon))
-
-rm(recGrabTemp6)
-
 # check names have been replaced
-table(recGrabTemp7$tempTaxon)
+table(recGrabTemp6$tempTaxon)
         
 # are there any NA spots left?
-table(is.na(recGrabTemp7$tempTaxon))
+table(is.na(recGrabTemp6$tempTaxon))
 
-recGrabTemp <- recGrabTemp7
-rm(recGrabTemp7)
+recGrabTemp <- recGrabTemp6
+rm(recGrabTemp6)
 
 
 # re-join lnamIDs from the database onto the tempTaxon thing? Replace acceptDetAs field first
@@ -304,8 +331,6 @@ datC <- sqldf("SELECT * FROM recGrab LEFT JOIN lnamInfo ON recGrab.acceptDetAs=l
 
 #a <- sqldf("SELECT * FROM recGrab WHERE lnamID IS NULL")
 #datA <- sqldf("SELECT * FROM a LEFT JOIN lnamInfo ON recGrab.acceptDetAs=lnamInfo.fullName")
-
-
 
 # replace lnamID & sortName(acceptDetNoAuth)
 datC$lnamID <- datC$nameID
@@ -375,7 +400,7 @@ recGrab <<- recGrab
 # get rank again
 
 ### TO DO ###
-print("still to re-assign rank; removing it for now")
+message("... have not re-assigned rank; everything should be species-level; removing taxRank column for now")
 recGrab$taxRank <- NULL
 
 
