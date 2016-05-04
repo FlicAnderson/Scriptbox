@@ -38,7 +38,7 @@ if (!require(dplyr)){
 # compiled by student Anna Hunt during summer 2014 from Ethnoflora of Socotra
 
 #importSource <- file.choose()
-importSource <- "O://CMEP\ Projects//Socotra//Padme\ Data//Socotra SPECIES LIST.xlsx"
+importSource <- "O://CMEP\ Projects//Socotra//EthnographicData_2014//EthnographicData_SocotraSPECIES-LIST_endemics.xlsx"
 
 # function to import the endemic annotation scores
 readEndemicInfo <<- function(){
@@ -66,13 +66,17 @@ table(endemics$endemicScore)
 
 endemics <- tbl_df(endemics)
 
-
 endemics %>%
         mutate(fullTax=paste(species, sspOrVar, sep=" ")) %>%
-        select(species, endemicScore) %>%
+        select(species, endemicScore) #%>%
         #filter(endemicScore==1) %>%
-        write.csv(file=file.choose(),row.names=FALSE)
+        #write.csv(file=file.choose(),row.names=FALSE)
 
+# add fullTax column with concat of name parts
+endemics <- 
+        endemics %>%
+                mutate(fullTax=paste(species, sspOrVar, sep=" ")) 
+# check for duplicate fullTax now
 
 ##### TO DO: 
 # link to latin names etc etc & write endemic y/n data into the database.  
