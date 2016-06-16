@@ -51,26 +51,26 @@ recGrab <- tbl_df(recGrab)
 table(duplicated(recGrab$recID))
 #FALSE  TRUE 
 #26363     1 
-which(duplicated(recGrab$recID))
-#[1] 23032
-recGrab[23032,]
-#Source: local data frame [1 x 31]
-#1  F-22 SOC-96-1 Miller, A.G. & Alexander, D. 2849 species Convolvulaceae Seddera fastigiata (Balf.f.) Verdc. Seddera fastigiata 
-which(recGrab$recID=="F-22")
-#[1]  7667 23032
-recGrab[c(7667,23032),]
-#Source: local data frame [2 x 31]
-# F-22  Convolvulus socotrana (Balf.f.) Verdc. Convolvulus socotrana       
-# F-22  Seddera fastigiata (Balf.f.) Verdc.    Seddera fastigiata 
-# therefore need to remove the second record as it holds the synonym
-if(recGrab$acceptDetAs[23032] == "Seddera fastigiata (Balf.f.) Verdc."){
-        recGrab <- recGrab[-23032,]
-        message("... duplicate record caused by taxonomy chain has been removed :)")
-} else if(sum(duplicated(recGrabA$recID))!=0){
-        message("... double-check for duplicate records caused by taxonomy chain - particularly amongst Convolvulus/Seddera  :s")
-} else {
-        message("... no duplicate records caused by taxonomy chain issues :D")
-}
+# which(duplicated(recGrab$recID))
+# #[1] 23032
+# recGrab[23032,]
+# #Source: local data frame [1 x 31]
+# #1  F-22 SOC-96-1 Miller, A.G. & Alexander, D. 2849 species Convolvulaceae Seddera fastigiata (Balf.f.) Verdc. Seddera fastigiata 
+# which(recGrab$recID=="F-22")
+# #[1]  7667 23032
+# recGrab[c(7667,23032),]
+# #Source: local data frame [2 x 31]
+# # F-22  Convolvulus socotrana (Balf.f.) Verdc. Convolvulus socotrana       
+# # F-22  Seddera fastigiata (Balf.f.) Verdc.    Seddera fastigiata 
+# # therefore need to remove the second record as it holds the synonym
+# if(recGrab$acceptDetAs[23032] == "Seddera fastigiata (Balf.f.) Verdc."){
+#         recGrab <- recGrab[-23032,]
+#         message("... duplicate record caused by taxonomy chain has been removed :)")
+# } else if(sum(duplicated(recGrabA$recID))!=0){
+#         message("... double-check for duplicate records caused by taxonomy chain - particularly amongst Convolvulus/Seddera  :s")
+# } else {
+#         message("... no duplicate records caused by taxonomy chain issues :D")
+# }
 
 #sum(duplicated(recGrabA$recID))
 
@@ -141,6 +141,7 @@ recGrab <-
                 filter(genusName != "Weisia") %>%
                 filter(genusName != "Chara")
 
+recGrab <<- recGrab
 
 # renew object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -203,17 +204,19 @@ recGrab <-
         filter(acceptDetAs != "Vachellia gerrardii (Benth.) P.J.H.Hurter & Mabb.") %>%
         filter(acceptDetAs != "Vachellia negrii (Pic.Serm.) Kyal. & Boatwr.") %>%
         filter(acceptDetAs != "Vachellia nilotica (L.) P.J.H.Hurter & Mabb.")
+recGrab <<- recGrab
 
 # remove FERNS!
 recGrab <- 
         recGrab %>%
         filter(familyName != "Adiantaceae") %>%
-        filter(familyName != "Aslpleniaceae") %>%
+        filter(familyName != "Aspleniaceae") %>%
         filter(familyName != "Dennstaedtiaceae") %>%
         filter(familyName != "Dryopteridaceae") %>%
         filter(familyName != "Marsileaceae") %>%
         filter(familyName != "Ophioglossaceae") %>%
         filter(familyName != "Thelypteridaceae")
+recGrab <<- recGrab
 
 
 
