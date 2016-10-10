@@ -30,12 +30,13 @@
 #taxonName <- "Senna%"  # finds all records with 'Senna' as genus & authority  
 #taxonName <- "Compositae Giseke"
 #taxonName <- "Dirachma socotrana"
-taxonName <- "Helichrysum%"
+#taxonName <- "Helichrysum%"
+taxonName <- "Boswellia%"
 
 # please input the location you're searching for, as shown in the examples below:
 # examples: 
-locatName <- "Socotra"
-#locatName <- "Socotra Archipelago"
+#locatName <- "Socotra"
+locatName <- "Socotra Archipelago"
 #locatName <- "Hadibo"
 
 # please input the herbarium you're searching for, as shown in the examples below:
@@ -52,7 +53,13 @@ herbariumCode <- "E"
 if (!require(RODBC)){
   install.packages("RODBC")
   library(RODBC)
-} 
+}
+
+# {RODBC} - ODBC Database Access
+if (!require(dplyr)){
+        install.packages("dplyr")
+        library(dplyr)
+}
 
 # open connection to live padme
 source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R")
@@ -88,6 +95,10 @@ iif(isnull(Herb.[Latitude 1 Decimal]),'G','S') as coordSourcePlus,
 Herb.[Date 1 Days] AS dateDD, 
 Herb.[Date 1 Months] AS dateMM, 
 Herb.[Date 1 Years] AS dateYY,
+Herb.[FlicFound], 
+Herb.[FlicStatus],
+Herb.[FlicNotes],
+Herb.[FlicIssue],
 Geog.fullName AS fullLocation ",
 # Joining tables: Herb, Geog, Herbaria, Determinations, Synonyms tree, Latin Names, Teams x2, CoordinateSources
 "FROM ((((((((Determinations AS Dets 
@@ -117,6 +128,7 @@ recGrab <- sqlQuery(con_livePadmeArabia, qry)
 
 # number of records returned
 nrow(recGrab)
+
 # sort so found/unmounted float to the top when displaying in console
 recGrab[order(recGrab$FlicStatus, decreasing=TRUE, na.last=TRUE),]
 
