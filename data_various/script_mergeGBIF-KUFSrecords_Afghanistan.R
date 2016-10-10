@@ -40,3 +40,43 @@ if (!require(dplyr)){
 
 # 1)
 
+# load KUFS herbarium records
+source("O://CMEP\ Projects/Scriptbox/data_various/script_KUFSrecords_Afghanistan.R")
+# load GBIF Afghanistan
+source("O://CMEP\ Projects/Scriptbox/data_gbif/script_GBIFData_Afghanistan.R")
+
+# rename GBIF dataset for ease of use
+datA_GBIF_filtered <- datA_afghanistan
+
+# tidy up the products from the GBIF script esp.
+rm(by_sps, by_sps_sum, filtered_datA_afghanistan, datA_afghanistan)
+
+# make variable names equivalent
+names(datA_GBIF_filtered)
+names(datA_KUFS_filtered)
+
+# make datasource column per dataset
+datA_GBIF_filtered$datasource <- NA
+datA_KUFS_filtered$datasource <- NA
+
+### current taxonomic setup of datasets:
+
+# GBIF:
+# species field: binomial, no auth
+# infraspecificepithet: epithet, no auth
+# taxonrank: taxon level
+# scientificname: full binomial plus infrasp, with auth
+## to get full no-auth name:         
+        # IF datA_...$taxonrank == SUBSPECIES/VARIETY/ETC
+        #       paste(datA_...$species, infraspecificepithet)
+        
+# KUFS:
+
+
+
+# mergeset fields required:
+# datasource
+# family
+# 
+
+# compare number of taxon names per dataset
