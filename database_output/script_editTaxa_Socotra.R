@@ -214,7 +214,11 @@ recGrab <-
         filter(familyName != "Dennstaedtiaceae") %>%
         filter(familyName != "Dryopteridaceae") %>%
         filter(familyName != "Marsileaceae") %>%
+        filter(familyName != "Oleandraceae") %>%
         filter(familyName != "Ophioglossaceae") %>%
+        filter(familyName != "Parkeriaceae") %>%
+        filter(familyName != "Polypodiaceae") %>%
+        filter(familyName != "Pteridaceae") %>%
         filter(familyName != "Thelypteridaceae")
 recGrab <<- recGrab
 
@@ -308,14 +312,20 @@ recGrabTemp6 <-
 
 rm(recGrabTemp5)
 
+recGrabTemp7 <- 
+        recGrabTemp6 %>%
+        mutate(tempTaxon=gsub(pattern="Helichrysum sp. E ined.", replacement="Helichrysum sp. E", x=recGrabTemp6$tempTaxon))
+
+rm(recGrabTemp6)
+
 # check names have been replaced
-table(recGrabTemp6$tempTaxon)
+table(recGrabTemp7$tempTaxon)
         
 # are there any NA spots left?
-table(is.na(recGrabTemp6$tempTaxon))
+table(is.na(recGrabTemp7$tempTaxon))
 
-recGrabTemp <- recGrabTemp6
-rm(recGrabTemp6)
+recGrabTemp <- recGrabTemp7
+rm(recGrabTemp7)
 
 
 # re-join lnamIDs from the database onto the tempTaxon thing? Replace acceptDetAs field first
