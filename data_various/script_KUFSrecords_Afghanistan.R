@@ -32,7 +32,11 @@ if (!require(dplyr)){
   install.packages("dplyr")
   library(dplyr)
 }
-
+# # {xlsx} - spreadsheets
+# if (!require(xlsx)){
+#         install.packages("xlsx")
+#         library(xlsx)
+# }
 
 # 1)
 
@@ -54,170 +58,179 @@ fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records
 
 datA_KUFS <- read.csv(
   file="KUFS.csv", 
-  header=TRUE, 
-  sep="", 
-  quote="", 
-  fill=TRUE, 
-  encoding="UTF-8", 
-  skipNul=TRUE
-  )
+  na.strings=""  # deals with NA - necessary!
+  # header=TRUE, 
+  # sep="", 
+  # quote="", 
+  # fill=TRUE, 
+  # encoding="UTF-8", 
+  # skipNul=TRUE
+)
 # 23428 obs x 1 var
 
-dat_KUFS <- read.xlsx(
-        file="KUFS.csv", 
-        sheetIndex = 1,
-        
-        )
+#dat_KUFS <- read.xlsx(
+#        file="KUFS.csv", 
+#        sheetIndex = 1,
+#        
+#        )
 
-
+# > names(datA_KUFS)
+# [1] "Specimen.ID"              "Herbarium.Number.BarCode" "Collection"               "Collection.Number"        "Type.information"        
+# [6] "Typified.by"              "Taxon"                    "Family"                   "Collector"                "Date"                    
+# [11] "Country"                  "Admin1"                   "Latitude"                 "Longitude"                "Altitude.lower"          
+# [16] "Altitude.higher"          "Label"                    "det..rev..conf..assigned" "ident..history"           "annotations" 
 
 # look at structure of data
-str(datA_afghanistan)
+str(datA_KUFS)
 
 # make dplyr objects
-datA_afghanistan <- tbl_df(datA_afghanistan)
+datA_KUFS <- tbl_df(datA_KUFS)
 
 # 2)
 
-# for one set (Afghanistan), pull apart & filter out irrelevant data:
-
 # check out structure again
-glimpse(datA_afghanistan)
+glimpse(datA_KUFS)
 
-# # for instance: need to remove fossil data
-#   table(datA_afghanistan$basisofrecord)
-#   # 47 fossil specimens
+# need to remove NA lat/lons:
+ 
+# number of NA decimal latitudes:
+nrow(datA_KUFS[which(is.na(datA_KUFS$Latitude)),])
+#10316
+
+# number of NA decimal longitudes:
+nrow(datA_KUFS[which(is.na(datA_KUFS$Longitude)),])
+#10255
+
+# do we need to remove "0" value lat/lons?: 
+
+# number of "0" value latitudes:
+nrow(datA_KUFS[which(datA_KUFS$Latitude==0),])
+# 0
+
+# number of "0" value longitudes:
+nrow(datA_KUFS[which(datA_KUFS$Longitude==0),])
+# 0
+
+
+# create filtered AFGHANISTAN dataset:
+datA_KUFS_filtered <- 
+        datA_KUFS %>%
+        filter(!is.na(Latitude)) %>%
+        filter(!is.na(Longitude))
+# 13090 obs of 20 variables
+
+   
+glimpse(datA_KUFS_filtered)
 # 
-# # need to remove NA lat/lons:
-#   
-#   # number of NA decimal latitudes:
-#   nrow(datA_afghanistan[which(is.na(datA_afghanistan$decimallatitude)),])
-#   #8708
+# # number of distinct taxa
+length(unique(datA_KUFS_filtered$Taxon))
+# 3087
+
+# # percentage of usable records left:
+round(nrow(datA_KUFS_filtered)/nrow(datA_KUFS)*100, digits=1)
+# 55.9% :c  This is low as non-georef'd records were removed
+
+# remove non-filtered data
+rm(datA_KUFS)
+
+
+
+
+
+
+# # ## write out as CSV for GIS stuff:
+# # write.csv(
+# #         datA_KUFS_filtered[
+# #     order(
+# #       datA_KUFS_filtered$scientificname, 
+# #       datA_KUFS_filtered$basisofrecord, 
+# #       na.last=TRUE),], 
+# #   file=paste0(
+# #     fileLocat, 
+# #     "GBIF_Afghanistan_filtered_", 
+# #     Sys.Date(), 
+# #     ".csv"), 
+# #   na="", 
+# #   row.names=FALSE
+# # )
 # 
-#   # number of NA decimal longitudes:
-#   nrow(datA_afghanistan[which(is.na(datA_afghanistan$decimallongitude)),])
-#   #8708
+# # replace datA_KUFS with filtered data (for brevity)
+# datA_KUFS <- datA_KUFS_filtered
+# rm(datA_KUFS_filtered)
 # 
-# # need to remove "0" value lat/lons: 
-#   
-#   # number of "0" value latitudes:
-#   nrow(datA_afghanistan[which(datA_afghanistan$decimallatitude==0),])
-#   # 771
-#   
-#   # number of "0" value longitudes:
-#   nrow(datA_afghanistan[which(datA_afghanistan$decimallongitude==0),])
-#   # 771
-  
-
-
-# create filtered LEBANON dataset:
-datA_afghanistan_filtered <- 
-        datA_afghanistan %>%
-    filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
-    filter(!is.na(decimallatitude)) %>%
-    filter(!is.na(decimallongitude)) %>%
-    filter(decimallatitude != 0) %>%
-    filter(decimallongitude != 0) 
-# 28208 obs of 42 variables
-  
-#glimpse(datA_afghanistan_filtered)
-
-# number of distinct taxa
-length(unique(datA_afghanistan_filtered$scientificname))
-# 2976
-
-# percentage of usable records left:
-round(nrow(datA_afghanistan_filtered)/nrow(datA_afghanistan)*100, digits=1)
-# 99.8% :P  This is high as georef'd records with no location issues were used
-
-# ## write out as CSV for GIS stuff:
-# write.csv(
-#         datA_afghanistan_filtered[
-#     order(
-#       datA_afghanistan_filtered$scientificname, 
-#       datA_afghanistan_filtered$basisofrecord, 
-#       na.last=TRUE),], 
-#   file=paste0(
-#     fileLocat, 
-#     "GBIF_Afghanistan_filtered_", 
-#     Sys.Date(), 
-#     ".csv"), 
-#   na="", 
-#   row.names=FALSE
+# #datA_KUFS <- 
+# #        select()
+# 
+# # # make LatLon column from concat'd AnyLat & AnyLon
+# datA_KUFS <- mutate(datA_KUFS, LatLon=paste(decimallatitude, decimallongitude, sep=" "))  
+# 
+# # display different taxon ranks
+# table(datA_KUFS$taxonrank)
+# # FAMILY      GENUS    KINGDOM      ORDER    SPECIES SUBSPECIES    VARIETY 
+# # 123          311          7          7      26528       1023        209 
+# 
+# # pull out only Species and Subspecies records (26528 + 1023=> 27551 records)
+# datA_KUFS <- 
+#         datA_KUFS %>%
+#         filter(taxonrank=="SPECIES"|taxonrank=="SUBSPECIES") %>%
+#         # select only useful columns
+#         select(family, species, infraspecificepithet, taxonrank, scientificname, recordedby, identifiedby, locality, LatLon, decimallatitude, decimallongitude, day, month, year, issue)
+#         
+# 
+# # group by species & summarize by 1 variable (scientific name)
+# by_sps <- group_by(datA_KUFS, scientificname)
+# summarize(by_sps, avgCollctn=round(mean(year, na.rm=TRUE), digits=0))  # average year of collection by species :)
+# summarize(by_sps, mednCollctn=round(median(year, na.rm=TRUE), digits=0))  # median year of collection by species :)
+# summarize(by_sps, maxCollctn=max(year, na.rm=TRUE))  # most recent year of collection by species :)
+# 
+# # group by species and summarize by multiple variables
+# by_sps <- group_by(datA_KUFS, scientificname)
+# by_sps_sum <- summarize(by_sps, 
+#                         count=n(),
+#                         collectedBy=n_distinct(recordedby), 
+#                         mostRecentCollection=max(year, na.rm=TRUE), 
+#                         uniqueLatLon=n_distinct(LatLon),
+#                         uniqueLocation=n_distinct(locality)
 # )
+# by_sps_sum
+# 
+# #number of taxa with over 10 unique lat+lon locations:
+# filter(by_sps_sum, uniqueLatLon>10)
+# # 698 @ 18/Nov/2015
+# 
+# #number of taxa with over 10 unique named-locations:
+# filter(by_sps_sum, uniqueLocation>10)
+# # 727 @ 18/Nov/2015
+# 
+# # number of taxa with over 10 occurrences/records:
+# filter(by_sps_sum, count>10)
+# # 762 taxa with >10 unique latlon locations @ 18/Nov/2015
+# 
+# # records by family, species & listing ~unique records (where there are >5 unique location points/'dots on map')
+# filtered_datA_KUFS <- 
+#         datA_KUFS %>%
+#         mutate(recordInfo=paste(scientificname, recordedby, LatLon)) %>%
+#         group_by(family, scientificname) %>%        # group by familyName AND scientificname
+#         arrange(scientificname) %>%         # sort by scientificname
+#         summarize(count=n(),
+#                   #collectedBy=n_distinct(recordedby), 
+#                   #mostRecentCollection=max(year, na.rm=TRUE), 
+#                   uniqueLatLon=n_distinct(LatLon),
+#                   AppxUniqueRex=n_distinct(recordInfo)
+#                   #uniqueLocation=n_distinct(locality)
+#         ) %>%
+#         filter(uniqueLatLon>5) # only show taxa where there are over 5 unique Lat/Lon combos
+# #head
+# # 1094 taxa (over 5 unique Lat/Lons; 2972 if that's removed)
 
-# replace datA_afghanistan with filtered data (for brevity)
-datA_afghanistan <- datA_afghanistan_filtered
-rm(datA_afghanistan_filtered)
 
-#datA_afghanistan <- 
-#        select()
 
-# # make LatLon column from concat'd AnyLat & AnyLon
-datA_afghanistan <- mutate(datA_afghanistan, LatLon=paste(decimallatitude, decimallongitude, sep=" "))  
 
-# display different taxon ranks
-table(datA_afghanistan$taxonrank)
-# FAMILY      GENUS    KINGDOM      ORDER    SPECIES SUBSPECIES    VARIETY 
-# 123          311          7          7      26528       1023        209 
 
-# pull out only Species and Subspecies records (26528 + 1023=> 27551 records)
-datA_afghanistan <- 
-        datA_afghanistan %>%
-        filter(taxonrank=="SPECIES"|taxonrank=="SUBSPECIES") %>%
-        # select only useful columns
-        select(family, species, infraspecificepithet, taxonrank, scientificname, recordedby, identifiedby, locality, LatLon, decimallatitude, decimallongitude, day, month, year, issue)
-        
-
-# group by species & summarize by 1 variable (scientific name)
-by_sps <- group_by(datA_afghanistan, scientificname)
-summarize(by_sps, avgCollctn=round(mean(year, na.rm=TRUE), digits=0))  # average year of collection by species :)
-summarize(by_sps, mednCollctn=round(median(year, na.rm=TRUE), digits=0))  # median year of collection by species :)
-summarize(by_sps, maxCollctn=max(year, na.rm=TRUE))  # most recent year of collection by species :)
-
-# group by species and summarize by multiple variables
-by_sps <- group_by(datA_afghanistan, scientificname)
-by_sps_sum <- summarize(by_sps, 
-                        count=n(),
-                        collectedBy=n_distinct(recordedby), 
-                        mostRecentCollection=max(year, na.rm=TRUE), 
-                        uniqueLatLon=n_distinct(LatLon),
-                        uniqueLocation=n_distinct(locality)
-)
-by_sps_sum
-
-#number of taxa with over 10 unique lat+lon locations:
-filter(by_sps_sum, uniqueLatLon>10)
-# 698 @ 18/Nov/2015
-
-#number of taxa with over 10 unique named-locations:
-filter(by_sps_sum, uniqueLocation>10)
-# 727 @ 18/Nov/2015
-
-# number of taxa with over 10 occurrences/records:
-filter(by_sps_sum, count>10)
-# 762 taxa with >10 unique latlon locations @ 18/Nov/2015
-
-# records by family, species & listing ~unique records (where there are >5 unique location points/'dots on map')
-filtered_datA_afghanistan <- 
-        datA_afghanistan %>%
-        mutate(recordInfo=paste(scientificname, recordedby, LatLon)) %>%
-        group_by(family, scientificname) %>%        # group by familyName AND scientificname
-        arrange(scientificname) %>%         # sort by scientificname
-        summarize(count=n(),
-                  #collectedBy=n_distinct(recordedby), 
-                  #mostRecentCollection=max(year, na.rm=TRUE), 
-                  uniqueLatLon=n_distinct(LatLon),
-                  AppxUniqueRex=n_distinct(recordInfo)
-                  #uniqueLocation=n_distinct(locality)
-        ) %>%
-        filter(uniqueLatLon>5) # only show taxa where there are over 5 unique Lat/Lon combos
-#head
-# 1076 taxa (over 5 unique Lat/Lons; 2856 if that's removed)
 
 # write this out to CSV
 write.csv(
-        filtered_datA_afghanistan,
+        filtered_datA_KUFS,
         file=file.choose(),
         na="", 
         row.names=FALSE
