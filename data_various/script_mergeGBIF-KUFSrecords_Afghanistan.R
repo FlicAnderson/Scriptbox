@@ -56,12 +56,13 @@ names(datA_GBIF_filtered)
 names(datA_KUFS_filtered)
 
 # make datasource column per dataset
-datA_GBIF_filtered$datasource <- NA
-datA_KUFS_filtered$datasource <- NA
+datA_GBIF_filtered$datasource <- "GBIF"
+datA_KUFS_filtered$datasource <- "KUFS"
 
 ### current taxonomic setup of datasets:
 
 # GBIF:
+# family: 
 # species field: binomial, no auth
 # infraspecificepithet: epithet, no auth
 # taxonrank: taxon level
@@ -71,12 +72,20 @@ datA_KUFS_filtered$datasource <- NA
         #       paste(datA_...$species, infraspecificepithet)
         
 # KUFS:
+# Family:
+# Taxon: full binomial with auth
 
 
-
-# mergeset fields required:
-# datasource
-# family
-# 
+### mergeset fields required:
+## GBIF == KUFS
+# datasource == datasource
+# family == Family
+# scientificname == Taxon
+# recordedBy == Collector
+# decimallatitude == Latitude
+# decimallongitude == Longitude
+# day == day
+# month == month
+# year == year
 
 # compare number of taxon names per dataset
