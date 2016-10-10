@@ -213,13 +213,13 @@ filtered_datA_afghanistan <-
 #head
 # 1076 taxa (over 5 unique Lat/Lons; 2856 if that's removed)
 
-# write this out to CSV
-write.csv(
-        filtered_datA_afghanistan,
-        file=file.choose(),
-        na="", 
-        row.names=FALSE
-)
+# # write this out to CSV
+# write.csv(
+#         filtered_datA_afghanistan,
+#         file=file.choose(),
+#         na="", 
+#         row.names=FALSE
+# )
 
 
 # check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff

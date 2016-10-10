@@ -228,13 +228,13 @@ rm(datA_KUFS)
 
 
 
-# write this out to CSV
-write.csv(
-        filtered_datA_KUFS,
-        file=file.choose(),
-        na="", 
-        row.names=FALSE
-)
+# # write this out to CSV
+# write.csv(
+#         filtered_datA_KUFS,
+#         file=file.choose(),
+#         na="", 
+#         row.names=FALSE
+# )
 
 
 # check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff
