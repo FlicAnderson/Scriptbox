@@ -49,11 +49,15 @@ if (!require(dplyr)){
 # add argument: quote=""
 
 # set working directory to avoid ungainly file location strings:
-setwd("Z://CMEP/Afghanistan/Afghanistan_0011346-151016162008034/")
-fileLocat <- "Z://CMEP/Afghanistan/Afghanistan_0011346-151016162008034/"
+setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/Afghanistan\ GBIF\ DATA/")
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/Afghanistan\ GBIF\ DATA/"
+GBIFdata <- "AF_2016Oct4_Plantae-HasCoordTRUE-HasGeospatialIssueFALSE.csv"
+
+#setwd("Z://CMEP/Afghanistan/Afghanistan_0011346-151016162008034/")
+#fileLocat <- "Z://CMEP/Afghanistan/Afghanistan_0011346-151016162008034/"
 
 datA_afghanistan <- read.csv(
-  file="0011346-151016162008034.csv", 
+  file=GBIFdata,
   header=TRUE, 
   sep="\t", 
   quote="", 
@@ -61,7 +65,7 @@ datA_afghanistan <- read.csv(
   encoding="UTF-8", 
   skipNul=TRUE
   )
-# 28273 obs x 42 var
+# 34556 obs x 44 var
 
 
 # look at structure of data
@@ -103,7 +107,7 @@ glimpse(datA_afghanistan)
   
 
 
-# create filtered LEBANON dataset:
+# create filtered AFGHANISTAN dataset:
 datA_afghanistan_filtered <- 
         datA_afghanistan %>%
     filter(basisofrecord != "FOSSIL_SPECIMEN") %>%
@@ -111,13 +115,13 @@ datA_afghanistan_filtered <-
     filter(!is.na(decimallongitude)) %>%
     filter(decimallatitude != 0) %>%
     filter(decimallongitude != 0) 
-# 28208 obs of 42 variables
+# 34498 obs of 44 variables
   
 #glimpse(datA_afghanistan_filtered)
 
 # number of distinct taxa
 length(unique(datA_afghanistan_filtered$scientificname))
-# 2976
+# 3111
 
 # percentage of usable records left:
 round(nrow(datA_afghanistan_filtered)/nrow(datA_afghanistan)*100, digits=1)
@@ -151,10 +155,11 @@ datA_afghanistan <- mutate(datA_afghanistan, LatLon=paste(decimallatitude, decim
 
 # display different taxon ranks
 table(datA_afghanistan$taxonrank)
-# FAMILY      GENUS    KINGDOM      ORDER    SPECIES SUBSPECIES    VARIETY 
-# 123          311          7          7      26528       1023        209 
+# FAMILY       FORM      GENUS      ORDER     PHYLUM    SPECIES SUBSPECIES    VARIETY 
+# 5119          7        282          1          0      27466       1389        234 
 
-# pull out only Species and Subspecies records (26528 + 1023=> 27551 records)
+
+# pull out only Species and Subspecies records (27466 + 1389 => 28855 records)
 datA_afghanistan <- 
         datA_afghanistan %>%
         filter(taxonrank=="SPECIES"|taxonrank=="SUBSPECIES") %>%
@@ -181,15 +186,15 @@ by_sps_sum
 
 #number of taxa with over 10 unique lat+lon locations:
 filter(by_sps_sum, uniqueLatLon>10)
-# 698 @ 18/Nov/2015
+# 712 @ 04/Oct/2016
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
-# 727 @ 18/Nov/2015
+# 737 @ 04/Oct/2016
 
 # number of taxa with over 10 occurrences/records:
 filter(by_sps_sum, count>10)
-# 762 taxa with >10 unique latlon locations @ 18/Nov/2015
+# 788 taxa with >10 unique latlon locations @ 04/Oct/2016
 
 # records by family, species & listing ~unique records (where there are >5 unique location points/'dots on map')
 filtered_datA_afghanistan <- 
