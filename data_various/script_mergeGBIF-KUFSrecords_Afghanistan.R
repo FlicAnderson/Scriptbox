@@ -88,4 +88,17 @@ datA_KUFS_filtered$datasource <- "KUFS"
 # month == month
 # year == year
 
+
+# edit fields
+### start here
+
+# merge fields
+
+# remove unnecessary/inappropriate fields
+
 # compare number of taxon names per dataset
+
+# taxon names which don't match
+        # how many?
+        
+        # fix!
