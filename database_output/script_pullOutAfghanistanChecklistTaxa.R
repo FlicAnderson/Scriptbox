@@ -45,6 +45,6 @@ livePadmeAfghanistanCon()
 
 
 # 1)  Assemble query
-sqlTables(con_livePadmeAfghanistan, tableType = "SYNONYM")
+#sqlTables(con_livePadmeAfghanistan, tableType = "SYNONYM")
 
-sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Latin Names];")
+sqlQuery(con_livePadmeAfghanistan, query = "SELECT TOP 5 * FROM [Latin Names]")
