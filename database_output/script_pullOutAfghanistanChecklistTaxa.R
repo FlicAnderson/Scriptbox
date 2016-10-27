@@ -20,7 +20,7 @@
 
 # 0) Load libraries, functions, source scripts
 # 1) 
-# 2) Build query 
+# 2) Create query 
 # 3) Run the query
 # 4) Show the output
 # 5) Save the output to .csv
@@ -40,8 +40,11 @@ if (!require(sqldf)){
         library(sqldf)
 } 
 # open connection to live padme
-source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeIraqCon.R")
+source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeAfghanistanCon.R")
 livePadmeAfghanistanCon()
 
 
 # 1)  Assemble query
+sqlTables(con_livePadmeAfghanistan, tableType = "SYNONYM")
+
+sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Latin Names];")
