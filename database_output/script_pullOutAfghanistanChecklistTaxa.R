@@ -19,11 +19,10 @@
 # CODE SUMMARY # 
 
 # 0) Load libraries, functions, source scripts
-# 1) 
-# 2) Create query 
-# 3) Run the query
-# 4) Show the output
-# 5) Save the output to .csv
+# 1) Create/run query 
+# 2) Joins & general tweaks for usability
+# 3) Show the output / summarize
+# 4) Save the output to .csv
 
 # ---------------------------------------------------------------------------- #
 
@@ -35,20 +34,29 @@ if (!require(RODBC)){
         install.packages("RODBC")
         library(RODBC)
 } 
+# {sqldf} - SQL operations on dataframes in R
 if (!require(sqldf)){
         install.packages("sqldf")
         library(sqldf)
 } 
+# {dplyr} - manipulating data & large data frames as tbl_df objects
+if (!require(dplyr)){
+        install.packages("dplyr")
+        library(dplyr)
+}
+
+
 # open connection to live padme
         source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeAfghanistanCon.R")
 livePadmeAfghanistanCon()
 
 
-# 1)  Assemble query/ table stuff
+
+# 1)  Assemble query/ table stuff & run it
 
 #sqlTables(con_livePadmeAfghanistan, tableType = "SYNONYM")
 
-allNamesAF <- sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Latin Names]")
+#allNamesAF <- sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Latin Names]")
 # sortName [,48] #taxonNoAuth_AF <- allNamesAF[,48]
 # Full Name [,7] #taxonWithAuth_AF <- allNamesAF[,7] 
 
@@ -59,12 +67,41 @@ namesRanksAF <- sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Ranks
 # for epithets <a></a> for authority, <r></r> for any rank stuff like Subfamily 
 # or subsp.
 
+
+# 2) Joins & general tweaks for usability
+
 # join ranks stuff onto names stuff
 namesAF <- sqldf("SELECT allNamesAF.*, namesRanksAF.name FROM allNamesAF LEFT JOIN namesRanksAF on allNamesAF.Rank=namesRanksAF.id")
 namesAF$Rank <- namesAF$name  # replace rank ID numbers with the names
 #head(namesAF)
 namesAF$name <- NULL  # remove the extra column called name (prev. ranks.name)
 
+# make dplyr-ready
+namesAF <- tbl_df(namesAF)
+
+# group by rank?
+# remove family-level and such?
 
 
 
+# 3) Summarise & show a little output
+
+table(namesAF$Rank)
+#Class    Division     Family     Genus    species   SubDivision   Subfamily  subspecies     variety 
+#4           1         150        1202        5274           1           3          18           2 
+
+
+
+# 4)  write out names - create species list .csv
+
+### USER REMINDER: 
+# write.csv() function will ask where to save file and what to call it
+# enter filename including '.csv', & if asked whether to create file, say 'YES' 
+# write to .csv file
+write.csv(namesAF, file=file.choose())
+
+
+# VERY IMPORTANT!
+# CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
+odbcCloseAll()
+rm(list=ls())
