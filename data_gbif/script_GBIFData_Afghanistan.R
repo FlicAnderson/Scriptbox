@@ -158,13 +158,17 @@ table(datA_afghanistan$taxonrank)
 # FAMILY       FORM      GENUS      ORDER     PHYLUM    SPECIES SUBSPECIES    VARIETY 
 # 5119          7        282          1          0      27466       1389        234 
 
+table(datA_afghanistan$basisofrecord)
+#FOSSIL_SPECIMEN    LIVING_SPECIMEN PRESERVED_SPECIMEN  UNKNOWN 
+#0                      206              17283          17009 
+
 
 # pull out only Species and Subspecies records (27466 + 1389 => 28855 records)
 datA_afghanistan <- 
         datA_afghanistan %>%
         filter(taxonrank=="SPECIES"|taxonrank=="SUBSPECIES") %>%
         # select only useful columns
-        select(family, species, infraspecificepithet, taxonrank, scientificname, recordedby, identifiedby, locality, LatLon, decimallatitude, decimallongitude, day, month, year, issue)
+        select(family, species, infraspecificepithet, taxonrank, scientificname, recordedby, identifiedby, locality, LatLon, decimallatitude, decimallongitude, day, month, year, basisofrecord, issue)
         
 
 # group by species & summarize by 1 variable (scientific name)
