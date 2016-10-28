@@ -40,11 +40,31 @@ if (!require(sqldf)){
         library(sqldf)
 } 
 # open connection to live padme
-source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeAfghanistanCon.R")
+        source("O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeAfghanistanCon.R")
 livePadmeAfghanistanCon()
 
 
-# 1)  Assemble query
+# 1)  Assemble query/ table stuff
+
 #sqlTables(con_livePadmeAfghanistan, tableType = "SYNONYM")
 
-sqlQuery(con_livePadmeAfghanistan, query = "SELECT TOP 5 * FROM [Latin Names]")
+allNamesAF <- sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Latin Names]")
+# sortName [,48] #taxonNoAuth_AF <- allNamesAF[,48]
+# Full Name [,7] #taxonWithAuth_AF <- allNamesAF[,7] 
+
+allNamesAF <- sqlQuery(con_livePadmeAfghanistan, query = "SELECT [id], [Full Name], [sortName], [Rank] FROM [Latin Names]")
+namesRanksAF <- sqlQuery(con_livePadmeAfghanistan, query = "SELECT * FROM [Ranks]")
+
+# N.B.: "formattedName" field contains tagged elements of the name eg. <e></e> 
+# for epithets <a></a> for authority, <r></r> for any rank stuff like Subfamily 
+# or subsp.
+
+# join ranks stuff onto names stuff
+namesAF <- sqldf("SELECT allNamesAF.*, namesRanksAF.name FROM allNamesAF LEFT JOIN namesRanksAF on allNamesAF.Rank=namesRanksAF.id")
+namesAF$Rank <- namesAF$name  # replace rank ID numbers with the names
+#head(namesAF)
+namesAF$name <- NULL  # remove the extra column called name (prev. ranks.name)
+
+
+
+
