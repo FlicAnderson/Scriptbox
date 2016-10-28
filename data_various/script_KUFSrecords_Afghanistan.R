@@ -91,6 +91,19 @@ datA_KUFS <- tbl_df(datA_KUFS)
 # check out structure again
 glimpse(datA_KUFS)
 
+# Fix date format (eg. "1973-08-29")
+datA_KUFS$dateDD <- datA_KUFS$Date
+datA_KUFS$dateMM <- datA_KUFS$Date
+datA_KUFS$dateYYYY <- datA_KUFS$Date
+
+### work on this ####
+#strsplit(as.character(a), split="-")
+### FINISH THIS!!! #####
+
+# remove numerics from collector name! 
+### FINISH THIS!!! #####
+
+
 # need to remove NA lat/lons:
  
 # number of NA decimal latitudes:
