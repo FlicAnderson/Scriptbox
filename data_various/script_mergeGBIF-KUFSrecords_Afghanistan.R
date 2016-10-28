@@ -95,10 +95,47 @@ names(datA_KUFS_filtered)
 # month == month
 # year == year
 
+## edit fields: GBIF
 
-# edit fields
-### start here
+# names(datA_GBIF_filtered)
+names(datA_GBIF_filtered)[1] <- "taxonFamily"
+names(datA_GBIF_filtered)[5] <- "taxonName"
+names(datA_GBIF_filtered)[6] <- "collectorName"
+names(datA_GBIF_filtered)[10] <- "latDec"
+names(datA_GBIF_filtered)[11] <- "lonDec"
+names(datA_GBIF_filtered)[12] <- "dateDD"
+names(datA_GBIF_filtered)[13] <- "dateMM"
+names(datA_GBIF_filtered)[14] <- "dateYYYY"
+names(datA_GBIF_filtered)[15] <- "recordType"
 
+# > names(datA_GBIF_filtered)
+# [1] "taxonFamily"          "species"              "infraspecificepithet" "taxonrank"            "taxonName"            "collectorName"       
+# [7] "identifiedby"         "locality"             "LatLon"               "latDec"               "lonDec"               "dateDD"              
+# [13] "dateMM"               "dateYYYY"             "recordType"           "issue"                "datasource" 
+
+## edit fields: KUFS
+
+# names(datA_KUFS_filtered)
+names(datA_KUFS_filtered)[8] <- "taxonFamily"
+names(datA_KUFS_filtered)[7] <- "taxonName"
+names(datA_KUFS_filtered)[9] <- "collectorName"
+names(datA_KUFS_filtered)[13] <- "latDec"
+names(datA_KUFS_filtered)[14] <- "lonDec"
+names(datA_KUFS_filtered)[10] <- "dateXXXX"
+datA_KUFS_filtered$recordType <- "PRESERVED_SPECIMEN"   # add recordType to KUFS to match GBIF spx
+datA_KUFS_filtered$dateDD <- NA
+datA_KUFS_filtered$dateMM <- NA
+datA_KUFS_filtered$dateYYYY <- NA
+
+# > names(datA_KUFS_filtered)
+# [1] "Specimen.ID"              "Herbarium.Number.BarCode" "Collection"               "Collection.Number"        "Type.information"        
+# [6] "Typified.by"              "taxonName"                "taxonFamily"              "collectorName"            "dateXXXX"                
+# [11] "Country"                  "Admin1"                   "latDec"                   "lonDec"                   "Altitude.lower"          
+# [16] "Altitude.higher"          "Label"                    "det..rev..conf..assigned" "ident..history"           "annotations"             
+# [21] "datasource"               "recordType"               "dateDD"                   "dateMM"                   "dateYYYY"  
+
+
+#mergesetAF <- as.data.frame(c("datasource", "taxonFamily", "taxonName", "collectorName", "latDec", "lonDec", "dateDD", "dateMM", "dateYYYY", "recordType"))
 
 
 # merge fields
