@@ -38,6 +38,9 @@ if (!require(dplyr)){
 # load other packages, functions, scripts
 # ?
 
+
+
+
 # 1)
 
 # load KUFS herbarium records
@@ -51,13 +54,13 @@ datA_GBIF_filtered <- datA_afghanistan
 # tidy up the products from the GBIF script esp.
 rm(by_sps, by_sps_sum, filtered_datA_afghanistan, datA_afghanistan)
 
-# make variable names equivalent
-names(datA_GBIF_filtered)
-names(datA_KUFS_filtered)
-
 # make datasource column per dataset
 datA_GBIF_filtered$datasource <- "GBIF"
 datA_KUFS_filtered$datasource <- "KUFS"
+
+# make variable names equivalent
+names(datA_GBIF_filtered)
+names(datA_KUFS_filtered)
 
 ### current taxonomic setup of datasets:
 
@@ -75,6 +78,10 @@ datA_KUFS_filtered$datasource <- "KUFS"
 # Family:
 # Taxon: full binomial with auth
 
+### GBIF DATASET INCLUDES NON-HERBARIUM-SPECIMEN RECORDS ###
+
+
+# 2) MERGE data
 
 ### mergeset fields required:
 ## GBIF == KUFS
@@ -92,6 +99,8 @@ datA_KUFS_filtered$datasource <- "KUFS"
 # edit fields
 ### start here
 
+
+
 # merge fields
 
 # remove unnecessary/inappropriate fields
@@ -102,3 +111,31 @@ datA_KUFS_filtered$datasource <- "KUFS"
         # how many?
         
         # fix!
+
+
+
+
+# 3) Analyse data
+
+
+
+
+# 4) Show the output
+
+
+
+
+# 5) Save the output to .csv
+
+### USER REMINDER: 
+# write.csv() function will ask where to save file and what to call it
+# enter filename including '.csv', & if asked whether to create file, say 'YES' 
+# write to .csv file
+# write.csv(x, file=file.choose())
+
+
+
+# VERY IMPORTANT!
+# CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
+odbcCloseAll()
+rm(list=ls())
