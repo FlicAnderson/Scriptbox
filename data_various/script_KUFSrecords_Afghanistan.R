@@ -96,8 +96,47 @@ datA_KUFS$dateDD <- datA_KUFS$Date
 datA_KUFS$dateMM <- datA_KUFS$Date
 datA_KUFS$dateYYYY <- datA_KUFS$Date
 
+### if dateformat: 
+
 ### work on this ####
 #strsplit(as.character(a), split="-")
+(0?[1-9]|[12][0-9]|3[01])[- /.](0?[1-9]|1[012])[- /.](19|20)?\d\d
+"\'(19|20)?\d\d[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])"
+
+# works to find year followed by any of: dash, space, slash or dot. 
+# grepl("[19|20][0-9][0-9][- /.]", a)
+# match year beginning 19- or 20-, month, day
+#grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]", a$orig)
+
+
+# create test dataset
+a <- data.frame(orig=datA_KUFS$Date[1:75], year=NA, month=NA, day=NA)
+head(a)
+# remote the ' from before all the entries
+a$orig <- gsub("'", "", a$orig)
+head(a)
+
+# if pattern matches YYYY MM DD then throw respective bits into a$year, a$month, a$day 
+# this works ok if matches pattern. 
+
+if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", a$orig)==TRUE){
+        a$year <- substr(a$orig, start=1, stop=4)
+        a$month <- substr(a$orig, start=6,stop=7)
+        a$day <- substr(a$orig, start=9, stop=10)
+} else {
+        # if YEAR is the ONLY thing in the date field, throw it into a$year
+        if (grepl("[19|20][0-9][0-9]$", a$orig)) {
+                # for row where the original date ENDS with 19?? or 20??, assign the original date yyyy only into a$year
+                a$year[grep("[19|20][0-9][0-9]$",a$orig)] <- substr(a$orig[grep("[19|20][0-9][0-9]$",a$orig)], start=1, stop=4) 
+                a$month <- NA
+                a$day <- NA
+        }
+}
+# things like "Fall 1970" aren't captured.
+
+
+        ## OR OTHER OPTIONS
+
 ### FINISH THIS!!! #####
 
 # remove numerics from collector name! 
