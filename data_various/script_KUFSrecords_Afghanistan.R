@@ -8,7 +8,7 @@
 # source: source("O://CMEP\ Projects/Scriptbox/data_various/script_KUFSrecords.R")
 #
 # AIM: Load and analyse KUFS herbarium records for Afghanistan project
-# .... remove any records without useful spatial data
+# .... remove any records without useful spatial data
 # .... package for mapping in GIS etc.
 
 # ---------------------------------------------------------------------------- #
@@ -57,7 +57,7 @@ setwd("O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records/")
 fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records/"
 
 datA_KUFS <- read.csv(
-  file="KUFS.csv", 
+  file="KUFS_cleanedData.csv", 
   na.strings=""  # deals with NA - necessary!
   # header=TRUE, 
   # sep="", 
@@ -67,6 +67,19 @@ datA_KUFS <- read.csv(
   # skipNul=TRUE
 )
 # 23428 obs x 1 var
+
+# datA_KUFS <- read.csv(
+#         file="KUFS.csv", 
+#         na.strings=""  # deals with NA - necessary!
+#         # header=TRUE, 
+#         # sep="", 
+#         # quote="", 
+#         # fill=TRUE, 
+#         # encoding="UTF-8", 
+#         # skipNul=TRUE
+# )
+# # 23428 obs x 1 var
+
 
 #dat_KUFS <- read.xlsx(
 #        file="KUFS.csv", 
@@ -110,7 +123,7 @@ datA_KUFS$dateYYYY <- datA_KUFS$Date
 
 
 # create test dataset
-a <- data.frame(orig=datA_KUFS$Date[1:75], year=NA, month=NA, day=NA)
+a <- data.frame(orig=datA_KUFS$Date[1:75], year=NA, month=NA, day=NA, loop=NA)
 head(a)
 # remote the ' from before all the entries
 a$orig <- gsub("'", "", a$orig)
@@ -119,19 +132,31 @@ head(a)
 # if pattern matches YYYY MM DD then throw respective bits into a$year, a$month, a$day 
 # this works ok if matches pattern. 
 
-if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", a$orig)==TRUE){
-        a$year <- substr(a$orig, start=1, stop=4)
-        a$month <- substr(a$orig, start=6,stop=7)
-        a$day <- substr(a$orig, start=9, stop=10)
-} else {
-        # if YEAR is the ONLY thing in the date field, throw it into a$year
-        if (grepl("[19|20][0-9][0-9]$", a$orig)) {
-                # for row where the original date ENDS with 19?? or 20??, assign the original date yyyy only into a$year
-                a$year[grep("[19|20][0-9][0-9]$",a$orig)] <- substr(a$orig[grep("[19|20][0-9][0-9]$",a$orig)], start=1, stop=4) 
-                a$month <- NA
-                a$day <- NA
-        }
-}
+# if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", a$orig)==TRUE){
+#         a$year <- substr(a$orig, start=1, stop=4)
+#         a$month <- substr(a$orig, start=6,stop=7)
+#         a$day <- substr(a$orig, start=9, stop=10)
+#         a$loop <- "first"
+# } else {
+#         # if YEAR is the ONLY thing in the date field, throw it into a$year
+#         if (grepl("[19|20][0-9][0-9]$", a$orig)) {
+#                 # for row where the original date ENDS with 19?? or 20??, assign the original date yyyy only into a$year
+#                 a$year[grep("[19|20][0-9][0-9]$",a$orig)] <- substr(a$orig[grep("[19|20][0-9][0-9]$",a$orig)], start=1, stop=4) 
+#                 # for(i in grep("[19|20][0-9][0-9]$",a$orig)){
+#                 #         a$loop[i] <- "second"
+#                 #         a$year[grep("[19|20][0-9][0-9]$",a$orig)] <- substr(a$orig[grep("[0-9]$",a$orig)], start=1, stop=4) 
+#                 #         a$month[i] <- NA
+#                 #         a$day[i] <- NA
+#                 # }
+#                 # a
+#         } else {
+#                 a$year <- NA
+#                 a$month <- NA
+#                 a$day <- NA
+#                 a$loop <- "third"
+#                 }
+# }
+
 # things like "Fall 1970" aren't captured.
 
 
