@@ -1,3 +1,32 @@
+## Trees of Arabia :: script_findOccurrenceTotals-GBIF-Padme_Trees_Arabia.R
+# ======================================================== 
+# (17th November 2016)
+# Author: Flic Anderson
+#
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
+# saved at: O://CMEP\ Projects/Scriptbox/data_various/script_findOccurrenceTotals-GBIF-Padme_Trees_Arabia.R
+# source: source("O://CMEP\ Projects/Scriptbox/data_various/script_findOccurrenceTotals-GBIF-Padme_Trees_Arabia.R")
+#
+# AIM: Pull out records into R for species in Arabia Socotra from 
+# .... Padme Arabia using SQL given a taxonName, print to console.  
+# .... queries built based on structure of:
+# .... "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabSpecieswithFullLatLon.R"
+
+# ---------------------------------------------------------------------------- #
+
+# CODE SUMMARY # 
+
+# 0) Load libraries, functions, source scripts
+# 1) 
+# 2) Build query 
+# 3) Run the query
+# 4) Show the output
+
+# ---------------------------------------------------------------------------- #
+
+# 0) 
+
+
 spsPick <- c(
         "Avicennia marina (Forssk.) Vierh.",
         "Ozoroa insignis Delile",
@@ -26,8 +55,13 @@ spsPick <- c(
         "Nuxia congesta R.Br. ex Fresen."
 )
 
-(iucn_redlist_key <- "") 
-/api/v3/species/id/:id?token='YOUR TOKEN' 
+# taxon keys from GBIF found using: 
+#head( name_suggest(q='Berchemia discolor') )
+# AND also (where there was more than one species-level match using name_suggest():
+#name_backbone(name='Nuxia congesta', rank='species', kingdom='plants')
+# these were then written into the list below. 
+# this *could* be automated, but it's not necessarily wise, as there are often
+# taxonomic hassles which arise and should be dealt with by hand.
 
 taxKeys <- c(
         2925403, 7321499, 5544278, 3035216, 2778089, 
@@ -68,34 +102,9 @@ for(i in 1:length(taxKeys)){
 # [1] 352
 # [1] 572
 
-## Socotra Project :: script_dataGrabSpecieswithFullLatLon.R
-# ======================================================== 
-# (28th April 2015)
-# Author: Flic Anderson
-#
-# dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
-# saved at: O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabSpecieswithFullLatLon.R
-# source: source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabSpecieswithFullLatLon.R")
-#
-# AIM: Pull out records into R for species in Arabia Socotra from 
-# .... Padme Arabia using SQL given a taxonName, print to console.  
-# .... Then save as CSV file (.csv) for future use. Records ordered by fields
-# .... [Herbarium Specimens].[Herbaria], then [Herbarium Specimens].[FlicFound]
 
-# ---------------------------------------------------------------------------- #
 
-# CODE SUMMARY # 
 
-# 0) Load libraries, functions, source scripts
-# 1) 
-# 2) Build query 
-# 3) Run the query
-# 4) Show the output
-# 5) Save the output to .csv
-
-# ---------------------------------------------------------------------------- #
-
-# 0) 
 
 # load required packages, install if they aren't installed already
 # {RODBC} - ODBC Database Access
