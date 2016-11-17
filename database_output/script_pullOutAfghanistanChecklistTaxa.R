@@ -90,6 +90,11 @@ table(namesAF$Rank)
 #Class    Division     Family     Genus    species   SubDivision   Subfamily  subspecies     variety 
 #4           1         150        1202        5274           1           3          18           2 
 
+namesAF_filtered <- 
+        namesAF %>%
+        filter(Rank %in% c("species", "subspecies", "variety"))
+        # NB: filter(Rank==c("species", "subspecies", "variety")) DOES NOT WORK AS YOU'D IMAGINE
+        # filter(Rank %in% c(x,y,z)) DOES WORK! USE THIS INSTEAD.
 
 
 # 4)  write out names - create species list .csv
@@ -98,7 +103,11 @@ table(namesAF$Rank)
 # write.csv() function will ask where to save file and what to call it
 # enter filename including '.csv', & if asked whether to create file, say 'YES' 
 # write to .csv file
-write.csv(namesAF, file=file.choose())
+
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/ChecklistData/"
+fileName <- "AF_checklistNamesFromPadme_"
+
+write.csv(namesAF_filtered, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
 
 
 # VERY IMPORTANT!
