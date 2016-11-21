@@ -143,7 +143,35 @@ for(i in 1:length(datA_KUFS$orig)){
 }
 
 #print(datA_KUFS)
-rm(i)
+
+
+# reset counter
+i <- 1
+# deal with things where dateMM contains things higher than 12...
+for(i in 1:length(datA_KUFS$orig)){
+        if(!is.na(datA_KUFS$dateMM[i]) && (as.numeric(datA_KUFS$dateMM[i]) > 12)){
+                # leave year, but remove month and day since they're probably random...
+                datA_KUFS$dateMM[i] <- NA
+                datA_KUFS$dateDD[i] <- NA
+                datA_KUFS$dateStatus[i] <- "problematic"
+        }
+        i <- i +1
+}
+
+# no records where dateDD is higher than 31, so don't need to implement anything for this
+#which(as.numeric(datA_KUFS_filtered$dateDD) > 31)
+# reset counter
+i <- 1
+# deal with things where dateDD contains things higher than 31...
+for(i in 1:length(datA_KUFS$orig)){
+        if(!is.na(datA_KUFS$dateDD[i]) && (as.numeric(datA_KUFS$dateDD[i]) > 31)){
+                # leave year, but remove month and day since they're probably random...
+                datA_KUFS$dateMM[i] <- NA
+                datA_KUFS$dateDD[i] <- NA
+                datA_KUFS$dateStatus[i] <- "problematic"
+        }
+        i <- i +1
+}
 
 # things like "Fall 1970" aren't captured but end up with "problematic" tag
 # Q: I'm not sure what happens to NA origs - presumably tagged problematic?
@@ -208,7 +236,7 @@ round(nrow(datA_KUFS_filtered)/nrow(datA_KUFS)*100, digits=1)
 # 55.9% :c  This is low as non-georef'd records were removed
 
 # remove non-filtered data
-rm(datA_KUFS)
+#rm(datA_KUFS)
 
 
 # file location settings
@@ -218,9 +246,7 @@ fileName <- "AF_refinedData"
 write.csv(datA_KUFS_filtered, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE, na="")
 
 
-# VERY IMPORTANT!
-# CLOSE DATABASE CONNECTIONs (& REMOVE OBJECTS FROM WORKSPACE!)
-odbcCloseAll()
+# REMOVE OBJECTS FROM WORKSPACE
 #rm(list=ls())
 
 
