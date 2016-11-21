@@ -105,70 +105,75 @@ datA_KUFS <- tbl_df(datA_KUFS)
 glimpse(datA_KUFS)
 
 # Fix date format (eg. "1973-08-29")
-datA_KUFS$dateDD <- datA_KUFS$Date
-datA_KUFS$dateMM <- datA_KUFS$Date
-datA_KUFS$dateYYYY <- datA_KUFS$Date
-
-### if dateformat: 
-
-### work on this ####
-#strsplit(as.character(a), split="-")
-(0?[1-9]|[12][0-9]|3[01])[- /.](0?[1-9]|1[012])[- /.](19|20)?\d\d
-"\'(19|20)?\d\d[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])"
+datA_KUFS$dateDD <- NA
+datA_KUFS$dateMM <- NA
+datA_KUFS$dateYYYY <- NA
+datA_KUFS$orig <- datA_KUFS$Date
+datA_KUFS$dateStatus <- NA
 
 # works to find year followed by any of: dash, space, slash or dot. 
-# grepl("[19|20][0-9][0-9][- /.]", a)
+# grepl("[19|20][0-9][0-9][- /.]", datA_KUFS)
 # match year beginning 19- or 20-, month, day
-#grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]", a$orig)
+#grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]", datA_KUFS$orig)
 
-
-# create test dataset
-a <- data.frame(orig=datA_KUFS$Date[1:75], year=NA, month=NA, day=NA, loop=NA)
-head(a)
-# remote the ' from before all the entries
-a$orig <- gsub("'", "", a$orig)
-head(a)
-
-# if pattern matches YYYY MM DD then throw respective bits into a$year, a$month, a$day 
+# if pattern matches YYYY MM DD then throw respective bits into datA_KUFS$dateYYYY, datA_KUFS$dateMM, datA_KUFS$dateDD 
 # IF NOT: 
-#               
+#
 
-
+# set counter
 i <- 1
 
-for(i in 1:length(a$orig)){
+# run loop
+for(i in 1:length(datA_KUFS$orig)){
         # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
-        if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", a$orig[i])==TRUE){
+        if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", datA_KUFS$orig[i])==TRUE){
                 # cut up the parts & put ito separate columns
-                a$year[i] <- substr(a$orig[i], start=1, stop=4)
-                a$month[i] <- substr(a$orig[i], start=6,stop=7)
-                a$day[i] <- substr(a$orig[i], start=9, stop=10)
-                a$loop[i] <- "fine"
+                datA_KUFS$dateYYYY[i] <- substr(datA_KUFS$orig[i], start=1, stop=4)
+                datA_KUFS$dateMM[i] <- substr(datA_KUFS$orig[i], start=6,stop=7)
+                datA_KUFS$dateDD[i] <- substr(datA_KUFS$orig[i], start=9, stop=10)
+                datA_KUFS$dateStatus[i] <- "fine"
         } else {
         # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
                 # if date STARTS WITH a year, AND is only a year (as.numeric(date)) works & doesn't give NA:
-                if(grepl("^([19|20][0-9][0-9])", a$orig[i], perl=TRUE) && !is.na(as.numeric(a$orig[i]))==TRUE){
+                if(grepl("^([19|20][0-9][0-9])", datA_KUFS$orig[i], perl=TRUE) && !is.na(as.numeric(datA_KUFS$orig[i]))==TRUE){
                         # if date starts with a year and is only a year:
-                        a$year[i] <- a$orig[i] 
-                        a$month[i] <- NA
-                        a$day[i] <- NA
-                        a$loop[i] <- "year only"
+                        datA_KUFS$dateYYYY[i] <- datA_KUFS$orig[i] 
+                        datA_KUFS$dateMM[i] <- NA
+                        datA_KUFS$dateDD[i] <- NA
+                        datA_KUFS$dateStatus[i] <- "year only"
                 } else {
-                # otherwise if date DOES NOT START WITH a year, or is not only a year ie. (as.numeric(date)) does NOT work & gives NA:
-                        a$year[i] <- NA
-                        a$month[i] <- NA
-                        a$day[i] <- NA
-                        a$loop[i] <- "problematic"
+                # otherwise if date DOES NOT START WITH a year, or is not only datA_KUFS year ie. (as.numeric(date)) does NOT work & gives NA:
+                        datA_KUFS$dateYYYY[i] <- NA
+                        datA_KUFS$dateMM[i] <- NA
+                        datA_KUFS$dateDD[i] <- NA
+                        datA_KUFS$dateStatus[i] <- "problematic"
                 }
         }
         
         i <- i +1
         
 }
-a
+
+#print(datA_KUFS)
 
 # things like "Fall 1970" aren't captured but end up with "problematic" tag
 # Q: I'm not sure what happens to NA origs - presumably tagged problematic?
+
+# pull apart how many are in each dateStatus group:
+datA_KUFS_byDateStatus <- 
+        datA_KUFS %>%
+        group_by(dateStatus) %>%
+        summarise(count=n()) %>%
+        print
+
+#    dateStatus count
+#         <chr> <int>
+# 1        fine 22204
+# 2 problematic  1128
+# 3   year only    96
+
+
+
 
 # remove numerics from collector name! 
 ### FINISH THIS!!! #####
