@@ -130,39 +130,45 @@ a$orig <- gsub("'", "", a$orig)
 head(a)
 
 # if pattern matches YYYY MM DD then throw respective bits into a$year, a$month, a$day 
-# this works ok if matches pattern. 
-
-# if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", a$orig)==TRUE){
-#         a$year <- substr(a$orig, start=1, stop=4)
-#         a$month <- substr(a$orig, start=6,stop=7)
-#         a$day <- substr(a$orig, start=9, stop=10)
-#         a$loop <- "first"
-# } else {
-#         # if YEAR is the ONLY thing in the date field, throw it into a$year
-#         if (grepl("[19|20][0-9][0-9]$", a$orig)) {
-#                 # for row where the original date ENDS with 19?? or 20??, assign the original date yyyy only into a$year
-#                 a$year[grep("[19|20][0-9][0-9]$",a$orig)] <- substr(a$orig[grep("[19|20][0-9][0-9]$",a$orig)], start=1, stop=4) 
-#                 # for(i in grep("[19|20][0-9][0-9]$",a$orig)){
-#                 #         a$loop[i] <- "second"
-#                 #         a$year[grep("[19|20][0-9][0-9]$",a$orig)] <- substr(a$orig[grep("[0-9]$",a$orig)], start=1, stop=4) 
-#                 #         a$month[i] <- NA
-#                 #         a$day[i] <- NA
-#                 # }
-#                 # a
-#         } else {
-#                 a$year <- NA
-#                 a$month <- NA
-#                 a$day <- NA
-#                 a$loop <- "third"
-#                 }
-# }
-
-# things like "Fall 1970" aren't captured.
+# IF NOT: 
+#               
 
 
-        ## OR OTHER OPTIONS
+i <- 1
 
-### FINISH THIS!!! #####
+for(i in 1:length(a$orig)){
+        # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
+        if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", a$orig[i])==TRUE){
+                # cut up the parts & put ito separate columns
+                a$year[i] <- substr(a$orig[i], start=1, stop=4)
+                a$month[i] <- substr(a$orig[i], start=6,stop=7)
+                a$day[i] <- substr(a$orig[i], start=9, stop=10)
+                a$loop[i] <- "fine"
+        } else {
+        # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
+                # if date STARTS WITH a year, AND is only a year (as.numeric(date)) works & doesn't give NA:
+                if(grepl("^([19|20][0-9][0-9])", a$orig[i], perl=TRUE) && !is.na(as.numeric(a$orig[i]))==TRUE){
+                        # if date starts with a year and is only a year:
+                        a$year[i] <- a$orig[i] 
+                        a$month[i] <- NA
+                        a$day[i] <- NA
+                        a$loop[i] <- "year only"
+                } else {
+                # otherwise if date DOES NOT START WITH a year, or is not only a year ie. (as.numeric(date)) does NOT work & gives NA:
+                        a$year[i] <- NA
+                        a$month[i] <- NA
+                        a$day[i] <- NA
+                        a$loop[i] <- "problematic"
+                }
+        }
+        
+        i <- i +1
+        
+}
+a
+
+# things like "Fall 1970" aren't captured but end up with "problematic" tag
+# Q: I'm not sure what happens to NA origs - presumably tagged problematic?
 
 # remove numerics from collector name! 
 ### FINISH THIS!!! #####
