@@ -32,11 +32,6 @@ if (!require(dplyr)){
   install.packages("dplyr")
   library(dplyr)
 }
-# # {xlsx} - spreadsheets
-# if (!require(xlsx)){
-#         install.packages("xlsx")
-#         library(xlsx)
-# }
 
 # 1)
 
@@ -68,30 +63,19 @@ datA_KUFS <- read.csv(
 )
 # 23428 obs x 1 var
 
-# datA_KUFS <- read.csv(
-#         file="KUFS.csv", 
-#         na.strings=""  # deals with NA - necessary!
-#         # header=TRUE, 
-#         # sep="", 
-#         # quote="", 
-#         # fill=TRUE, 
-#         # encoding="UTF-8", 
-#         # skipNul=TRUE
-# )
-# # 23428 obs x 1 var
-
-
-#dat_KUFS <- read.xlsx(
-#        file="KUFS.csv", 
-#        sheetIndex = 1,
-#        
-#        )
-
 # > names(datA_KUFS)
-# [1] "Specimen.ID"              "Herbarium.Number.BarCode" "Collection"               "Collection.Number"        "Type.information"        
-# [6] "Typified.by"              "Taxon"                    "Family"                   "Collector"                "Date"                    
-# [11] "Country"                  "Admin1"                   "Latitude"                 "Longitude"                "Altitude.lower"          
-# [16] "Altitude.higher"          "Label"                    "det..rev..conf..assigned" "ident..history"           "annotations" 
+# [1] "Specimen.ID"              "Herbarium.Number.BarCode"
+# [3] "Collection"               "Collection.Number"       
+# [5] "Type.information"         "Typified.by"             
+# [7] "Taxon"                    "Family"                  
+# [9] "Collector"                "OrigCollector"           
+# [11] "Date"                     "OrigDate"                
+# [13] "Country"                  "Admin1"                  
+# [15] "Latitude"                 "Longitude"               
+# [17] "Altitude.lower"           "Altitude.higher"         
+# [19] "Label"                    "det..rev..conf..assigned"
+# [21] "DetAuth"                  "DetDate"                 
+# [23] "ident..history"           "annotations"             
 
 # look at structure of data
 str(datA_KUFS)
@@ -105,6 +89,9 @@ datA_KUFS <- tbl_df(datA_KUFS)
 glimpse(datA_KUFS)
 
 # Fix date format (eg. "1973-08-29")
+# create dateDD, dateMM, dateYYYY fields, create 'orig' field set as the open-refine
+# cleaned Date field, NOT OrigDate field which has NOT been cleaned in openrefine, 
+# and create dateStatus field to allow subsetting out borked date records for fixing/attention
 datA_KUFS$dateDD <- NA
 datA_KUFS$dateMM <- NA
 datA_KUFS$dateYYYY <- NA
@@ -118,7 +105,8 @@ datA_KUFS$dateStatus <- NA
 
 # if pattern matches YYYY MM DD then throw respective bits into datA_KUFS$dateYYYY, datA_KUFS$dateMM, datA_KUFS$dateDD 
 # IF NOT: 
-#
+# capture year only if this is legit, 
+# or if nothing is clearly legit, give dateStatus "problematic"
 
 # set counter
 i <- 1
@@ -155,6 +143,7 @@ for(i in 1:length(datA_KUFS$orig)){
 }
 
 #print(datA_KUFS)
+rm(i)
 
 # things like "Fall 1970" aren't captured but end up with "problematic" tag
 # Q: I'm not sure what happens to NA origs - presumably tagged problematic?
@@ -176,7 +165,7 @@ datA_KUFS_byDateStatus <-
 
 
 # remove numerics from collector name! 
-### FINISH THIS!!! #####
+# No, since this was done in open refine
 
 
 # need to remove NA lat/lons:
@@ -222,9 +211,20 @@ round(nrow(datA_KUFS_filtered)/nrow(datA_KUFS)*100, digits=1)
 rm(datA_KUFS)
 
 
+# file location settings
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records/"
+fileName <- "AF_refinedData"
+# write filtered data out to CSV
+write.csv(datA_KUFS_filtered, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE, na="")
 
 
+# VERY IMPORTANT!
+# CLOSE DATABASE CONNECTIONs (& REMOVE OBJECTS FROM WORKSPACE!)
+odbcCloseAll()
+#rm(list=ls())
 
+
+################################################################################
 
 # # ## write out as CSV for GIS stuff:
 # # write.csv(
@@ -316,13 +316,6 @@ rm(datA_KUFS)
 
 
 
-# # write this out to CSV
-# write.csv(
-#         filtered_datA_KUFS,
-#         file=file.choose(),
-#         na="", 
-#         row.names=FALSE
-# )
 
 
 # check out http://rcastilho.pt/SDM101/SDM_files/Occurrence_data.R for land/sea point filtering and stuff
