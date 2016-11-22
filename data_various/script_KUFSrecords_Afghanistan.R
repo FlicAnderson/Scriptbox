@@ -256,9 +256,10 @@ nrow(datA_KUFS[which(datA_KUFS$Longitude==0),])
 datA_KUFS_filtered <- 
         datA_KUFS %>%
         filter(!is.na(Latitude)) %>%
-        filter(!is.na(Longitude)) #%>%
-        #filter(dateStatus!="problematic")
-# 13090 obs of 20 variables
+        filter(!is.na(Longitude)) %>%
+        filter(dateStatus!="problematic")
+# 13049 obs of 20 variables
+# (removed 41 "problematic" records)
 
    
 glimpse(datA_KUFS_filtered)
@@ -270,6 +271,7 @@ length(unique(datA_KUFS_filtered$Taxon))
 # # percentage of usable records left:
 round(nrow(datA_KUFS_filtered)/nrow(datA_KUFS)*100, digits=1)
 # 55.9% :c  This is low as non-georef'd records were removed
+# 55.7% once "problematic" dates removed
 
 # remove non-filtered data
 #rm(datA_KUFS)
