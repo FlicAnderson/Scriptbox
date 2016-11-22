@@ -116,16 +116,16 @@ for(i in 1:length(datA_KUFS$orig)){
         # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
         if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", datA_KUFS$orig[i])==TRUE){
                 # cut up the parts & put ito separate columns
-                datA_KUFS$dateYYYY[i] <- substr(datA_KUFS$orig[i], start=1, stop=4)
+                datA_KUFS$dateYYYY[i] <- as.character(substr(datA_KUFS$orig[i], start=1, stop=4))
                 datA_KUFS$dateMM[i] <- substr(datA_KUFS$orig[i], start=6,stop=7)
                 datA_KUFS$dateDD[i] <- substr(datA_KUFS$orig[i], start=9, stop=10)
                 datA_KUFS$dateStatus[i] <- "fine"
         } else {
         # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
                 # if date STARTS WITH a year, AND is only a year (as.numeric(date)) works & doesn't give NA:
-                if(grepl("^([19|20][0-9][0-9])", datA_KUFS$orig[i], perl=TRUE) && !is.na(as.numeric(datA_KUFS$orig[i]))==TRUE){
+                if(grepl("^([19|20][0-9][0-9])", datA_KUFS$orig[i], perl=TRUE) && (nchar(as.character(a[1,28]))==4) && (!is.na(as.numeric(datA_KUFS$orig[i]))==TRUE)){
                         # if date starts with a year and is only a year:
-                        datA_KUFS$dateYYYY[i] <- datA_KUFS$orig[i] 
+                        datA_KUFS$dateYYYY[i] <- as.character(datA_KUFS$orig[i]) 
                         datA_KUFS$dateMM[i] <- NA
                         datA_KUFS$dateDD[i] <- NA
                         datA_KUFS$dateStatus[i] <- "year only"
@@ -173,8 +173,20 @@ for(i in 1:length(datA_KUFS$orig)){
         i <- i +1
 }
 
+# no records where dateDD is higher than 31, so don't need to implement anything for this
+#which(as.numeric(datA_KUFS_filtered$dateDD) > 31)
+# reset counter
+i <- 1
+# deal with things where date is blank
+for(i in 1:length(datA_KUFS$orig)){
+        if(is.na(datA_KUFS$orig[i])){
+                datA_KUFS$dateStatus[i] <- "blank"
+        }
+        i <- i +1
+}
+
 # things like "Fall 1970" aren't captured but end up with "problematic" tag
-# Q: I'm not sure what happens to NA origs - presumably tagged problematic?
+# NA origs are given "blank" tag.
 
 # pull apart how many are in each dateStatus group:
 datA_KUFS_byDateStatus <- 
@@ -185,16 +197,17 @@ datA_KUFS_byDateStatus <-
 
 #    dateStatus count
 #         <chr> <int>
-# 1        fine 22204
-# 2 problematic  1128
-# 3   year only    96
-
-
-
+# 1       blank   700
+# 2        fine 22197
+# 3 problematic   435
+# 4   year only    96
 
 # remove numerics from collector name! 
-# No, since this was done in open refine
+# No need, since this was done in open refine
 
+a<- as.data.frame(datA_KUFS[which(as.numeric(datA_KUFS$dateYYYY <1800)==TRUE),])
+
+head(a)
 
 # need to remove NA lat/lons:
  
@@ -245,6 +258,16 @@ fileName <- "AF_refinedData"
 # write filtered data out to CSV
 write.csv(datA_KUFS_filtered, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE, na="")
 
+# pull apart how many are in each dateStatus group:
+datA_KUFS_byDateStatus <- 
+        datA_KUFS_filtered %>%
+        group_by(dateStatus) %>%
+        summarise(count=n()) %>%
+        print
+
+aa<- as.data.frame(datA_KUFS_filtered[which(as.numeric(datA_KUFS_filtered$dateYYYY <1800)==TRUE),])
+
+head(aa)
 
 # REMOVE OBJECTS FROM WORKSPACE
 #rm(list=ls())
