@@ -114,7 +114,7 @@ i <- 1
 # run loop
 for(i in 1:length(datA_KUFS$orig)){
         # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
-        if(grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", datA_KUFS$orig[i])==TRUE){
+        if((grepl("[19|20][0-9][0-9][- /.][0|1][0-9][- /.][0|1|2|3][0-9]$", datA_KUFS$orig[i])==TRUE) && (as.numeric(as.character(substr(datA_KUFS$orig[i], start=1, stop=4))) > 1800)){
                 # cut up the parts & put ito separate columns
                 datA_KUFS$dateYYYY[i] <- as.character(substr(datA_KUFS$orig[i], start=1, stop=4))
                 datA_KUFS$dateMM[i] <- substr(datA_KUFS$orig[i], start=6,stop=7)
@@ -123,18 +123,31 @@ for(i in 1:length(datA_KUFS$orig)){
         } else {
         # if year matches YYYY-MM-DD pattern with dots, spaces, dashes or slashes:
                 # if date STARTS WITH a year, AND is only a year (as.numeric(date)) works & doesn't give NA:
-                if(grepl("^([19|20][0-9][0-9])", datA_KUFS$orig[i], perl=TRUE) && (nchar(as.character(a[1,28]))==4) && (!is.na(as.numeric(datA_KUFS$orig[i]))==TRUE)){
+                if(grepl("^([19|20][0-9][0-9])", datA_KUFS$orig[i], perl=TRUE) && (nchar(as.character(datA_KUFS$orig[i]))==4) && (!is.na(as.numeric(datA_KUFS$orig[i]))==TRUE)){
                         # if date starts with a year and is only a year:
                         datA_KUFS$dateYYYY[i] <- as.character(datA_KUFS$orig[i]) 
                         datA_KUFS$dateMM[i] <- NA
                         datA_KUFS$dateDD[i] <- NA
                         datA_KUFS$dateStatus[i] <- "year only"
                 } else {
-                # otherwise if date DOES NOT START WITH a year, or is not only datA_KUFS year ie. (as.numeric(date)) does NOT work & gives NA:
-                        datA_KUFS$dateYYYY[i] <- NA
-                        datA_KUFS$dateMM[i] <- NA
-                        datA_KUFS$dateDD[i] <- NA
-                        datA_KUFS$dateStatus[i] <- "problematic"
+                        if((nchar(as.character(datA_KUFS$orig[i]))==4) && (as.character(datA_KUFS$orig[i]) < 1800)){
+                                datA_KUFS$dateStatus[i] <- "year wrong"
+                        } else {
+                                if(nchar(as.character(datA_KUFS$orig[i]))!=4){
+                                        datA_KUFS$dateYYYY[i] <- NA
+                                        datA_KUFS$dateMM[i] <- NA
+                                        datA_KUFS$dateDD[i] <- NA
+                                        datA_KUFS$dateStatus[i] <- "problematic"
+                                } else {
+                                        # otherwise if date DOES NOT START WITH a year, 
+                                        # or is not only datA_KUFS year ie. (as.numeric(date)) 
+                                        # does NOT work & gives NA:
+                                        datA_KUFS$dateYYYY[i] <- NA
+                                        datA_KUFS$dateMM[i] <- NA
+                                        datA_KUFS$dateDD[i] <- NA
+                                        datA_KUFS$dateStatus[i] <- "problematic"
+                                }
+                        }
                 }
         }
         
@@ -173,8 +186,7 @@ for(i in 1:length(datA_KUFS$orig)){
         i <- i +1
 }
 
-# no records where dateDD is higher than 31, so don't need to implement anything for this
-#which(as.numeric(datA_KUFS_filtered$dateDD) > 31)
+# blank date records should be tagged separately
 # reset counter
 i <- 1
 # deal with things where date is blank
@@ -184,6 +196,16 @@ for(i in 1:length(datA_KUFS$orig)){
         }
         i <- i +1
 }
+
+# # date years before 1800 should be flagged up as possibly wrong
+# # reset counter
+# i <- 1
+# # deal with things where date is blank
+# for(i in 1:length(datA_KUFS$orig)){
+# 
+#         i <- i +1
+# }
+
 
 # things like "Fall 1970" aren't captured but end up with "problematic" tag
 # NA origs are given "blank" tag.
@@ -205,9 +227,9 @@ datA_KUFS_byDateStatus <-
 # remove numerics from collector name! 
 # No need, since this was done in open refine
 
-a<- as.data.frame(datA_KUFS[which(as.numeric(datA_KUFS$dateYYYY <1800)==TRUE),])
-
-head(a)
+# check: if this runs and nrow(a)>0, then there's an issue in the loops
+#a<- as.data.frame(datA_KUFS[which(as.numeric(datA_KUFS$dateYYYY <1800)==TRUE),])
+#head(a)
 
 # need to remove NA lat/lons:
  
@@ -234,7 +256,8 @@ nrow(datA_KUFS[which(datA_KUFS$Longitude==0),])
 datA_KUFS_filtered <- 
         datA_KUFS %>%
         filter(!is.na(Latitude)) %>%
-        filter(!is.na(Longitude))
+        filter(!is.na(Longitude)) #%>%
+        #filter(dateStatus!="problematic")
 # 13090 obs of 20 variables
 
    
@@ -251,6 +274,10 @@ round(nrow(datA_KUFS_filtered)/nrow(datA_KUFS)*100, digits=1)
 # remove non-filtered data
 #rm(datA_KUFS)
 
+# check: if this runs and nrow(aa)>0, then there's an issue in the loops
+#aa<- as.data.frame(datA_KUFS_filtered[which(as.numeric(datA_KUFS_filtered$dateYYYY <1800)==TRUE),])
+#head(aa)
+
 
 # file location settings
 fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/KUFS\ Records/"
@@ -264,10 +291,6 @@ datA_KUFS_byDateStatus <-
         group_by(dateStatus) %>%
         summarise(count=n()) %>%
         print
-
-aa<- as.data.frame(datA_KUFS_filtered[which(as.numeric(datA_KUFS_filtered$dateYYYY <1800)==TRUE),])
-
-head(aa)
 
 # REMOVE OBJECTS FROM WORKSPACE
 #rm(list=ls())
