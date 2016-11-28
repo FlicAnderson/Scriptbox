@@ -91,9 +91,9 @@ names(datA_KUFS_filtered)
 # recordedBy == Collector
 # decimallatitude == Latitude
 # decimallongitude == Longitude
-# day == day
-# month == month
-# year == year
+# day == dateDD
+# month == dateMM
+# year == dateYYYY
 
 ## edit fields: GBIF
 
@@ -116,9 +116,10 @@ names(datA_GBIF_filtered)[15] <- "recordType"
 ## edit fields: KUFS
 
 # names(datA_KUFS_filtered)
-names(datA_KUFS_filtered)[8] <- "taxonFamily"
-names(datA_KUFS_filtered)[7] <- "taxonName"
-names(datA_KUFS_filtered)[9] <- "collectorName"
+colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Family")] <- "taxonFamily"
+colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Taxon")] <- "taxonName"
+colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Collector")] <- "collectorName"
+
 names(datA_KUFS_filtered)[13] <- "latDec"
 names(datA_KUFS_filtered)[14] <- "lonDec"
 names(datA_KUFS_filtered)[10] <- "dateXXXX"
