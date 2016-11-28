@@ -288,14 +288,14 @@ fileName <- "AF_refinedData"
 write.csv(datA_KUFS_filtered, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE, na="")
 
 # pull apart how many are in each dateStatus group:
-datA_KUFS_byDateStatus <- 
+#datA_KUFS_byDateStatus <- 
         datA_KUFS_filtered %>%
         group_by(dateStatus) %>%
         summarise(count=n()) %>%
         print
 
-# REMOVE OBJECTS FROM WORKSPACE
-#rm(list=ls())
+# REMOVE UNNECESSARY OBJECTS FROM WORKSPACE
+rm(datA_KUFS, i, fileLocat, fileName)
 
 
 ################################################################################
