@@ -51,8 +51,8 @@ source("O://CMEP\ Projects/Scriptbox/data_gbif/script_GBIFData_Afghanistan.R")
 # rename GBIF dataset for ease of use
 datA_GBIF_filtered <- datA_afghanistan
 
-# tidy up the products from the GBIF script esp.
-rm(by_sps, by_sps_sum, filtered_datA_afghanistan, datA_afghanistan)
+# tidy up the products from the GBIF script esp. & a bit from KUFS
+rm(by_sps, by_sps_sum, filtered_datA_afghanistan, datA_afghanistan, datA_KUFS_byDateStatus)
 
 # make datasource column per dataset
 datA_GBIF_filtered$datasource <- "GBIF"
@@ -98,50 +98,56 @@ names(datA_KUFS_filtered)
 ## edit fields: GBIF
 
 # names(datA_GBIF_filtered)
-names(datA_GBIF_filtered)[1] <- "taxonFamily"
-names(datA_GBIF_filtered)[5] <- "taxonName"
-names(datA_GBIF_filtered)[6] <- "collectorName"
-names(datA_GBIF_filtered)[10] <- "latDec"
-names(datA_GBIF_filtered)[11] <- "lonDec"
-names(datA_GBIF_filtered)[12] <- "dateDD"
-names(datA_GBIF_filtered)[13] <- "dateMM"
-names(datA_GBIF_filtered)[14] <- "dateYYYY"
-names(datA_GBIF_filtered)[15] <- "recordType"
-
-# > names(datA_GBIF_filtered)
-# [1] "taxonFamily"          "species"              "infraspecificepithet" "taxonrank"            "taxonName"            "collectorName"       
-# [7] "identifiedby"         "locality"             "LatLon"               "latDec"               "lonDec"               "dateDD"              
-# [13] "dateMM"               "dateYYYY"             "recordType"           "issue"                "datasource" 
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "family")] <- "taxonFamily"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "scientificname")] <- "taxonName"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "recordedby")] <- "collectorName"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "decimallatitude")] <- "latDec"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "decimallongitude")] <- "lonDec"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "day")] <- "dateDD"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "month")] <- "dateMM"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "year")] <- "dateYYYY"
+colnames(datA_GBIF_filtered)[which(names(datA_GBIF_filtered) == "basisofrecord")] <- "recordType"
+names(datA_GBIF_filtered)
 
 ## edit fields: KUFS
-
 # names(datA_KUFS_filtered)
 colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Family")] <- "taxonFamily"
 colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Taxon")] <- "taxonName"
 colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Collector")] <- "collectorName"
-
-names(datA_KUFS_filtered)[13] <- "latDec"
-names(datA_KUFS_filtered)[14] <- "lonDec"
-names(datA_KUFS_filtered)[10] <- "dateXXXX"
+colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Latitude")] <- "latDec"
+colnames(datA_KUFS_filtered)[which(names(datA_KUFS_filtered) == "Longitude")] <- "lonDec"
 datA_KUFS_filtered$recordType <- "PRESERVED_SPECIMEN"   # add recordType to KUFS to match GBIF spx
-datA_KUFS_filtered$dateDD <- NA
-datA_KUFS_filtered$dateMM <- NA
-datA_KUFS_filtered$dateYYYY <- NA
-
-# > names(datA_KUFS_filtered)
-# [1] "Specimen.ID"              "Herbarium.Number.BarCode" "Collection"               "Collection.Number"        "Type.information"        
-# [6] "Typified.by"              "taxonName"                "taxonFamily"              "collectorName"            "dateXXXX"                
-# [11] "Country"                  "Admin1"                   "latDec"                   "lonDec"                   "Altitude.lower"          
-# [16] "Altitude.higher"          "Label"                    "det..rev..conf..assigned" "ident..history"           "annotations"             
-# [21] "datasource"               "recordType"               "dateDD"                   "dateMM"                   "dateYYYY"  
-
-
-#mergesetAF <- as.data.frame(c("datasource", "taxonFamily", "taxonName", "collectorName", "latDec", "lonDec", "dateDD", "dateMM", "dateYYYY", "recordType"))
-
-
-# merge fields
+# fix the datatype of date cols
+datA_KUFS_filtered$dateDD <- as.numeric(datA_KUFS_filtered$dateDD)
+datA_KUFS_filtered$dateMM <- as.numeric(datA_KUFS_filtered$dateMM) 
+datA_KUFS_filtered$dateYYYY <- as.numeric(datA_KUFS_filtered$dateYYYY) 
+names(datA_KUFS_filtered)
 
 # remove unnecessary/inappropriate fields
+
+datA_GBIF_joinset <- 
+        datA_GBIF_filtered %>%
+        select(taxonName, taxonFamily, collectorName, latDec, lonDec, dateDD, dateMM, dateYYYY, recordType, datasource)
+
+datA_KUFS_joinset <- 
+        datA_KUFS_filtered %>%
+        select(taxonName, taxonFamily, collectorName, latDec, lonDec, dateDD, dateMM, dateYYYY, recordType, datasource)
+
+# merge fields
+mergeset <- bind_rows("KUFS"=datA_KUFS_joinset, "GBIF"=datA_GBIF_joinset, .id="setID")
+# gives warning: Warning messages:
+# 1: In bind_rows_(x, .id) : Unequal factor levels: coercing to character
+# 2: In bind_rows_(x, .id) : Unequal factor levels: coercing to character
+# 3: In bind_rows_(x, .id) : Unequal factor levels: coercing to character
+# BUT this just means that the species names, collector names, family names have
+# differing numbers of factor levels, which is expected and fine
+# it coerces to char type which is fine for now. 
+
+# don't really require setID field tho, it's repeat of datasource field but I
+# wanted to try that arg for bind_rows() since I haven't used it before. Handy.
+
+glimpse(mergeset)
+
 
 # compare number of taxon names per dataset
 
