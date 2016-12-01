@@ -75,6 +75,8 @@ namesAF <- sqldf("SELECT allNamesAF.*, namesRanksAF.name FROM allNamesAF LEFT JO
 namesAF$Rank <- namesAF$name  # replace rank ID numbers with the names
 #head(namesAF)
 namesAF$name <- NULL  # remove the extra column called name (prev. ranks.name)
+colnames(namesAF)[which(names(namesAF) == "id")] <- "lnamID"
+colnames(namesAF)[which(names(namesAF) == "Full Name")] <- "taxonName"
 
 # make dplyr-ready
 namesAF <- tbl_df(namesAF)
@@ -97,6 +99,18 @@ namesAF_filtered <-
         # filter(Rank %in% c(x,y,z)) DOES WORK! USE THIS INSTEAD.
 
 
+# add family names
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_getFamilies_Afghanistan.R")
+getFamilies_Afghanistan()
+
+tail(namesAF_filtered)
+namesAF_filtered <- tbl_df(namesAF_filtered)
+
+# reorder columns
+namesAF_filtered_print <- 
+        namesAF_filtered %>%
+                select(lnamID, familyName, taxonName, Rank)
+
 # 4)  write out names - create species list .csv
 
 ### USER REMINDER: 
@@ -107,7 +121,7 @@ namesAF_filtered <-
 fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/ChecklistData/"
 fileName <- "AF_checklistNamesFromPadme_"
 
-write.csv(namesAF_filtered, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
+write.csv(namesAF_filtered_print, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
 
 
 # VERY IMPORTANT!
