@@ -149,6 +149,8 @@ mergeset <- bind_rows("KUFS"=datA_KUFS_joinset, "GBIF"=datA_GBIF_joinset, .id="s
 glimpse(mergeset)
 
 
+
+
 # compare number of taxon names per dataset
 
 # taxon names which don't match
@@ -177,9 +179,11 @@ glimpse(mergeset)
 # write to .csv file
 # write.csv(x, file=file.choose())
 
+# file location settings
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Afghanistan/ChecklistData/GBIF-KUFS_mergedData/"
+fileName <- "AF_GBIF-KUFS-mergedData_"
+# write filtered data out to CSV
+write.csv(mergeset, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE, na="")
 
-
-# VERY IMPORTANT!
-# CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
-odbcCloseAll()
-rm(list=ls())
+# remove all objects from workspace
+#rm(list=ls())
