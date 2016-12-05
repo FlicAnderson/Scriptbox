@@ -39,6 +39,7 @@ length(unique(recGrab$acceptDetAs))
 # 1256 taxa at 2016-02-25
 # 1028 taxa at 2016-02-26 (after filtering out using keepTaxRankOnly() function)
 # 818 after pruning out 0-Lat/0-Lon records
+# 807 @ 2016/12/05
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -392,8 +393,8 @@ recGrab <- sqldf("SELECT * FROM recGrab LEFT JOIN families ON recGrab.lnamid=fam
 names(recGrab)
 
 # remove recGrab$member temp column (column 32)
-if(names(recGrab[32])=="member"){
-        recGrab <<- recGrab[,-32]
+if(names(recGrab[31])=="member"){
+        recGrab <<- recGrab[,-31]
 } else { 
         print("wrong number of columns; temp column 'member' not removed")
 }
@@ -403,6 +404,7 @@ if(names(recGrab[32])=="member"){
 recGrab$genusName <- NULL
 
 # renew and re-add GENUS NAME
+recGrab$genusName <- NA
 # pull out genus (use non-auth det & then regex the epithet off)
 recGrab$genusName <- recGrab$acceptDetNoAuth
 recGrab$genusName <- gsub(" .*", "", recGrab$genusName)
@@ -429,11 +431,9 @@ taxaListSocotra <- unique(recGrab$acceptDetAs)
 recGrab <- tbl_df(recGrab)
 
 # pull out names only
-taxaListForChecks <- 
+taxaListForChecks <<- 
         recGrab %>%
-        distinct(acceptDetAs) %>%
-        select(acceptDetAs, genusName, familyName) %>%
-        arrange(acceptDetAs, genusName, familyName)
+        distinct(acceptDetAs)
 
 # write list of unique taxa
 message(paste0("... saving revised list of ", length(taxaListSocotra), " accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_Checklist_", Sys.Date(), ".csv"))
