@@ -219,7 +219,7 @@ recGrabTemp2 <<-
 rm(fielAllGeog)
 
 # bind herbarium and field records back together
-recGrabTemp <- bind_rows(tbl_df(recGrabTemp1), tbl_df(recGrabTemp2))
+suppressWarnings(recGrabTemp <- bind_rows(tbl_df(recGrabTemp1), tbl_df(recGrabTemp2)))
 rm(recGrabTemp1, recGrabTemp2)
 
 # join the new lat/lons to recGrab as additional columns
