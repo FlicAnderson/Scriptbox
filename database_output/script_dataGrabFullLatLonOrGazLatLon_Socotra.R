@@ -202,6 +202,7 @@ recGrab <<- recGrab[,c(
 source("O:/CMEP Projects/Scriptbox/general_utilities/function_getRanks.R")
 getRanks()
 # 22/03/2016 recGrab 31614 obs x 31 var
+# 2016/12/05 recgrab 31650 obs x 31 var
 
 # BIN BY TAXONOMY
 # keep all records with species-level, subspecies or variety-level 
@@ -211,6 +212,7 @@ keepTaxRankOnly()
 # 2016-03-06 leaves 26475 x 31 analysis set records (binned 4720 above sps-level)
 # 2016/03/16 leaves 26853 x 31 analysis set records (after Semhah -> Samha tweak); binned 4757 above-sps
 # 2016/03/22 leaves 26849 x 31 analysis set records (after %Samha/%Darsa -> %Samha%/%Darsa% tweak); binned 4765 above-sps
+# 2016/12/05 leaves 26849 x 31, binned 4765 above-sps.
 
 
 
@@ -220,16 +222,19 @@ keepTaxRankOnly()
 # REMOVE JUNK-LOCATION RECORDS
 # weed out NA or 0-lat/lons.
 source("O://CMEP\ Projects/Scriptbox/general_utilities/function_binJunkRecs.R")
-binJunkRecs(returnJunk=FALSE, chattyReturn=FALSE)
+binJunkRecs(returnJunk=FALSE, chattyReturn=TRUE)
 # 2016-03-10 26011 x 31 after several fixes (removing filter on latDec=0/lonDec=0!)
 # 2016/03/16 26388 x 31 (after Semhah -> Samha tweak)
 # 2016/03/17 26276
 # 2016/03/16 26383 x 31 analysis set records (after %Samha/%Darsa -> %Samha%/%Darsa% tweak); binned 466 trash recs
+# 2016/12/05 26420 x 31 kept; 465 binned
+
 
 # FIX BAD RECORDS (LOCATION)
 # alter bad records via script
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socotra.R")
 # 2016/03/16 26383 x 31 still
+# 2016/12/05 
 
 
 
@@ -241,6 +246,7 @@ source("O://CMEP\ Projects/Scriptbox/database_output/script_editBadRecords_Socot
 source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
 # 834 accepted taxa names
 # 26197 x 31 records (removed lichens etc)
+# 2016/12/05 25639 x 30 obs; 806 names accepted.
 
 
 # 7)  add record source column
@@ -249,6 +255,7 @@ source("O://CMEP\ Projects/Scriptbox/general_utilities/function_addRecTypeColumn
 # run the function!!!!
 addRecTypeColumn()
 # 26197 x 32 obs
+# 2016/12/05 25639 x 31 obs
 
 
 #########################################
