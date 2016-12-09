@@ -45,6 +45,11 @@ if (!require(dplyr)){
         install.packages("dplyr")
         library(dplyr)
 }
+if (!require(sqldf)){
+        install.packages("sqldf")
+        library(sqldf)
+}
+
 
 # source main socotra dataset
 source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
@@ -82,6 +87,32 @@ table(duplicated(endemics$species))
 # this is because endemics currently includes subspecies, which was creating the
 # dups issue due to bad handling (the ssp/var field had been left off, causing dups)
 
+
+########## TO DO!!!!##########
+
+# join endemics onto recgrab
+# sqldf
+
+names(endemics)
+# > names(endemics)
+# [1] "fullTax"      "endemicScore"
+names(recGrab)
+# "acceptDetNoAuth" 
+# 
+# recGrab$acceptDetNoAuth == endemics$fullTax
+
+# make new field in recGrab: endemicScore == 0
+recGrab$endemicScore <- 0
+
+# work on this::: 
+# ensure that when endemics is joined that recGrab endemicScore is set to 1
+# for(i in 1:nrow(recGrab){
+#       if (recGrab$acceptDetNoAuth[i] %in% endemics$fullTax) {
+#               recgrab$endemicScore[i] <- 1
+#       } 
+# }
+
+########## TO DO!!!!##########
 
 
 
