@@ -66,16 +66,27 @@ table(endemics$endemicScore)
 
 endemics <- tbl_df(endemics)
 
-endemics %>%
-        mutate(fullTax=paste(species, sspOrVar, sep=" ")) %>%
-        select(species, endemicScore) #%>%
-        #filter(endemicScore==1) %>%
-        #write.csv(file=file.choose(),row.names=FALSE)
+fullTaxnScoreOnly <- 
+        endemics %>%
+                mutate(fullTax=paste(species, sspOrVar, sep=" ")) %>%
+                select(fullTax, endemicScore) %>%
+                filter(endemicScore==1)
+        
+
+write.csv(fullTaxnScoreOnly, file=paste0("O://CMEP Projects/Socotra/EthnographicData_2014/scoredAsEndemics_SPECIES-LIST/EndemicTaxaOnly_Socotra_", Sys.Date(), ".csv"),row.names=FALSE)
+
+
+# add lnamID
+#livePadmeArabiaCon()
+#qry <- ""
+# this would be a good addition!
+
+
 
 # add fullTax column with concat of name parts
-endemics <- 
-        endemics %>%
-                mutate(fullTax=paste(species, sspOrVar, sep=" ")) 
+#endemics <- 
+#        endemics %>%
+#                mutate(fullTax=paste(species, sspOrVar, sep=" ")) 
 # check for duplicate fullTax now
 
 ##### TO DO: 
