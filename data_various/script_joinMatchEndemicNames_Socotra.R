@@ -18,7 +18,7 @@
 # The column endemicScore shows 1 for all endemic taxa, and 0 for non-endemic.  
 # 
 # The file is at 
-# O://CMEP Projects/Socotra/EthnographicData2014/scoredAsEndemics_SPECIES-LIST/EndemicTaxa_Socotra.csv
+# O://CMEP Projects/Socotra/EthnographicData2014/scoredAsEndemics_SPECIES-LIST/EndemicTaxaOnly_Socotra_*(sys.date)*.csv
 # (Created using script_endemicAnnotationsPadme.R)"
 
 # ---------------------------------------------------------------------------- #
@@ -46,11 +46,6 @@ if (!require(dplyr)){
         library(dplyr)
 }
 
-fileLocat <- "O://CMEP\ Projects/Socotra/EthnographicData2014/scoredAsEndemics_SPECIES-LIST/"
-fileName <- "EndemicTaxa_Socotra.csv"
-
-read.csv(file=paste0(fileLocat,fileName))
-
 # source main socotra dataset
 source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R")
 
@@ -74,13 +69,24 @@ if(!exists("recGrab")){stop()}
 
 #"O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_Checklist_2016-12-05.csv"
 
+fileLocat <- "O://CMEP\ Projects/Socotra/EthnographicData_2014/scoredAsEndemics_SPECIES-LIST/"
+#fileName <- "EndemicTaxaOnly_Socotra.csv"
+fileName <- "EndemicTaxaOnly_Socotra_2016-12-09.csv"
+
+endemics <- read.csv(file=paste0(fileLocat,fileName))
+
+
+# confirm no duplicates
+table(duplicated(endemics$species))
+# None :)
+# this is because endemics currently includes subspecies, which was creating the
+# dups issue due to bad handling (the ssp/var field had been left off, causing dups)
 
 
 
 
 
-
-# writeout
+# writeout resulting records
 
 #fileLocat <- "O://CMEP\ Projects/Socotra/EthnographicData2014/scoredAsEndemics_SPECIES-LIST/"
 #fileName <- "EndemicTaxa_Socotra.csv"
