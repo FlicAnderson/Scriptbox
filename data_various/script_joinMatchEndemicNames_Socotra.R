@@ -80,22 +80,22 @@ fileName <- "EndemicTaxaOnly_Socotra_2016-12-09.csv"
 
 endemics <- read.csv(file=paste0(fileLocat,fileName))
 
-
 # confirm no duplicates
 table(duplicated(endemics$species))
 # None :)
 # this is because endemics currently includes subspecies, which was creating the
 # dups issue due to bad handling (the ssp/var field had been left off, causing dups)
 
-
-########## TO DO!!!!##########
-
 # join endemics onto recgrab
-# sqldf
 
 names(endemics)
 # > names(endemics)
 # [1] "fullTax"      "endemicScore"
+
+# remove space at end of endemics names
+
+endemics$fullTax <- gsub("*( $)", "", as.character(endemics$fullTax))
+
 names(recGrab)
 # "acceptDetNoAuth" 
 # 
@@ -103,14 +103,37 @@ names(recGrab)
 
 # make new field in recGrab: endemicScore == 0
 recGrab$endemicScore <- 0
+#dim(recGrab)[2]
+#[1] 33
+# 33 is good (12Dec), endemicScore is new column on orig 32
 
-# work on this::: 
 # ensure that when endemics is joined that recGrab endemicScore is set to 1
-# for(i in 1:nrow(recGrab){
-#       if (recGrab$acceptDetNoAuth[i] %in% endemics$fullTax) {
-#               recgrab$endemicScore[i] <- 1
+# # create a testing set
+# a <- recGrab[, c(7, 33)]
+# a <- unique(a)
+# a <- a[780:800,]
+# 
+# i <- 1
+# for(i in 1:nrow(a)){
+#       if (as.character(a$acceptDetNoAuth)[i] %in% as.character(endemics$fullTax)) {
+#        a$endemicScore[i] <- 1
 #       } 
 # }
+
+# loop to tag endemicScores to 1 for taxa in endemic list
+i <- 1
+for(i in 1:nrow(recGrab)){
+        if (as.character(recGrab$acceptDetNoAuth)[i] %in% as.character(endemics$fullTax)) {
+                recGrab$endemicScore[i] <- 1
+        } 
+}
+
+table(recGrab$endemicScore)
+# this worked
+
+# consider which endemics AREN'T in here...
+a <- as.character(unique(endemics$fullTax))
+
 
 ########## TO DO!!!!##########
 
