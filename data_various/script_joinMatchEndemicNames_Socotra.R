@@ -133,6 +133,32 @@ table(recGrab$endemicScore)
 
 # consider which endemics AREN'T in here...
 a <- as.character(unique(endemics$fullTax))
+aa <- as.character(unique(recGrab$acceptDetNoAuth))
+# find species in endemics list which aren't matched to recGrab
+a[which(a %in% aa == FALSE)]
+# [1] "Asparagus africanus var. microcarpus"         "Chlorophytum sp. nov."                       
+# [3] "Ischaemum sp. A"                              "Acacia pennivenia"                           
+# [5] "Acacia sp. A"                                 "Indigofera socotrana"                        
+# [7] "Begonia semhaensis"                           "Maytenus sp. nov. A"                         
+# [9] "Erythroxylon socotranum"                      "Andrachne schweinfurthii var. papillosa"     
+# [11] "Andrachne schweinfurthii var. schweinfurthii" "Tragia balfouriana"                          
+# [13] "Hypericum socotranum subsp. smithii"          "Hypericum socotranum subsp. socotranum"      
+# [15] "Boswellia sp. B"                              "Commiphora socotrana"                        
+# [17] "Rhus sp. A"                                   "Rhus thyrsiflora"                            
+# [19] "Maerua angolensis var. socotrana"             "Hemicrambe townsendii"                       
+# [21] "Nesocrambe socotrana"                         "Polycarpaea spicata var. capillaris"         
+# [23] "Portulaca sedifolia"                          "Gaillonia puberula"                          
+# [25] "Gaillonia putorioides"                        "Gaillonia thymoides"                         
+# [27] "Gaillonia tinctoria"                          "Placopoda virgata"                           
+# [29] "Adenium obesum subsp. sokotranum"             "Cryptolepis sp. nov."                        
+# [31] "Heliotropium aff. socotranum"                 "Heliotropium derafontense"                   
+# [33] "Heliotropium socotranum"                      "Seddera fastigiata"                          
+# [35] "Seddera semhahensis"                          "Seddera spinosa"                             
+# [37] "Jasminum fluminense subsp. socotranum"        "Leucas spiculifera"                          
+# [39] "Micromeria remota"                            "Dicoma cana"                                 
+# [41] "Helichrysum socotranum"                       "Prenanthes amabilis"                         
+# [43] "Rughidia cordatum"
+
 
 
 ########## TO DO!!!!##########
