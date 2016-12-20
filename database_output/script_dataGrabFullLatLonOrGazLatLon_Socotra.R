@@ -319,3 +319,38 @@ odbcCloseAll()
 message("... datagrab complete!")
 
 ## for summary stats and analysis, go to "O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R"
+
+# RUN THIS AFTER:...
+
+## Socotra Project :: script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R
+# ==============================================================================
+# 14 August 2015
+# Author: Flic Anderson
+#
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
+# & dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
+# saved at: O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R
+# source: source("O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R")
+#
+# AIM: Using records pulled out in script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# .... Perform summary stats! 
+
+
+# AND/OR RUN THIS AFTER:...
+
+## Socotra Project :: script_editTaxa_Socotra.R
+# ==============================================================================
+# 10 March 2016
+# Author: Flic Anderson
+#
+# objects created: recGrab(altered)
+# saved at: O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra_replacementInfo.R"
+# source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
+#
+# AIM:  Fix some bad taxa, remove lichens, remove ferns, ensure everything is good
+# ....  order for analysis. Run this after script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# ....  and before script_joinMatchEndemicNames_Socotra.R
+#
