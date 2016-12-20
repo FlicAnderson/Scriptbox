@@ -135,7 +135,7 @@ table(recGrab$endemicScore)
 a <- as.character(unique(endemics$fullTax))
 aa <- as.character(unique(recGrab$acceptDetNoAuth))
 # find species in endemics list which aren't matched to recGrab
-a[which(a %in% aa == FALSE)]
+nonMatchNames <- a[which(a %in% aa == FALSE)]
 # [1] "Asparagus africanus var. microcarpus"         "Chlorophytum sp. nov."                       
 # [3] "Ischaemum sp. A"                              "Acacia pennivenia"                           
 # [5] "Acacia sp. A"                                 "Indigofera socotrana"                        
@@ -145,7 +145,7 @@ a[which(a %in% aa == FALSE)]
 # [13] "Hypericum socotranum subsp. smithii"          "Hypericum socotranum subsp. socotranum"      
 # [15] "Boswellia sp. B"                              "Commiphora socotrana"                        
 # [17] "Rhus sp. A"                                   "Rhus thyrsiflora"                            
-# [19] "Maerua angolensis var. socotrana"             "Hemicrambe townsendii"                       
+# [19] "Maerua angolensis var. socotrana" = 1            "Hemicrambe townsendii"    
 # [21] "Nesocrambe socotrana"                         "Polycarpaea spicata var. capillaris"         
 # [23] "Portulaca sedifolia"                          "Gaillonia puberula"                          
 # [25] "Gaillonia putorioides"                        "Gaillonia thymoides"                         
@@ -159,10 +159,154 @@ a[which(a %in% aa == FALSE)]
 # [41] "Helichrysum socotranum"                       "Prenanthes amabilis"                         
 # [43] "Rughidia cordatum"
 
+source("O://CMEP\ Projects/Scriptbox/general_utilities/function_padmeNameMatch.R")
+
+# # used this loop to find the matches/non-matches: uncomment & re-run to verify matches
+# i <- 1
+# for(i in 1:length(nonMatchNames)){
+#        padmeNameMatch(checkMe=nonMatchNames[i], taxonType="species", authorityPresent=FALSE, taxonSingle=TRUE, chattyReturn=TRUE)
+# }
+## used output of padmeNameMatch() function from above loop to create fixes for 
+## each non-matching name, made into vector nonMatchFix.
+
+nonMatchFix <- c(
+        "Asparagus africanus",
+        "Chlorophytum sp. nov. A", 
+        "Ischaemum sp. A",
+        "Vachellia pennivenia",
+        "Vachellia sp. A",
+        "Indigofera sokotrana",
+        "Begonia samhaensis",
+        "Maytenus sp. A",
+        "Erythroxylum socotranum",
+        "Andrachne schweinfurthii",
+        "Andrachne schweinfurthii",
+        "Tragia balfourii",
+        "Hypericum socotranum",
+        "Hypericum socotranum",
+        "Boswellia bullata",
+        "Commiphora socotrana",
+        "Searsia sp. A",
+        "Searsia thyrsiflora",
+        "Maerua angolensis",
+        "Hemicrambe fruticosa",
+        "Hemicrambe socotrana",
+        "Polycarpaea sp. nov.",
+        "Portulaca monanthoides",
+        "Plocama puberula",
+        "Plocama putorioides",
+        "Plocama thymoides",
+        "Plocama tinctoria",
+        "Dirichletia virgata",
+        "Adenium obesum",
+        "Cryptolepis sp. nov. A",                       
+        "Heliotropium aff. sokotranum",
+        "Heliotropium shoabense",                   
+        "Heliotropium sokotranum",
+        "Convolvulus socotrana",
+        "Convolvulus semhaensis",
+        "Convolvulus kossmatii",
+        "Jasminum fluminense",
+        "Leucas spiculifolia",                          
+        "Micromeria imbricata",
+        "Macledium canum",                                 
+        "Helichrysum sp. B",
+        "Erythroseris amabilis",
+        "Rughidia cordata"
+        )
 
 
-########## TO DO!!!!##########
+##### detailed namefix info:
+# "Asparagus africanus var. microcarpus" <-  "Asparagus africanus" # all on Socotra are endemic var
+# "Chlorophytum sp. nov." <- "Chlorophytum sp. nov. A" 
+# "Ischaemum sp. A" #- matches in Padme Arabia. Fix
+# "Acacia pennivenia" <- "Vachellia pennivenia"
+# "Acacia sp. A" <- "Vachellia sp. A"
+# "Indigofera socotrana" <- "Indigofera sokotrana"
+# "Begonia semhaensis" <- "Begonia samhaensis"
+# "Maytenus sp. nov. A" <- "Maytenus sp. A"
+# "Erythroxylon socotranum" <- "Erythroxylum socotranum"
+# "Andrachne schweinfurthii var. papillosa" <- "Andrachne schweinfurthii" #all subsps endemic
+# "Andrachne schweinfurthii var. schweinfurthii" <- "Andrachne schweinfurthii" #all subsps endemic
+# "Tragia balfouriana" <- "Tragia balfourii"
+# "Hypericum socotranum subsp. smithii" <- "Hypericum socotranum" #all subsps endemic
+# "Hypericum socotranum subsp. socotranum" <- "Hypericum socotranum" #all subsps endemic
+# "Boswellia sp. B" <- "Boswellia bullata"
+# # "Commiphora socotrana" # ain't in the recGrab list, tho legit name match.
+# "Rhus sp. A" <- # not same sp-concept as Rhus sp. nov.; avoid conflating; should be Searsia sp. A due to taxonomy changes.
+# "Rhus thyrsiflora" <- "Searsia thyrsiflora" # taxonomic change
+# "Maerua angolensis var. socotrana" <- "Maerua angolensis" # =endemic as all Socotran Maerua records refer to the endemic variety, so we're scoring all as Maerua angolensis & endemic
+# "Hemicrambe townsendii" <- "Hemicrambe fruticosa" # syn.
+# "Nesocrambe socotrana" <- "Hemicrambe socotrana" # syn. 
+# "Polycarpaea spicata var. capillaris" <- "Polycarpaea sp. nov." # endmic var
+# "Portulaca sedifolia" <- "Portulaca monanthoides" # taxonomic change
+# "Gaillonia puberula" <- "Plocama puberula" # taxonomic change
+# "Gaillonia putorioides" <- "Plocama putorioides" # taxonomic change
+# "Gaillonia thymoides" <- "Plocama thymoides" # taxonomic change
+# "Gaillonia tinctoria" <- "Plocama tinctoria" # taxonomic change
+# "Placopoda virgata" <- "Dirichletia virgata" # taxonomic change
+# "Adenium obesum subsp. sokotranum" <- "Adenium obesum" #subsps ignored.
+# "Cryptolepis sp. nov." <- "Cryptolepis sp. nov. A"                       
+# "Heliotropium aff. socotranum" <- "Heliotropium aff. sokotranum" # orthog. variant
+# "Heliotropium derafontense" <- "Heliotropium shoabense"                   
+# "Heliotropium socotranum" <- "Heliotropium sokotranum" # orthog. variant
+# "Seddera fastigiata" <- "Convolvulus socotrana" # taxonomic change
+# "Seddera semhahensis" <- "Convolvulus semhaensis"
+# "Seddera spinosa" <- "Convolvulus kossmatii"
+# "Jasminum fluminense subsp. socotranum" <- "Jasminum fluminense"
+# "Leucas spiculifera" <- "Leucas spiculifolia"                          
+# "Micromeria remota" <- "Micromeria imbricata"
+# "Dicoma cana" <- "Macledium canum"                                 
+# "Helichrysum socotranum" <- "Helichrysum sp. B"
+# "Prenanthes amabilis" <- "Erythroseris amabilis"
+# "Rughidia cordatum" <- "Rughidia cordata"
+##########
 
+# update nonMatchNames with their nonMatchFix option
+# reset/create  counters
+i <- 1  # loop counter endemics
+j <- 1  # counter nonMatchNames/nonMatchFix as they correlate
+k <- 1  # counter for matching row in endemics to apply namefix to
+# run loop
+for(i in 1:nrow(endemics)){
+        # if taxon matches in nonMatchNames[j]
+        k <- which(grepl(pattern=nonMatchNames[j], x=endemics$fullTax))
+        endemics$fullTax[k] <- nonMatchFix[j]
+        j <- j+1
+        if(j>length(nonMatchNames)){stop("end of loop")}
+}
+
+# create new set with definitely updated endemic names/scores
+endemicsUpdated <- endemics
+
+# update endemicScore to 1 for everything matching now.
+# use new endemicset to apply 1 to all matching names
+#reset counter
+i <- 1
+# run loop
+for(i in 1:nrow(recGrab)){
+        if (as.character(recGrab$acceptDetNoAuth)[i] %in% as.character(endemicsUpdated$fullTax)) {
+                recGrab$endemicScore[i] <- 1
+        } 
+}
+
+#########  unneccesary here but possibly useful elsewhere:
+# update namefields for namefixed taxa : this fix probably could apply earlier in the scriptchain - maybe script_editTaxa_Socotra.R?
+#
+## unneccessary step just now;
+# # get lnams & sortName & Full Name of updated tax. 
+# source("O://CMEP\ Projects/Scriptbox/general_utilities/function_getLnamID.R")
+#
+#replaceNamesRow <- getLnamID(checkMe=nonMatchFix[i], authorityPresent=FALSE)
+# if (as.character(recGrab$acceptDetNoAuth)[i] == as.character(replaceNamesRow$acceptDetNoAuth)) {
+#         recGrab$lnamID[i] <- replaceNamesRow$lnamID
+#         recGrab$acceptDetNoAuth[i] <- replaceNamesRow$acceptDetNoAuth
+#         recGrab$acceptDetAs[i] <- replaceNamesRow$acceptDetAs
+#         recGrab$endemicScore[i] <- 1
+# } 
+#replaceNames <- bind_rows(replaceNames, replaceNamesRow)
+#getLnamID(checkMe="Chlorophytum sp. nov. A", authorityPresent=FALSE)
+#######
 
 
 
