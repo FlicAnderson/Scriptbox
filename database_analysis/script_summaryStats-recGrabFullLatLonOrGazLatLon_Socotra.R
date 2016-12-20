@@ -9,8 +9,12 @@
 # source: source("O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R")
 #
 # AIM: Using records pulled out in script_dataGrabFullLatLonOrGazLatLon_Socotra.R
-# .... Perform summary stats! 
-# .... 
+# .... Perform summary stats! Best run with other scripts in the following order: 
+# ....  - script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# ....  (- script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R)
+# ....  - script_editTaxa_Socotra.R
+# ....  - script_joinMatchEndemicNames_Socotra.R
+# ....  - script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R
 
 # ---------------------------------------------------------------------------- #
 
@@ -60,6 +64,7 @@ length(unique(recGrab$acceptDetAs))
 # 1028 taxa at 2016-02-26 (after filtering out using keepTaxRankOnly() function)
 # 818 after pruning out 0-Lat/0-Lon records
 # 834 2016/03/23
+# 807 20Dec2016
 
 # create object
 taxaListSocotra <- unique(recGrab$acceptDetAs)
@@ -103,22 +108,23 @@ socotraData <- tbl_df(recGrab)
 
 # get names of variables
 names(socotraData)
-# [1] "recID"              "expdName"            
+# [1] "recID"              "expdName"          
 # [3] "collector"          "collNumFull"       
-# [5] "lnamID"             "taxRank"           
-# [7] "familyName"         "acceptDetAs"       
-# [9] "acceptDetNoAuth"    "genusName"         
-# [11] "detAs"              "lat1Dir"           
-# [13] "lat1Deg"            "lat1Min"           
-# [15] "lat1Sec"            "lat1Dec"           
-# [17] "anyLat"             "lon1Dir"           
-# [19] "lon1Deg"            "lon1Min"           
-# [21] "lon1Sec"            "lon1Dec"           
-# [23] "anyLon"             "coordSource"       
-# [25] "coordAccuracy"      "coordAccuracyUnits"
-# [27] "coordSourcePlus"    "dateDD"            
-# [29] "dateMM"             "dateYYYY"          
-# [31] "fullLocation"    
+# [5] "lnamID"             "acceptDetAs"       
+# [7] "acceptDetNoAuth"    "detAs"             
+# [9] "lat1Dir"            "lat1Deg"           
+# [11] "lat1Min"            "lat1Sec"           
+# [13] "lat1Dec"            "anyLat"            
+# [15] "lon1Dir"            "lon1Deg"           
+# [17] "lon1Min"            "lon1Sec"           
+# [19] "lon1Dec"            "anyLon"            
+# [21] "coordSource"        "coordAccuracy"     
+# [23] "coordAccuracyUnits" "coordSourcePlus"   
+# [25] "dateDD"             "dateMM"            
+# [27] "dateYYYY"           "fullLocation"      
+# [29] "familyName"         "member"            
+# [31] "genusName"          "recType"           
+# [33] "endemicScore"         
 
 #?manip  # gives info on manipulation functions
 
@@ -182,8 +188,12 @@ by_sps_counts
 
 
 #number of taxa with over 10 unique lat+lon locations:
-filter(by_sps_sum, uniqueLatLon>10)
+over10s <- filter(by_sps_sum, uniqueLatLon>10)
 #390
+write.csv(over10s, file.select(), row.names = FALSE)
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Socotra\ 2013-2016\ LEVERHULME\ TRUST\ RPG-2012-778/AnalysisData/"
+fileName <- "over10Locats-Socotra_"
+write.csv(over10s, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
@@ -207,3 +217,52 @@ expds
 odbcCloseAll()
 # empty the environment of objects
 #rm(list=ls())
+
+# # REMOVE NEEDLESS OBJECTS FROM WORKSPACE!
+#         # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
+#         # (eg. Keeps: connections, recGrab, etc):
+rm(list=setdiff(ls(), 
+                c(
+                        "recGrab", 
+                        "con_livePadmeArabia", 
+                        "livePadmeArabiaCon"
+                )
+)
+)
+
+
+# RUN THIS AFTER:...
+## Socotra Project :: script_editTaxa_Socotra.R
+# ==============================================================================
+# 10 March 2016
+# Author: Flic Anderson
+#
+# to call: 
+# objects created: recGrab(altered)
+# saved at: O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_connections/function_livePadmeArabiaCon.R"
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"
+# dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra_replacementInfo.R"
+# source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
+#
+# AIM:  Fix some bad taxa, remove lichens, remove ferns, ensure everything is good
+# ....  order for analysis. Run this after script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# ....  and before script_joinMatchEndemicNames_Socotra.R
+
+
+#AND/OR RUN THIS AFTER:...
+
+
+## Socotra Project :: script_joinMatchEndemicNames_Socotra.R
+# ============================================================================ #
+# 05 December 2016
+# Author: Flic Anderson
+#
+# dependant on: script_dataGrabFullLatLonOrGazLatLon_Socotra.R; script_endemicAnnotationsPadme.R
+# saved at: O://CMEP\-Projects/Scriptbox/data_various/script_joinMatchEndemicNames_Socotra.R
+# source("O://CMEP\ Projects/Scriptbox/data_various/script_joinMatchEndemicNames_Socotra.R")
+#
+# AIM:  Join Ethnoflora endemism scored data (scored by Anna) for Socotra to 
+# ....  the Socotra dataset on names; where names do not match, apply a 
+# ....  taxonomic fix as necessary. Run after script_editTaxa_Socotra.R (which 
+# ....  runs after script_dataGrabFullLatLonOrGazLatLon_Socotra.R)
