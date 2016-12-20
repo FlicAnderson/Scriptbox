@@ -53,11 +53,11 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
         # check taxonomic name input checkMe is acceptable
         if(is.character(checkMe)==TRUE | is.factor(checkMe)==TRUE){
                 if(chattyReturn==TRUE){
-                        cat("... checkMe is of OK type: character or factor", sep="")
+                        cat("\n", "... checkMe is of OK type: character or factor", sep="")
                 }
         } else {
                 if(chattyReturn==TRUE){
-                        cat("... checkMe is not of accepted type; try one of: character or factor", sep="")
+                        cat("\n", "... checkMe is not of accepted type; try one of: character or factor", sep="")
                 }
                 stop("checkMe type unacceptable")
         }
@@ -244,7 +244,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                         # exact match
                         return(cat(possMatch))
                 } else {
-                cat("\n", "... checking complete: ", testThis[1], " is an EXACT MATCH in Padme Arabia  :D", sep="") 
+                cat("\n", "... checking complete: ", testThis[1], " is an EXACT MATCH in Padme Arabia  :D", "\n", sep="") 
                         }
         } else {
                 if(chattyReturn==FALSE){
@@ -252,7 +252,7 @@ padmeNameMatch <- function(checkMe=NULL, taxonType="species", authorityPresent=F
                         return(cat(possMatch))
                 } else {
                 cat("\n", "... entered name(s) ", testThis[1], " NOT EXACT MATCH in Padme Arabia  :c", sep="")
-                cat("\n", "... >>> did you mean: ", possMatch, "?", sep="")
+                cat("\n", "... >>> did you mean: ", possMatch, "?", "\n", sep="")
                 }
         }
         
