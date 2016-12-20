@@ -9,7 +9,8 @@
 #
 # AIM:  Join Ethnoflora endemism scored data (scored by Anna) for Socotra to 
 # ....  the Socotra dataset on names; where names do not match, apply a 
-# ....  taxonomic fix as necessary.
+# ....  taxonomic fix as necessary. Run after script_editTaxa_Socotra.R (which 
+# ....  runs after script_dataGrabFullLatLonOrGazLatLon_Socotra.R)
 #
 # ---------------------------------------------------------------------------- #
 
@@ -308,10 +309,32 @@ for(i in 1:nrow(recGrab)){
 #getLnamID(checkMe="Chlorophytum sp. nov. A", authorityPresent=FALSE)
 #######
 
-
+#table(recGrab$endemicScore)
+#0     1 
+#10541 15098
 
 # writeout resulting records
+message(paste0("... saving revised records with endemicScore for accepted taxa names in analysis set to: O://CMEP Projects/PROJECTS BY COUNTRY/Socotra/Socotra 2013-2016 LEVERHULME TRUST RPG-2012-778/AnalysisData/analysisRecords-incEndemic-Socotra_", Sys.Date(), ".csv"))
+fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Socotra\ 2013-2016\ LEVERHULME\ TRUST\ RPG-2012-778/AnalysisData/"
+fileName <- "analysisRecords-incEndemic-Socotra_"
+write.csv(recGrab, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
 
-#fileLocat <- "O://CMEP\ Projects/Socotra/EthnographicData2014/scoredAsEndemics_SPECIES-LIST/"
-#fileName <- "EndemicTaxa_Socotra.csv"
-#write.csv(file=paste0(fileLocat,fileName,Sys.Date(),".csv"))
+# tidy up
+# # REMOVE NEEDLESS OBJECTS FROM WORKSPACE!
+#         # removes EVERYTHING EXCEPT WHAT YOU WANT TO KEEP 
+#         # (eg. Keeps: connections, recGrab, etc):
+rm(list=setdiff(ls(), 
+                c(
+                        "recGrab", 
+                        "taxaListSocotra",
+                        "con_livePadmeArabia", 
+                        "livePadmeArabiaCon"
+                )
+)
+)
+
+
+# VERY IMPORTANT!
+# CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
+odbcCloseAll()
+#rm(list=ls())
