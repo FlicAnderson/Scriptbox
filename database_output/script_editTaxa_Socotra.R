@@ -11,8 +11,9 @@
 # dependent on: "O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra_replacementInfo.R"
 # source("O://CMEP\ Projects/Scriptbox/database_output/script_editTaxa_Socotra.R")
 #
-# AIM:  
-# ....  
+# AIM:  Fix some bad taxa, remove lichens, remove ferns, ensure everything is good
+# ....  order for analysis. Run this after script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# ....  and before script_joinMatchEndemicNames_Socotra.R
 #
 # ---------------------------------------------------------------------------- #
 
@@ -441,3 +442,17 @@ write.csv(taxaListForChecks, file=paste0("O://CMEP\ Projects/Socotra/analysisTax
 
 # tidy up
 rm(taxaFixes, taxaListForChecks, datC, recGrabTemp, lnamInfo, families)
+
+# RUN THIS AFTER:...
+## Socotra Project :: script_joinMatchEndemicNames_Socotra.R
+# ============================================================================ #
+# 05 December 2016
+# Author: Flic Anderson
+#
+# dependant on: script_dataGrabFullLatLonOrGazLatLon_Socotra.R; script_endemicAnnotationsPadme.R
+# saved at: O://CMEP\-Projects/Scriptbox/data_various/script_joinMatchEndemicNames_Socotra.R
+# source("O://CMEP\ Projects/Scriptbox/data_various/script_joinMatchEndemicNames_Socotra.R")
+#
+# AIM:  Join Ethnoflora endemism scored data (scored by Anna) for Socotra to 
+# ....  the Socotra dataset on names; where names do not match, apply a 
+# ....  taxonomic fix as necessary.
