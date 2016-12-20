@@ -34,17 +34,24 @@ if (!require(dplyr)){
         install.packages("dplyr")
         library(dplyr)
 }
+if (!require(sqldf)){
+        install.packages("sqldf")
+        library(sqldf)
+}
 
-# source Socotra data script
-# NB: using suppressWarning() to avoid this: 
-#Warning message:
-#In rbind_all(list(x, ...)) : Unequal factor levels: coercing to character
-# it doesn't seem to break anything and it'll take m
-suppressWarnings(source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"))
+# check for recGrab object
+# informative error if it doesn't exist
+if(!exists("recGrab")) stop("... ERROR: recGrab object doesn't exist")
+# # source Socotra data script
+# # NB: using suppressWarning() to avoid this: 
+# #Warning message:
+# #In rbind_all(list(x, ...)) : Unequal factor levels: coercing to character
+# # it doesn't seem to break anything and it'll take m
+# suppressWarnings(source("O://CMEP\ Projects/Scriptbox/database_output/script_dataGrabFullLatLonOrGazLatLon_Socotra.R"))
 
 
 # 1) read in csv file of IUCN category data
-
+# DOESN'T WORK; FILE LINK BROKEN; UNKNOWN STATUS
 iucnDat <- read.csv("O://CMEP\ Projects/Socotra/IUCNPlantRedListCategories_Socotra.csv")
 
 iucnDat <- tbl_df(iucnDat)
