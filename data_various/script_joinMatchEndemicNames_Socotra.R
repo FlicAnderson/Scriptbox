@@ -338,3 +338,22 @@ rm(list=setdiff(ls(),
 # CLOSE DATABASE CONNECTIONs & REMOVE OBJECTS FROM WORKSPACE!
 odbcCloseAll()
 #rm(list=ls())
+
+
+# RUN THIS NEXT: 
+
+## Socotra Project :: script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R
+# ==============================================================================
+# 14 August 2015
+# Author: Flic Anderson
+#
+# saved at: O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R
+# source: source("O://CMEP\ Projects/Scriptbox/database_analysis/script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R")
+#
+# AIM: Using records pulled out in script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# .... Perform summary stats! Best run with other scripts in the following order: 
+# ....  - script_dataGrabFullLatLonOrGazLatLon_Socotra.R
+# ....  (- script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R)
+# ....  - script_editTaxa_Socotra.R
+# ....  - script_joinMatchEndemicNames_Socotra.R
+# ....  - script_summaryStats-recGrabFullLatLonOrGazLatLon_Socotra.R
