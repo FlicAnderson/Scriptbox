@@ -438,7 +438,7 @@ taxaListForChecks <<-
 
 # write list of unique taxa
 message(paste0("... saving revised list of ", length(taxaListSocotra), " accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_Checklist_", Sys.Date(), ".csv"))
-write.csv(taxaListForChecks, file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_RevisedChecklist_", Sys.Date(), ".csv"), row.names=FALSE)
+#write.csv(taxaListForChecks, file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_RevisedChecklist_", Sys.Date(), ".csv"), row.names=FALSE)
 
 # tidy up
 rm(taxaFixes, taxaListForChecks, datC, recGrabTemp, lnamInfo, families)
