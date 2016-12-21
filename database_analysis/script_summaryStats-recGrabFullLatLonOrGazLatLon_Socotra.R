@@ -67,12 +67,13 @@ length(unique(recGrab$acceptDetAs))
 # 807 20Dec2016
 
 # create object
-taxaListSocotra <- unique(recGrab$acceptDetAs)
+#taxaListSocotra <- unique(recGrab$acceptDetAs)
+taxaListSocotra <- unique(recGrab$acceptDetNoAuth)
 #sort(taxaListSocotra)
 
 message(paste0(" ... saving list of accepted taxa names in analysis set to: O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_", Sys.Date(), ".csv"))
 # write list of unique taxa
-write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_", Sys.Date(), ".csv"), row.names=FALSE)
+#write.csv(sort(taxaListSocotra), file=paste0("O://CMEP\ Projects/Socotra/analysisTaxaListSocotra_", Sys.Date(), ".csv"), row.names=FALSE)
 
 # message(paste0(" ... saving list of accepted taxa names to: O://CMEP\ Projects/Socotra/taxaListSocotra_", Sys.Date(), ".csv"))
 # # write list of unique taxa
@@ -141,7 +142,7 @@ filter(socotraData, acceptDetAs=="Aerva revoluta Balf.f.")
 arrange(socotraData, acceptDetAs, dateYYYY, collector)
 
 # mutate(datasource, newcolumn=AnyLat + " " + AnyLon)
-socotraData <- mutate(socotraData, LatLon=paste(anyLat, anyLon, sep=" "))
+socotraData <- mutate(socotraData, latLon=paste(anyLat, anyLon, sep=" "))
 
 # summarize(datasource, summarizingcolumn = summarizing function(column3))
 # no easy example here
@@ -160,7 +161,7 @@ avgSpsCollection <-
 
 # group by species and summarize by multiple variables
 socDat <- mutate(socotraData, latLon=paste(anyLat, anyLon, sep=" "))
-by_sps <- group_by(socDat, acceptDetAs)
+by_sps <- group_by(socDat, acceptDetNoAuth)
 by_sps_sum <- summarize(by_sps, 
                         count=n(),
                         collectedBy=n_distinct(collector), 
@@ -179,7 +180,7 @@ by_fam_gps <-
 by_fam_gps
 
 # top 10 species by usable records
-by_sps <- group_by(socDat, acceptDetAs)
+by_sps <- group_by(socDat, acceptDetNoAuth)
 by_sps_counts <- 
         by_sps %>%
         summarize(count=n()) %>%
@@ -188,12 +189,28 @@ by_sps_counts
 
 
 #number of taxa with over 10 unique lat+lon locations:
-over10s <- filter(by_sps_sum, uniqueLatLon>10)
-#390
-write.csv(over10s, file.select(), row.names = FALSE)
-fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Socotra\ 2013-2016\ LEVERHULME\ TRUST\ RPG-2012-778/AnalysisData/"
-fileName <- "over10Locats-Socotra_"
-write.csv(over10s, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
+over10s <- filter(by_sps_sum, uniqueLatLon>10) %>% select(acceptDetNoAuth)
+#379 taxa
+#fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Socotra\ 2013-2016\ LEVERHULME\ TRUST\ RPG-2012-778/AnalysisData/"
+#fileName <- "over10Locats-Socotra_"
+#write.csv(over10s, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)
+
+
+# endemic taxa with more than 10 unique lat+lon locations
+endemicTaxOver10s <- 
+        by_sps %>% 
+        filter(endemicScore==1) %>%
+        summarize(count=n(),
+                  uniqueLatLon=n_distinct(latLon),
+                  mostRecent=max(dateYYYY, na.rm=TRUE)
+        ) %>%
+        filter(uniqueLatLon >10) %>%
+        select(acceptDetNoAuth)
+# 196 taxa
+# writeout: 
+#fileLocat <- "O://CMEP\ Projects/PROJECTS\ BY\ COUNTRY/Socotra/Socotra\ 2013-2016\ LEVERHULME\ TRUST\ RPG-2012-778/AnalysisData/"
+#fileName <- "EndemicTaxaOver10Locats-Socotra_"
+#write.csv(endemicTaxOver10s, file=paste0(fileLocat,fileName,Sys.Date(),".csv"), row.names = FALSE)               
 
 #number of taxa with over 10 unique named-locations:
 filter(by_sps_sum, uniqueLocation>10)
