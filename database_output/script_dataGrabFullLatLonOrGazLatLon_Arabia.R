@@ -58,7 +58,7 @@ livePadmeArabiaCon()
 
 locatName <- "Arabian Peninsula"
 
-#taxonName <- "Opuntia"
+taxonName <- "Argemone mexicana"
 
 ###---------------------- USER INPUT REQUIRED HERE --------------------------###
 
@@ -129,7 +129,7 @@ LEFT JOIN Teams AS DtTm ON Dets.[Det by] = DtTm.id ",
   # ... AND no synonyms, accepted names only
 "AND ((LnSy.[Synonym of]) Is Null) ",
 ## pull out specific taxonName
-#"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
+"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
 # order by collector string:
 "ORDER BY Team.[name for display];")
 
@@ -190,7 +190,7 @@ LEFT JOIN [Latin Names] AS LnSy ON Snym.[member of] = LnSy.id ",
 # ... AND no synonyms, accepted names only
 "AND LnSy.[Synonym of] Is Null ",
 ## pull out specific taxonName
-#"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
+"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
 # order by collector string:
 "ORDER BY Team.[name for display];")
 
@@ -261,7 +261,7 @@ LEFT JOIN [Latin Names] AS LnSy ON Synm.[member of] = LnSy.id ",
 # ... AND no synonyms, accepted names only
 "AND LnSy.[Synonym of] Is Null ",
 ## pull out specific taxonName
-#"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
+"AND (LnSy.[sortName] LIKE '%", taxonName, "%' OR Lnam.[sortName] LIKE '%", taxonName, "%')  ",
 # order by collector string:
 "ORDER BY Litr.id;")
 
