@@ -301,7 +301,7 @@ nrow(litrRex)
 
 recGrab <- rbind(herbRex, fielRex, litrRex)
 nrow(recGrab) 
-# 30/Sept/2015 - 105371
+# 2018 Nov 15 - 27583
 
 # sort specimens
 #   sorted so Edinburgh specimens, then found specimens float to the top 
